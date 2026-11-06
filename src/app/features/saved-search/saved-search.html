@@ -1,0 +1,98 @@
+<section class="ss">
+
+  <!-- ================= HEADER ================= -->
+  <header class="head">
+    <div>
+      <h1>Saved Searches</h1>
+      <p>
+        Save the filters you use often and run them again in one click.
+        ({{ items.length }} of {{ limit }} used)
+      </p>
+    </div>
+    <button
+      type="button"
+      class="btn-main"
+      [disabled]="atLimit"
+      [attr.title]="atLimit ? 'You have reached the limit of ' + limit + ' saved searches' : null"
+      (click)="newSearch()"
+    >
+      New search
+    </button>
+  </header>
+
+  @if (atLimit) {
+    <div class="limit-note" role="status">
+      <i class="bi bi-info-circle"></i>
+      You’ve used all {{ limit }} saved searches. Delete one to add a new search.
+    </div>
+  }
+
+  <!-- ================= TOOLBAR ================= -->
+  <div class="toolbar">
+    <div class="search">
+      <i class="bi bi-search"></i>
+      <input
+        type="text"
+        name="kw"
+        [(ngModel)]="keyword"
+        placeholder="Search your saved searches..."
+        autocomplete="off"
+        aria-label="Search your saved searches"
+      />
+    </div>
+
+    <span class="sel">
+      <select [(ngModel)]="sortKey" name="sort" aria-label="Sort saved searches">
+        @for (o of sortOptions; track o.key) {
+          <option [ngValue]="o.key">{{ o.label }}</option>
+        }
+      </select>
+      <i class="bi bi-chevron-down"></i>
+    </span>
+  </div>
+
+  <!-- ================= LIST ================= -->
+  <div class="list">
+    @for (s of filtered; track s.id) {
+      <article class="sv">
+
+        <div class="left">
+          <h3>{{ s.name }}</h3>
+          <span class="saved">Saved {{ s.savedOn | date: 'MMM d, y' }}</span>
+
+          <div class="chips">
+            @for (c of s.chips; track c) {
+              <span class="chip">{{ c }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="acts">
+          <button type="button" class="b-run" (click)="runSearch(s)">Run search</button>
+          <button
+            type="button"
+            class="b-delete"
+            [class.confirm]="confirmId === s.id"
+            (click)="askDelete(s)"
+            (blur)="confirmId = null"
+          >
+            {{ confirmId === s.id ? 'Confirm?' : 'Delete' }}
+          </button>
+        </div>
+      </article>
+    } @empty {
+      <div class="empty">
+        <i class="bi bi-bookmark"></i>
+        @if (items.length === 0) {
+          <h3>No saved searches yet</h3>
+          <p>Run an Advanced Search and save it to see it here.</p>
+          <button type="button" class="btn-main" (click)="newSearch()">New search</button>
+        } @else {
+          <h3>No saved searches match</h3>
+          <p>Try a different keyword.</p>
+          <button type="button" class="btn-main" (click)="keyword = ''">Clear search</button>
+        }
+      </div>
+    }
+  </div>
+</section>

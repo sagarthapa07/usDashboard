@@ -1,0 +1,347 @@
+/* ---------- Topbar: transparent + blur (design jaisa), border nahi ---------- */
+.topbar {
+  display: flex;
+  gap: 16px;
+  padding: 12px 24px;
+  background: color-mix(in srgb, var(--bgClr) 80%, transparent);
+  backdrop-filter: blur(12px);
+  align-items: center;
+}
+.topbar > * {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* ---------- Burger button ---------- */
+.burger {
+  display: flex;
+  padding: 7px 9px;
+  background: var(--cardBgClr);
+  border: 0;
+  border-radius: var(--radiusSm);
+  box-shadow: var(--shadow);
+  color: var(--textClr);
+}
+
+/* ---------- Brand (logo) ---------- */
+.brand {
+  display: none; /* default hidden */
+  align-items: center;
+  gap: 11px;
+  height: 40px;
+  padding-right: 18px;
+  border-right: var(--border);
+  color: var(--textClr);
+
+  &.show-brand {
+    display: flex;
+  }
+
+  .logo {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--navyClr);
+    color: var(--whiteClr);
+    font-weight: 800;
+    font-size: 18px;
+  }
+
+  .brand-name {
+    b {
+      display: block;
+      font-size: 16px;
+      line-height: 1.1;
+      font-weight: 800;
+    }
+    small {
+      display: block;
+      color: var(--mutedClr);
+      font-size: 10.5px;
+    }
+  }
+}
+
+/* ---------- Breadcrumb: Home › Find Grants › [Latest Grants] ---------- */
+.crumbs {
+  display: flex;
+  align-items: center;
+  align-self: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  font-size: 13.5px;
+  color: var(--mutedClr);
+  white-space: nowrap;
+
+  a {
+    color: var(--mutedClr);
+
+    &:hover {
+      color: var(--primaryClr);
+    }
+  }
+
+  .sep {
+    font-size: 11px;
+    line-height: 1;
+  }
+
+  .crumb.current {
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--primaryLightClr);
+    color: var(--primaryClr);
+    font-weight: 600;
+  }
+}
+
+/* ---------- Search box (pill) ---------- */
+.search-box {
+  flex: 1;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--cardBgClr);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  color: var(--mutedClr);
+
+  &:focus-within {
+    border-color: var(--primaryClr);
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 13.5px;
+    color: var(--textClr);
+  }
+
+  kbd {
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: var(--bgClr);
+    font: 500 11px var(--fontFamily);
+    color: var(--mutedClr);
+  }
+}
+
+/* ---------- Help ---------- */
+.help {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--menuTextClr);
+  font-weight: 500;
+  font-size: 13.5px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* ---------- Bell (white circle) ---------- */
+.bell {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--cardBgClr);
+  box-shadow: var(--shadow);
+  color: var(--menuTextClr);
+  cursor: pointer;
+
+  em {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 16px;
+    background: var(--dangerClr);
+    color: var(--whiteClr);
+    font: 700 10px/16px var(--fontFamily);
+    font-style: normal;
+    text-align: center;
+    border-radius: 50%;
+  }
+}
+
+/* ---------- Avatar ---------- */
+.avatar {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--navyClr);
+  color: var(--whiteClr);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* ---------- Bootstrap Icons ke sizes ---------- */
+.burger .bi {
+  font-size: 20px;
+}
+.search-box .bi {
+  font-size: 16px;
+}
+.help .bi {
+  font-size: 18px;
+}
+.bell .bi {
+  font-size: 19px;
+}
+.profile .chevron {
+  font-size: 14px;
+}
+
+/* ---------- User profile + dropdown ---------- */
+.profile {
+  position: relative;
+
+  .user-btn {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 4px 8px;
+    background: none;
+    border: 0;
+    border-radius: 10px;
+    color: var(--textClr);
+
+    &:hover {
+      background: var(--primaryLightClr);
+    }
+  }
+
+  .user-info {
+    text-align: left;
+
+    b {
+      display: block;
+      font-size: 13px;
+      line-height: 1.15;
+    }
+    small {
+      color: var(--mutedClr);
+      font-size: 11.5px;
+    }
+  }
+
+  .chevron {
+    color: var(--mutedClr);
+    transition: transform 0.2s;
+  }
+
+  .dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    width: 262px;
+    max-width: calc(100vw - 24px);
+    background: var(--cardBgClr);
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 14px 34px rgba(15, 31, 56, 0.16);
+    overflow: hidden;
+    z-index: 60;
+  }
+
+  .dropdown-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: var(--bgClr);
+
+    b {
+      display: block;
+      font-size: 13.5px;
+    }
+    small {
+      color: var(--mutedClr);
+      font-size: 12px;
+    }
+  }
+
+  .dropdown a {
+    display: block;
+    padding: 11px 16px;
+    border-top: var(--border);
+    color: var(--textClr);
+    font-size: 13.5px;
+    font-weight: 600;
+
+    &:hover {
+      background: var(--primaryLightClr);
+      color: var(--primaryClr);
+    }
+
+    &.sign-out {
+      color: var(--dangerClr);
+    }
+
+    &.active {
+      background: var(--primaryLightClr);
+      color: var(--primaryClr);
+    }
+
+    &.sign-out {
+      color: var(--dangerClr);
+    }
+  }
+
+  &.open {
+    .user-btn {
+      background: var(--primaryLightClr);
+    }
+    .chevron {
+      transform: rotate(180deg);
+    }
+    .dropdown {
+      display: block;
+    }
+  }
+}
+
+/* ---------- Responsive (tablet / mobile) ---------- */
+@media (max-width: 1000px) {
+  .brand {
+    display: flex;
+  }
+  .user-info,
+  .chevron {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .topbar {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  .brand-name {
+    display: none;
+  }
+  .brand {
+    padding-right: 0;
+    border-right: 0;
+  }
+  .crumbs,
+  .help span,
+  .search-box kbd {
+    display: none;
+  }
+}

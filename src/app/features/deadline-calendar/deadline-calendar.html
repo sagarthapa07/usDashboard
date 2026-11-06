@@ -1,0 +1,322 @@
+<div class="dc-page" [class.filters-open]="filtersOpen">
+  <!-- ============ HERO + FILTERS (ek hi box) ============ -->
+  <section class="dc-hero">
+    <span class="dc-eyebrow">PLAN YOUR APPLICATIONS</span>
+    <h1>Deadline <span>Calendar</span></h1>
+    <p>See every grant deadline at a glance. Switch between grid, list and calendar views.</p>
+
+    <!-- MOBILE: Filters button (desktop par chhupa rehta hai) -->
+    <button
+      type="button"
+      class="dc-filter-toggle"
+      [attr.aria-expanded]="filtersOpen"
+      (click)="toggleFilters()"
+    >
+      <i class="bi bi-funnel"></i>
+      Filters
+      @if (activeFilterCount) {
+        <span class="cnt">{{ activeFilterCount }}</span>
+      }
+      <i class="bi bi-chevron-down chev"></i>
+    </button>
+
+    <div class="dc-filter">
+      <div class="dc-field">
+        <label for="dc-date">Deadline Date</label>
+        <select id="dc-date" [(ngModel)]="draft.date" name="date">
+          @for (o of dateOptions; track o.value) {
+            <option [value]="o.value">{{ o.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="dc-field">
+        <label for="dc-status">Grant Status</label>
+        <select id="dc-status" [(ngModel)]="draft.status" name="status">
+          @for (o of statusOptions; track o.value) {
+            <option [value]="o.value">{{ o.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="dc-field">
+        <label for="dc-amount">Funding Amount</label>
+        <select id="dc-amount" [(ngModel)]="draft.amount" name="amount">
+          @for (o of amountOptions; track o.value) {
+            <option [value]="o.value">{{ o.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="dc-field">
+        <label for="dc-from">Deadline From</label>
+        <input id="dc-from" type="date" [(ngModel)]="draft.from" name="from" />
+      </div>
+
+      <div class="dc-field">
+        <label for="dc-to">Deadline To</label>
+        <input id="dc-to" type="date" [(ngModel)]="draft.to" name="to" />
+      </div>
+
+      <div class="dc-actions">
+        <app-buttons variant="link" iconEnd="bi-arrow-right" (click)="onAdvanced()"
+          >Advanced Search</app-buttons
+        >
+        <div class="dc-btns">
+          <app-buttons (click)="onSearch()">Search</app-buttons>
+          <app-buttons variant="outline" (click)="onReset()">Reset</app-buttons>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ SELECTED FILTERS ============ -->
+    <div class="dc-selected">
+      <div class="sel-left">
+        <b>Selected Filters:</b>
+
+        @if (chipsList.length) {
+          @for (c of chipsList; track c.key) {
+            <span class="sel-chip">
+              {{ c.label }}
+              <button
+                type="button"
+                [attr.aria-label]="'Remove ' + c.label"
+                (click)="removeChip(c.key)"
+              >
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </span>
+          }
+          <button type="button" class="clear-all" (click)="clearAll()">Clear All</button>
+        } @else {
+          <span class="sel-none">None — showing all upcoming deadlines</span>
+        }
+      </div>
+
+      <button type="button" class="save-search" (click)="saveSearch()">
+        <i class="bi" [class]="searchSaved ? 'bi-bookmark-fill' : 'bi-bookmark'"></i>
+        {{ searchSaved ? 'Search Saved' : 'Save Search' }}
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ HEADING + SORT + VIEW TOGGLE ============ -->
+  <div class="dc-head">
+    <h2>{{ filteredCards.length }} Grants Found</h2>
+
+    <div class="dc-tools">
+      <label class="sort">
+        <span>Sort by</span>
+        <select
+          aria-label="Sort by"
+          [ngModel]="sortKey"
+          (ngModelChange)="onSort($event)"
+          name="sort"
+        >
+          @for (o of sortOptions; track o.key) {
+            <option [value]="o.key">{{ o.label }}</option>
+          }
+        </select>
+      </label>
+
+      <div class="seg" role="group" aria-label="View">
+        @for (v of views; track v.key) {
+          <button type="button" [class.on]="viewMode === v.key" (click)="setView(v.key)">
+            {{ v.label }}
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ EMPTY ============ -->
+  @if (!filteredCards.length) {
+    <div class="no-result">
+      <i class="bi bi-inbox"></i>
+      <span>No grants match these filters.</span>
+    </div>
+  } @else {
+    <!-- ============ GRID VIEW ============ -->
+    @if (viewMode === 'grid') {
+      <div class="gc-grid">
+        @for (g of pagedCards; track g.id) {
+          <article class="gc" tabindex="0" (click)="onView(g)" (keydown.enter)="onView(g)">
+            <div class="gc-top">
+              <div class="tile" [class]="'tone-' + g.tone">
+                <i class="bi" [class]="g.icon ?? 'bi-geo-alt'"></i>
+              </div>
+
+              <div class="gc-info">
+                <div class="gc-head">
+                  <span class="tag">{{ g.category }}</span>
+                  <button
+                    type="button"
+                    class="heart"
+                    [class.on]="g.isFav"
+                    [attr.aria-label]="g.isFav ? 'Remove from saved' : 'Save grant'"
+                    (click)="toggleFav(g, $event)"
+                  >
+                    <i class="bi" [class]="g.isFav ? 'bi-heart-fill' : 'bi-heart'"></i>
+                  </button>
+                </div>
+
+                <h3 [attr.title]="g.title">{{ g.title }}</h3>
+
+                <div class="gc-meta">
+                  <span class="st"><i class="bi bi-geo-alt"></i>{{ g.state }}</span>
+                  <span class="amt"><i class="bi bi-currency-dollar"></i>{{ g.amount }}</span>
+                </div>
+                <div class="gc-donor" [attr.title]="g.donor">
+                  <i class="bi bi-building"></i>{{ g.donor }}
+                </div>
+              </div>
+            </div>
+
+            <div class="gc-foot" [class]="urgency(g)">
+              <div class="gc-date">
+                <i class="bi bi-calendar3"></i>
+                <div>
+                  <small>Deadline</small>
+                  <b>{{ g.deadline | date: 'MMM d, y' }}</b>
+                </div>
+              </div>
+              <span class="left">{{ leftLabel(g) }}</span>
+            </div>
+          </article>
+        }
+      </div>
+    }
+
+    <!-- ============ LIST VIEW ============ -->
+    @if (viewMode === 'list') {
+      <div class="lr-list">
+        @for (g of pagedCards; track g.id) {
+          <article class="lr" tabindex="0" (click)="onView(g)" (keydown.enter)="onView(g)">
+            <div class="tile sm" [class]="'tone-' + g.tone">
+              <i class="bi" [class]="g.icon ?? 'bi-geo-alt'"></i>
+            </div>
+
+            <div class="lrb">
+              <div class="lrg">
+                <span [class]="urgency(g)">{{ leftLabel(g) }}</span>
+                <span>{{ g.type ?? 'Grant' }}</span>
+              </div>
+              <h3>{{ g.title }}</h3>
+              <div class="lrm">
+                <span class="a">{{ g.amount }}</span>
+                <span class="d">Due {{ g.deadline | date: 'MMM d, y' }}</span>
+                <span class="n">{{ g.donor }}</span>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+
+    <!-- ============ CALENDAR VIEW ============ -->
+    @if (viewMode === 'calendar') {
+      <section class="cal">
+        <div class="cal-head">
+          <button type="button" class="nav-btn" aria-label="Previous month" (click)="prevMonth()">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <h2>{{ monthLabel }}</h2>
+          <div class="cal-right">
+            <button type="button" class="today-btn" (click)="goToday()">Today</button>
+            <button type="button" class="nav-btn" aria-label="Next month" (click)="nextMonth()">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="cal-week">
+          @for (w of weekdays; track w) {
+            <span>{{ w }}</span>
+          }
+        </div>
+
+        <div class="cal-grid">
+          @for (c of cells; track $index) {
+            @if (c.day) {
+              <button
+                type="button"
+                class="cal-cell"
+                [class.today]="c.isToday"
+                [class.on]="c.date === selectedDate"
+                (click)="selectDay(c)"
+              >
+                <span class="num">{{ c.day }}</span>
+                @if (c.count) {
+                  <span class="pill" [class]="urgencyOfDate(c.date)">
+                    <b>{{ c.count }}</b
+                    ><em> {{ c.count === 1 ? 'grant' : 'grants' }}</em>
+                  </span>
+                }
+              </button>
+            } @else {
+              <span class="cal-blank"></span>
+            }
+          }
+        </div>
+      </section>
+
+      <!-- Selected din ke grants -->
+      @if (selectedDate) {
+        <section class="day" id="dc-day">
+          <div class="day-head">
+            <h3>{{ selectedItems.length }} closing on {{ selectedDate | date: 'MMM d, y' }}</h3>
+            <button
+              type="button"
+              class="day-close"
+              aria-label="Close list"
+              (click)="selectedDate = null"
+            >
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+
+          @if (selectedItems.length) {
+            <div class="lr-list">
+              @for (g of selectedItems; track g.id) {
+                <article class="lr" tabindex="0" (click)="onView(g)" (keydown.enter)="onView(g)">
+                  <div class="tile sm" [class]="'tone-' + g.tone">
+                    <i class="bi" [class]="g.icon ?? 'bi-geo-alt'"></i>
+                  </div>
+
+                  <div class="lrb">
+                    <div class="lrg">
+                      <span [class]="urgency(g)">{{ leftLabel(g) }}</span>
+                      <span>{{ g.type ?? 'Grant' }}</span>
+                    </div>
+                    <h3>{{ g.title }}</h3>
+                    <div class="lrm">
+                      <span class="a">{{ g.amount }}</span>
+                      <span class="d">Due {{ g.deadline | date: 'MMM d, y' }}</span>
+                      <span class="n">{{ g.donor }}</span>
+                    </div>
+                  </div>
+                </article>
+              }
+            </div>
+          } @else {
+            <div class="no-result">
+              <i class="bi bi-calendar-x"></i>
+              <span>No deadlines on this day.</span>
+            </div>
+          }
+        </section>
+      }
+    }
+
+    <!-- Pagination: sirf Grid / List me -->
+    @if (viewMode !== 'calendar') {
+      <app-pagination
+        [totalItems]="filteredCards.length"
+        [pageSize]="pageSize"
+        [currentPage]="currentPage"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+      ></app-pagination>
+    }
+  }
+</div>

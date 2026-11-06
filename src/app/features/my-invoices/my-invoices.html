@@ -1,0 +1,44 @@
+<section class="inv">
+  <header class="inv-hd">
+    <h1 class="inv-title">{{ text.title }}</h1>
+    <p class="inv-sub">{{ text.subtitle }}</p>
+  </header>
+
+  <div class="inv-card">
+    <div class="inv-wrap">
+      <table class="inv-tbl">
+        <thead>
+          <tr>
+            @for (col of columns; track col) {
+              <th>{{ col }}</th>
+            }
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (item of sortedInvoices(); track item.id) {
+            <tr>
+              <td class="inv-id" [attr.data-label]="columns[0]">{{ item.id }}</td>
+              <td [attr.data-label]="columns[1]">{{ item.date | date: 'MMMM d, y' }}</td>
+              <td [attr.data-label]="columns[2]">{{ item.plan }}</td>
+              <td [attr.data-label]="columns[3]">{{ item.net }}</td>
+              <td [attr.data-label]="columns[4]">Paid via {{ item.via }}</td>
+              <td [attr.data-label]="columns[5]">
+                {{ item.dur }} · until {{ item.end | date: 'MMMM d, y' }}
+              </td>
+              <td [attr.data-label]="columns[6]">
+                <span class="inv-st" [class]="'inv-st ' + statusClass(item.status)">
+                  {{ item.status }}
+                </span>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="inv-empty" [attr.colspan]="columns.length">{{ text.emptyText }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

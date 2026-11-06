@@ -1,0 +1,122 @@
+@if (variant === 'tile') {
+  <!-- ============ DESIGN 1: TILE ============ -->
+  <article class="gc gc-tile">
+    <div class="gc-top">
+      <div class="gc-icon tone-{{ grant.tone }}"><i class="bi {{ grant.icon }}"></i></div>
+
+      <div class="gc-body">
+        <div class="gc-row">
+          <span class="gc-pill">{{ grant.category }}</span>
+          <button
+            type="button"
+            class="gc-fav"
+            [class.on]="grant.isFav"
+            (click)="onFav()"
+            aria-label="Save grant"
+          >
+            <i class="bi" [class.bi-heart]="!grant.isFav" [class.bi-heart-fill]="grant.isFav"></i>
+          </button>
+        </div>
+
+        <h3 class="gc-title">{{ grant.title }}</h3>
+
+        <div class="gc-meta">
+          <span><i class="bi bi-geo-alt"></i>{{ grant.state }}</span>
+          <span><i class="bi bi-currency-dollar"></i>{{ grant.amount }}</span>
+        </div>
+        <div class="gc-meta gc-donor"><i class="bi bi-bank"></i>{{ grant.donor }}</div>
+      </div>
+    </div>
+
+    <div class="gc-foot-tile">
+      <i class="bi bi-calendar3"></i>
+      <div>
+        <small>Deadline</small>
+        <b>{{ grant.deadline | date: 'MMM d, y' }}</b>
+      </div>
+      <span class="gc-days">{{ daysLeft }} days left</span>
+    </div>
+  </article>
+} @else if (variant === 'detailed') {
+  <!-- ============ DESIGN 2: DETAILED ============ -->
+  <article class="gc gc-detailed">
+    <div class="gc-top">
+      <div class="gc-icon tone-{{ grant.tone }}"><i class="bi {{ grant.icon }}"></i></div>
+
+      <div class="gc-body">
+        <h3 class="gc-title">{{ grant.title }}</h3>
+        <div class="gc-donor-link">{{ grant.donor }}</div>
+        @if (grant.type) {
+          <span class="gc-type type-{{ grant.type.toLowerCase() }}">{{ grant.type }}</span>
+        }
+      </div>
+    </div>
+
+    <ul class="gc-list">
+      <li [class.gc-amt]="amountAvailable" [class.gc-amt-na]="!amountAvailable">
+        <i class="bi bi-currency-dollar"></i>{{ grant.amount }}
+      </li>
+      <li class="gc-strong"><i class="bi bi-bank"></i>{{ grant.category }}</li>
+      <li class="gc-strong"><i class="bi bi-geo-alt"></i>{{ grant.state }}</li>
+      @if (grant.posted) {
+        <li class="gc-posted">
+          <i class="bi bi-calendar3"></i>Posted {{ grant.posted | date: 'MMMM d, y' }}
+        </li>
+      }
+    </ul>
+
+    <div class="gc-foot-detailed">
+      <div>
+        <small>LAST DATE</small>
+        <b>{{ grant.deadline | date: 'MMMM d, y' }}</b>
+      </div>
+      <div class="gc-actions">
+        <button
+          type="button"
+          class="gc-save"
+          [class.on]="grant.isFav"
+          (click)="onFav()"
+          aria-label="Save grant"
+        >
+          <i
+            class="bi"
+            [class.bi-bookmark]="!grant.isFav"
+            [class.bi-bookmark-fill]="grant.isFav"
+          ></i>
+        </button>
+        <button type="button" class="gc-view" (click)="onView()">View Details</button>
+      </div>
+    </div>
+  </article>
+} @else {
+  <!-- ============ DESIGN 3: ROW (table / list) ============ -->
+  <article class="gc gc-row-card" [class.sel]="selected">
+    <div class="gc-icon tone-{{ grant.tone }}"><i class="bi {{ grant.icon }}"></i></div>
+
+    <div class="gc-body">
+      <div class="gcr-badges">
+        @if (selected) {
+          <span class="gcr-selected">SELECTED</span>
+        }
+        @if (grant.isNew) {
+          <span class="gcr-new">NEW</span>
+        }
+        @if (grant.type) {
+          <span class="gcr-type">{{ grant.type }}</span>
+        }
+      </div>
+
+      <h3 class="gc-title">{{ grant.title }}</h3>
+
+      <div class="gcr-meta">
+        <span class="gcr-amt">{{ grant.amount }}</span>
+        <span class="gcr-due">Due {{ grant.deadline | date: 'MMM d, y' }}</span>
+        <span class="gcr-donor">{{ grant.donor }}</span>
+      </div>
+
+      @if (selected && grant.description) {
+        <p class="gcr-desc">{{ grant.description }}</p>
+      }
+    </div>
+  </article>
+}

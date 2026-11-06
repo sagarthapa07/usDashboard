@@ -1,0 +1,280 @@
+<section class="dn">
+  <!-- =====================================================
+       HERO + KEYWORD SEARCH
+       ===================================================== -->
+  <div class="dnh">
+    <div class="dnh-top">
+      <div>
+        <h1>{{ text.titleStart }} <span>{{ text.titleAccent }}</span></h1>
+        <p>{{ text.subtitle }}</p>
+      </div>
+
+      <app-buttons variant="outline" size="lg" icon="bi-play-fill" (click)="openTutorial()">
+        {{ text.tutorialBtn }}
+      </app-buttons>
+    </div>
+
+    <div class="dnh-bar">
+      <i class="bi bi-search"></i>
+      <input
+        type="search"
+        aria-label="Keyword"
+        autocomplete="off"
+        [placeholder]="text.searchPlaceholder"
+        [ngModel]="keyword()"
+        (ngModelChange)="setKeyword($event)"
+      />
+      <app-buttons variant="primary" (click)="setKeyword(keyword())">{{ text.searchBtn }}</app-buttons>
+    </div>
+  </div>
+
+  <div class="dn-w">
+    <!-- =====================================================
+         LEFT: FILTERS
+         ===================================================== -->
+    <app-donor-filter
+      class="dn-side"
+      [countries]="countries"
+      [focuses]="focuses"
+      [areas]="areas"
+      [popular]="popular"
+      [value]="filter()"
+      [filterTitle]="text.filterTitle"
+      [popularTitle]="text.popularTitle"
+      (valueChange)="applyFilter($event)"
+      (popularPick)="pickPopular($event)"
+    />
+
+    <!-- =====================================================
+         RIGHT: RESULTS
+         ===================================================== -->
+    <div class="dn-main">
+      <!-- Toolbar -->
+      <div class="dn-tb">
+        <span class="dn-count" aria-live="polite">
+          @if (filtered().length) {
+            Showing <b>{{ rangeFrom() }}–{{ rangeTo() }}</b> of <b>{{ filtered().length }}</b> donors
+          } @else {
+            No donors found
+          }
+        </span>
+
+        <div class="dn-tr">
+          <button
+            type="button"
+            class="dn-sv"
+            [class.on]="savedOnly()"
+            [attr.aria-pressed]="savedOnly()"
+            (click)="toggleSavedOnly()"
+          >
+            <i class="bi" [class.bi-heart]="!savedOnly()" [class.bi-heart-fill]="savedOnly()"></i>
+            {{ text.savedLabel }} ({{ saved().size }})
+          </button>
+
+          <select class="dn-so" aria-label="Sort" [ngModel]="sort()" (ngModelChange)="setSort($event)">
+            @for (o of sortOptions; track o.key) {
+              <option [value]="o.key">{{ o.label }}</option>
+            }
+          </select>
+
+          <div class="dn-vw">
+            <button type="button" aria-label="List view" [class.on]="view() === 'list'" (click)="setView('list')">
+              <i class="bi bi-list-ul"></i>
+            </button>
+            <button type="button" aria-label="Grid view" [class.on]="view() === 'grid'" (click)="setView('grid')">
+              <i class="bi bi-grid"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active filter chips -->
+      @if (chips().length) {
+        <div class="dn-ac">
+          @for (c of chips(); track c.key) {
+            <button type="button" (click)="removeChip(c.key)">
+              {{ c.label }} <i class="bi bi-x-lg"></i>
+            </button>
+          }
+          <button type="button" class="clr" (click)="resetAll()">Clear all</button>
+        </div>
+      }
+
+      <!-- Donor cards -->
+      <div class="dn-l" [class.g]="view() === 'grid'">
+        @for (d of pageItems(); track d.id) {
+          <article class="dn-c" [style.--c]="color(d)" (click)="openDonor(d)">
+            <div class="dn-av" aria-hidden="true">{{ initials(d.name) }}</div>
+
+            <div class="dn-cb">
+              <h3><button type="button" class="dn-n">{{ d.name }}</button></h3>
+
+              <div class="dn-m">
+                <span><i class="bi bi-geo-alt"></i>{{ d.country }}</span>
+                <span><i class="bi bi-calendar3"></i>Posted {{ d.posted | date: 'MMMM d, y' }}</span>
+              </div>
+
+              <div class="dn-u">
+                <i class="bi bi-link-45deg"></i>
+                <a [href]="d.url" target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()">
+                  {{ shortUrl(d.url) }}
+                </a>
+              </div>
+
+              <div class="dn-tg">
+                @for (a of d.areas; track a) {
+                  <span><i class="bi bi-check-circle"></i>{{ a }}</span>
+                }
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="dn-h"
+              [class.on]="isSaved(d.id)"
+              [attr.aria-pressed]="isSaved(d.id)"
+              [attr.aria-label]="isSaved(d.id) ? 'Remove from saved' : 'Save donor'"
+              (click)="toggleSaved(d.id, $event)"
+            >
+              <i class="bi" [class.bi-heart]="!isSaved(d.id)" [class.bi-heart-fill]="isSaved(d.id)"></i>
+            </button>
+          </article>
+        } @empty {
+          <div class="dn-e">
+            <b>{{ savedOnly() && saved().size === 0 ? text.emptySavedTitle : text.emptyTitle }}</b>
+            {{ savedOnly() && saved().size === 0 ? text.emptySavedText : text.emptyText }}
+            <div class="dn-e-btn">
+              <app-buttons variant="primary" (click)="resetAll()">{{ text.resetBtn }}</app-buttons>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Pagination -->
+      @if (filtered().length) {
+        <div class="dn-pg">
+          <label class="dn-pg-l">
+            Show
+            <select [ngModel]="pageSize()" (ngModelChange)="setPageSize($event)">
+              @for (n of pageSizes; track n) {
+                <option [value]="n">{{ n }}</option>
+              }
+            </select>
+            per page
+          </label>
+
+          @if (totalPages() > 1) {
+            <nav class="dn-pgi" aria-label="Pages">
+              <button type="button" [disabled]="currentPage() === 1" (click)="goTo(currentPage() - 1)">
+                &lsaquo; Prev
+              </button>
+
+              @for (b of pageButtons(); track $index) {
+                @if (b.page === null) {
+                  <span>…</span>
+                } @else {
+                  <button
+                    type="button"
+                    [class.sel]="b.page === currentPage()"
+                    (click)="goTo(b.page)"
+                  >
+                    {{ b.label }}
+                  </button>
+                }
+              }
+
+              <button type="button" [disabled]="currentPage() === totalPages()" (click)="goTo(currentPage() + 1)">
+                Next &rsaquo;
+              </button>
+            </nav>
+          }
+
+          <span class="dn-jump">
+            <label>
+              Page
+              <input
+                #jump
+                type="number"
+                min="1"
+                aria-label="Go to page"
+                [placeholder]="currentPage() + ' / ' + totalPages()"
+                (keydown.enter)="goTo(jump.value); jump.value = ''"
+              />
+            </label>
+            <app-buttons variant="primary" size="sm" (click)="goTo(jump.value); jump.value = ''">Go</app-buttons>
+          </span>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================
+     DRAWER (donor profile / video tutorial)
+     ===================================================== -->
+<div class="dn-ov" [class.on]="drawerOpen()" (click)="closeDrawer()"></div>
+
+<aside class="dn-dr" [class.on]="drawerOpen()" role="dialog" aria-modal="true" aria-label="Donor">
+  <div class="dn-dh">
+    <span>{{ drawerMode() === 'donor' ? 'Donor profile' : 'Video tutorial' }}</span>
+    <app-buttons variant="neutral" size="sm" (click)="closeDrawer()">Close</app-buttons>
+  </div>
+
+  @if (drawerMode() === 'tutorial') {
+    <div class="dn-db">
+      <h2>{{ text.tutorialTitle }}</h2>
+      <div class="dn-vd"><i class="bi bi-play-fill"></i></div>
+      <ol class="dn-st">
+        @for (step of text.tutorialSteps; track step) {
+          <li>{{ step }}</li>
+        }
+      </ol>
+    </div>
+  } @else if (activeDonor(); as d) {
+    <div class="dn-db" [style.--c]="color(d)">
+      <div class="dn-av big">{{ initials(d.name) }}</div>
+      <h2>{{ d.name }}</h2>
+
+      <div class="dn-m">
+        <span><i class="bi bi-geo-alt"></i>{{ d.country }}</span>
+        <span><i class="bi bi-globe2"></i>Focus: {{ d.focus }}</span>
+        <span><i class="bi bi-calendar3"></i>Posted {{ d.posted | date: 'MMMM d, y' }}</span>
+      </div>
+
+      <div class="dn-tg">
+        @for (a of d.areas; track a) {
+          <span><i class="bi bi-check-circle"></i>{{ a }}</span>
+        }
+      </div>
+
+      <div class="dn-bx">
+        <small>Reference URL</small>
+        <a [href]="d.url" target="_blank" rel="noopener noreferrer">{{ d.url }}</a>
+      </div>
+
+      <div class="dn-ac2">
+        <a class="dn-visit" [href]="d.url" target="_blank" rel="noopener noreferrer">
+          Visit website <i class="bi bi-box-arrow-up-right"></i>
+        </a>
+        <app-buttons variant="neutral" (click)="copyLink(d.url)">
+          {{ copied() ? 'Copied!' : 'Copy link' }}
+        </app-buttons>
+        <app-buttons variant="neutral" [active]="isSaved(d.id)" (click)="toggleSaved(d.id)">
+          {{ isSaved(d.id) ? 'Saved' : 'Save donor' }}
+        </app-buttons>
+      </div>
+
+      @if (similarDonors().length) {
+        <h4 class="dn-sh">Similar donors</h4>
+        <div class="dn-sim">
+          @for (x of similarDonors(); track x.id) {
+            <button type="button" (click)="openDonor(x)">
+              <span>{{ x.name }}</span>
+              <small>{{ x.country }}</small>
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
+</aside>

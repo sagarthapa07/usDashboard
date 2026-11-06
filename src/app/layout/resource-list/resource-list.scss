@@ -1,0 +1,192 @@
+:host {
+  display: block;
+  font-family: var(--fontFamily);
+}
+
+/* ---------- Tone colors (table icon ke liye) ---------- */
+.tone-blue    { --t1: #4a80c9; --t2: #2a5b9d; }
+.tone-red     { --t1: #e0624d; --t2: #b03a26; }
+.tone-indigo  { --t1: #6366d1; --t2: #4346a8; }
+.tone-gold    { --t1: #c9a33a; --t2: #92701f; }
+.tone-pink    { --t1: #de5a97; --t2: #b02f6c; }
+.tone-slate   { --t1: #6b7a9c; --t2: #43506f; }
+.tone-green   { --t1: #12945f; --t2: #0a5a3a; }
+.tone-purple  { --t1: #8a47c9; --t2: #4f1f86; }
+.tone-teal    { --t1: #1fae94; --t2: #0a7d6a; }
+.tone-orange  { --t1: #e08a45; --t2: #b05a1c; }
+.tone-brown   { --t1: #8a4a24; --t2: #2e170b; }
+.tone-dark    { --t1: #2f3440; --t2: #0f1218; }
+.tone-crimson { --t1: #b3243f; --t2: #5c0a1c; }
+.tone-navy    { --t1: #3b5bdb; --t2: #1a2a6c; }
+
+/* =============== CARDS GRID =============== */
+.rl-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* article / course */
+
+  &[data-type='proposal'],
+  &[data-type='ebook'] {
+    grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  }
+
+  &[data-type='video'] {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .rl-grid,
+  .rl-grid[data-type='proposal'],
+  .rl-grid[data-type='ebook'],
+  .rl-grid[data-type='video'] {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rl-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 16px;
+  color: var(--mutedClr);
+  font-size: 13.5px;
+
+  .bi {
+    font-size: 28px;
+  }
+}
+
+/* =============== TABLE =============== */
+.rt-wrap {
+  background: var(--cardBgClr);
+  border: var(--border);
+  border-radius: 14px;
+  overflow-x: auto;
+}
+
+.rt {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border-bottom: var(--border);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--mutedClr);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 12px 16px;
+    border-bottom: var(--border);
+    vertical-align: middle;
+    color: var(--textClr);
+  }
+
+  tbody tr {
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:last-child td {
+      border-bottom: 0;
+    }
+
+    &:hover {
+      background: #f8fafc;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #4f8cff;
+      outline-offset: -2px;
+    }
+  }
+}
+
+.rt-right {
+  text-align: right !important;
+}
+
+.rt-nowrap {
+  white-space: nowrap;
+}
+
+.rt-muted {
+  color: var(--mutedClr);
+}
+
+.rt-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 260px;
+
+  b {
+    font-weight: 600;
+    line-height: 1.35;
+  }
+}
+
+.rt-ico {
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--t1), var(--t2));
+  color: #fff;
+  font-size: 17px;
+}
+
+.rt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.rt-chip {
+  background: #eef1f6;
+  color: #475569;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.rt-btn {
+  height: 34px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--primaryClr);
+  color: var(--whiteClr);
+  font: 600 13px var(--fontFamily);
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+}
+
+.rt-icon-btn {
+  width: 34px;
+  height: 34px;
+  margin-right: 6px;
+  border: var(--border);
+  border-radius: 8px;
+  background: var(--cardBgClr);
+  color: var(--primaryClr);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--primaryLightClr);
+  }
+}

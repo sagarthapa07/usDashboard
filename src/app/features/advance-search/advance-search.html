@@ -1,0 +1,204 @@
+<section class="adv">
+  <!-- ================= HERO ================= -->
+  <header class="hero">
+    <span class="eyebrow">{{ heading.eyebrow }}</span>
+    <h1>Advanced <span>Grant Search</span></h1>
+    <p>{{ heading.subtitle }}</p>
+
+    <form class="search-box" (ngSubmit)="runSearch()">
+      <i class="bi bi-search"></i>
+      <input
+        type="text"
+        name="keyword"
+        [(ngModel)]="search.keyword"
+        placeholder="Type here: education, health, women..."
+        autocomplete="off"
+      />
+      <button type="submit" class="btn search-btn">Search</button>
+    </form>
+
+    <div class="chips">
+      @for (t of typeChips; track t.key) {
+        <button
+          type="button"
+          class="chip"
+          [class.active]="search.type === t.key"
+          (click)="setType(t.key)"
+        >
+          <i class="bi" [ngClass]="t.icon"></i> {{ t.label }}
+        </button>
+      }
+    </div>
+
+    <div class="chips">
+      <button type="button" class="opt" [class.on]="search.closingSoon" (click)="toggleClosing()">
+        <i class="bi" [ngClass]="search.closingSoon ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+        Closing in {{ closingDays }} days
+      </button>
+      <button
+        type="button"
+        class="opt"
+        [class.on]="search.includeExpired"
+        (click)="toggleExpired()"
+      >
+        <i class="bi" [ngClass]="search.includeExpired ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+        Include expired
+      </button>
+    </div>
+  </header>
+
+  <button type="button" class="btn filter-toggle" (click)="filtersOpenMobile = !filtersOpenMobile">
+    <i class="bi bi-sliders"></i> {{ filtersOpenMobile ? 'Hide filters' : 'Show filters' }}
+  </button>
+
+  <div class="layout">
+    <!-- ================= FILTERS ================= -->
+    <div class="filter-col" [class.open]="filtersOpenMobile">
+      <app-advanced-filter
+        [states]="states"
+        [areas]="areas"
+        [donors]="donors"
+        (filterChange)="onFilterChange($event)"
+      />
+    </div>
+
+    <!-- ================= RESULTS ================= -->
+    <div class="results">
+      <div class="results-head">
+        <div>
+          <h2>Search Results</h2>
+          <span class="count">{{ results.length }} grants found</span>
+        </div>
+
+        <div class="controls">
+          <button type="button" class="save-btn" (click)="saveSearch()">
+            <i class="bi bi-bookmark"></i> Save this search
+          </button>
+
+          <label class="ctl">
+            <span>Sort:</span>
+            <span class="sel">
+              <select [(ngModel)]="sortKey" name="sort" (ngModelChange)="onSortChange()">
+                @for (o of sortOptions; track o.key) {
+                  <option [ngValue]="o.key">{{ o.label }}</option>
+                }
+              </select>
+              <i class="bi bi-chevron-down"></i>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      @if (savedMsg) {
+        <div class="saved-msg"><i class="bi bi-check-circle"></i> {{ savedMsg }}</div>
+      }
+
+      @if (savedSearches.length) {
+        <div class="saved-bar">
+          <b><i class="bi bi-bookmark-fill"></i> Saved searches:</b>
+          @for (s of savedSearches; track s.id) {
+            <span
+              class="saved-chip"
+              (click)="applySaved(s)"
+              tabindex="0"
+              (keydown.enter)="applySaved(s)"
+            >
+              {{ s.label }}
+              <button
+                type="button"
+                [attr.aria-label]="'Remove ' + s.label"
+                (click)="removeSaved(s, $event)"
+              >
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </span>
+          }
+        </div>
+      }
+
+      <!-- 3 column cards -->
+      <div class="grid">
+        @for (g of paged; track g.id) {
+          <article class="gcard" (click)="openGrant(g)" tabindex="0" (keydown.enter)="openGrant(g)">
+            <div class="g-head">
+              <div class="tile" [ngClass]="visual(g).cls">
+                <i class="bi" [ngClass]="visual(g).icon"></i>
+              </div>
+              <div class="g-info">
+                <h3>{{ g.title }}</h3>
+                <span class="donor">{{ g.donor }}</span>
+                <span class="tag" [ngClass]="visual(g).cls">{{ g.type ?? 'Grant' }}</span>
+              </div>
+            </div>
+
+            <ul class="meta">
+              <li class="amt" [class.na]="g.amount === 'Not Available'">
+                <i class="bi bi-currency-dollar"></i>{{ g.amount }}
+              </li>
+              <li class="strong"><i class="bi bi-building"></i>{{ g.category }}</li>
+              <li class="strong"><i class="bi bi-geo-alt"></i>{{ g.state }}</li>
+              @if (g.posted) {
+                <li class="posted">
+                  <i class="bi bi-calendar3"></i>Posted {{ g.posted | date: 'MMMM d, y' }}
+                </li>
+              }
+            </ul>
+
+            <div class="g-foot">
+              <div class="last">
+                <small>LAST DATE</small>
+                @if (g.deadline) {
+                  <b>{{ g.deadline | date: 'MMMM d, y' }}</b>
+                  @if (isExpired(g)) {
+                    <em>Expired</em>
+                  }
+                } @else {
+                  <b class="ongoing">Ongoing</b>
+                }
+              </div>
+
+              <div class="acts">
+                <button
+                  type="button"
+                  class="bm"
+                  [class.on]="saved.has('' + g.id)"
+                  (click)="toggleSave(g, $event)"
+                  [attr.aria-label]="
+                    saved.has('' + g.id) ? 'Remove bookmark' : 'Bookmark this grant'
+                  "
+                >
+                  <i
+                    class="bi"
+                    [ngClass]="saved.has('' + g.id) ? 'bi-bookmark-fill' : 'bi-bookmark'"
+                  ></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn view"
+                  (click)="openGrant(g); $event.stopPropagation()"
+                >
+                  View Details
+                </button>
+              </div>
+            </div>
+          </article>
+        } @empty {
+          <div class="empty">
+            <i class="bi bi-search"></i>
+            <h3>No grants match these filters</h3>
+            <p>Remove a filter or try a broader keyword.</p>
+            <button type="button" class="btn" (click)="resetAll()">Reset everything</button>
+          </div>
+        }
+      </div>
+
+      <app-pagination
+        [totalItems]="results.length"
+        [pageSize]="pageSize"
+        [currentPage]="page"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+      ></app-pagination>
+    </div>
+  </div>
+</section>

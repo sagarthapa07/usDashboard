@@ -1,0 +1,210 @@
+:host {
+  display: block;
+}
+
+.sh {
+  font-family: var(--fontFamily);
+  padding: 18px 20px 20px;
+  border: var(--border);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #e9f0fb 0%, #dfe9f8 100%);
+
+  button,
+  input,
+  h2,
+  p {
+    font-family: inherit;
+  }
+}
+
+/* ---------- Heading ---------- */
+.sh-eyebrow {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--primaryClr);
+}
+
+.sh-title {
+  margin: 4px 0 2px;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--navyClr);
+}
+
+.sh-sub {
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  color: var(--mutedClr);
+}
+
+/* ---------- Search box ---------- */
+.sh-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 6px 6px 14px;
+  border: var(--border);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 31, 56, 0.05);
+
+  &:focus-within {
+    border-color: var(--primaryClr);
+  }
+}
+
+.sh-search-ico {
+  flex: 0 0 auto;
+  font-size: 15px;
+  color: var(--mutedClr);
+}
+
+.sh-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+
+  input {
+    width: 100%;
+    height: 38px;
+    border: 0;
+    outline: none;
+    background: transparent;
+    font: 500 14px var(--fontFamily);
+    color: var(--textClr);
+  }
+}
+
+/* Rangeen placeholder: input khaali ho tabhi dikhta hai */
+.sh-hint {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13.5px;
+  color: var(--mutedClr);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  pointer-events: none;
+
+  b {
+    font-weight: 500;
+  }
+
+  .c1 { color: #2563eb; }
+  .c2 { color: #d97706; }
+  .c3 { color: #16a34a; }
+}
+
+.sh-btn {
+  flex: 0 0 auto;
+  height: 38px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--primaryClr);
+  color: var(--whiteClr);
+  font: 700 13px var(--fontFamily);
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #4f8cff;
+    outline-offset: 2px;
+  }
+}
+
+/* ---------- Type chips ---------- */
+.sh-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.sh-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: var(--border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--primaryClr);
+  font: 600 12.5px var(--fontFamily);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover:not(.on) {
+    background: var(--primaryLightClr);
+  }
+
+  &.on {
+    background: var(--primaryClr);
+    border-color: var(--primaryClr);
+    color: var(--whiteClr);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #4f8cff;
+    outline-offset: 2px;
+  }
+}
+
+/* ---------- Toggles (dashed pills) ---------- */
+.sh-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.sh-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px dashed #9db3d6;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--primaryClr);
+  font: 600 12px var(--fontFamily);
+  cursor: pointer;
+
+  &:hover {
+    background: #fff;
+  }
+
+  &.on {
+    border-style: solid;
+    border-color: var(--primaryClr);
+    background: #fff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #4f8cff;
+    outline-offset: 2px;
+  }
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 600px) {
+  .sh {
+    padding: 14px;
+  }
+  .sh-title {
+    font-size: 19px;
+  }
+  .sh-btn {
+    padding: 0 14px;
+  }
+}

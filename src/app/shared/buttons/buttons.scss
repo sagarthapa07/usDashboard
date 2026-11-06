@@ -1,0 +1,311 @@
+:host {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+:host(.ub-host-block) {
+  display: flex;
+  width: 100%;
+}
+
+/* =====================================================
+   BASE
+   ===================================================== */
+.ub {
+  --ub-h: 38px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: var(--ub-h);
+  width: 100%; /* host ke andar poori jagah le */
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: var(--radiusSm);
+  background: none;
+  color: var(--textClr);
+  font: 600 13.5px/1 var(--fontFamily);
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s,
+    filter 0.15s,
+    box-shadow 0.15s;
+
+  .bi {
+    flex: 0 0 auto;
+    font-size: 1.1em;
+    line-height: 1;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #4f8cff;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* =====================================================
+   SIZES
+   ===================================================== */
+.ub-sm {
+  --ub-h: 32px;
+  padding: 0 12px;
+  font-size: 12.5px;
+}
+
+.ub-md {
+  --ub-h: 38px;
+}
+
+.ub-lg {
+  --ub-h: 44px;
+  padding: 0 22px;
+  font-size: 14.5px;
+}
+
+/* Sirf icon wale: square, ya round ho to gol */
+.ub-icon {
+  width: var(--ub-h);
+  padding: 0;
+
+  .bi {
+    font-size: 1.25em;
+  }
+}
+
+.ub-round {
+  border-radius: 50%;
+}
+
+/* =====================================================
+   VARIANTS
+   ===================================================== */
+
+/* ---------- Primary: solid blue ---------- */
+.ub-primary {
+  background: var(--primaryClr);
+  border-color: var(--primaryClr);
+  color: var(--whiteClr);
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.12);
+  }
+}
+
+/* ---------- Secondary: halka blue ---------- */
+.ub-secondary {
+  background: #eef1f8;
+  border-color: #eef1f8;
+  color: var(--primaryClr);
+
+  &:hover:not(:disabled) {
+    background: #e1e8f6;
+    border-color: #e1e8f6;
+  }
+}
+
+/* ---------- Outline: blue border ---------- */
+.ub-outline {
+  background: var(--cardBgClr);
+  border-color: var(--primaryClr);
+  color: var(--primaryClr);
+
+  &:hover:not(:disabled) {
+    background: var(--primaryLightClr);
+  }
+}
+
+/* ---------- Neutral: grey border ---------- */
+.ub-neutral {
+  background: var(--cardBgClr);
+  border-color: #dbe2ee;
+  color: var(--textClr);
+
+  &:hover:not(:disabled) {
+    background: var(--primaryLightClr);
+    color: var(--primaryClr);
+  }
+
+  &.is-active {
+    background: var(--primaryLightClr);
+    color: var(--primaryClr);
+  }
+}
+
+/* ---------- Ghost: bina border ---------- */
+.ub-ghost {
+  background: transparent;
+  color: var(--menuTextClr);
+
+  &:hover:not(:disabled),
+  &.is-active {
+    background: var(--primaryLightClr);
+    color: var(--primaryClr);
+  }
+}
+
+/* ---------- Danger ---------- */
+.ub-danger {
+  background: var(--dangerClr);
+  border-color: var(--dangerClr);
+  color: var(--whiteClr);
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.1);
+  }
+}
+
+.ub-danger-outline {
+  background: var(--cardBgClr);
+  border-color: var(--dangerClr);
+  color: var(--dangerClr);
+
+  &:hover:not(:disabled) {
+    background: #fdf0f0;
+  }
+}
+
+/* ---------- Success ---------- */
+.ub-success {
+  background: #15803d;
+  border-color: #15803d;
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.1);
+  }
+}
+
+/* ---------- Navy (Need help?) ---------- */
+.ub-navy {
+  background: var(--navyClr);
+  border-color: var(--navyClr);
+  color: var(--whiteClr);
+  border-radius: 14px;
+
+  &:hover:not(:disabled) {
+    background: var(--navyHoverClr);
+    border-color: var(--navyHoverClr);
+  }
+}
+
+/* ---------- Link (text only) ---------- */
+.ub-link,
+.ub-link-danger {
+  width: auto;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  font-weight: 600;
+
+  &:hover:not(:disabled) {
+    text-decoration: underline;
+  }
+}
+
+.ub-link {
+  color: var(--primaryClr);
+}
+
+.ub-link-danger {
+  color: var(--dangerClr);
+  text-decoration: underline;
+}
+
+/* Link buttons ki height / padding size se nahi, text se banti hai */
+.ub-link.ub-sm,
+.ub-link.ub-md,
+.ub-link.ub-lg,
+.ub-link-danger.ub-sm,
+.ub-link-danger.ub-md,
+.ub-link-danger.ub-lg {
+  height: auto;
+  padding: 2px 0;
+}
+
+/* ---------- Chip: chhota rounded box ---------- */
+.ub-chip {
+  background: var(--cardBgClr);
+  border-color: #dbe2ee;
+  color: var(--primaryClr);
+
+  &:hover:not(:disabled):not(.is-active) {
+    background: var(--primaryLightClr);
+  }
+
+  &.is-active {
+    background: var(--primaryClr);
+    border-color: var(--primaryClr);
+    color: var(--whiteClr);
+  }
+}
+
+/* ---------- Pill: poora gol tab ---------- */
+.ub-pill {
+  background: var(--cardBgClr);
+  border-color: #dbe2ee;
+  border-radius: 999px;
+  color: var(--textClr);
+  font-weight: 500;
+
+  &:hover:not(:disabled):not(.is-active) {
+    background: var(--primaryLightClr);
+    color: var(--primaryClr);
+  }
+
+  &.is-active {
+    background: var(--primaryClr);
+    border-color: var(--primaryClr);
+    color: var(--whiteClr);
+    font-weight: 600;
+  }
+}
+
+/* ---------- Toggle: dashed ---------- */
+.ub-toggle {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px dashed #9db3d6;
+  color: var(--primaryClr);
+
+  &:hover:not(:disabled) {
+    background: #fff;
+  }
+
+  &.is-active {
+    background: #fff;
+    border-style: solid;
+    border-color: var(--primaryClr);
+  }
+}
+
+/* =====================================================
+   LOADING SPINNER
+   ===================================================== */
+.ub-spin {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: ub-rotate 0.7s linear infinite;
+}
+
+.is-loading {
+  cursor: progress;
+}
+
+@keyframes ub-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}

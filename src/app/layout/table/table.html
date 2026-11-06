@@ -1,0 +1,18 @@
+<div class="gt">
+  @for (g of grants; track g.id) {
+    <div
+      class="gt-row"
+      role="button"
+      tabindex="0"
+      (click)="onSelect(g)"
+      (keydown.enter)="onSelect(g)"
+    >
+      <app-card [grant]="g" variant="row" [selected]="g.id === selectedId"></app-card>
+    </div>
+  } @empty {
+    <div class="gt-empty">
+      <i class="bi bi-inbox"></i>
+      <span>No grants found</span>
+    </div>
+  }
+</div>

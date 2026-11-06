@@ -1,0 +1,160 @@
+<aside class="af">
+
+  <!-- Heading -->
+  <div class="af-head">
+    <b>Filters</b>
+    <button type="button" class="af-clear" [disabled]="totalActive === 0" (click)="clearAll()">Clear all</button>
+  </div>
+
+  <!-- =====================================================
+       DATE FILTER
+       ===================================================== -->
+  <section class="af-sec">
+    <button type="button" class="af-sec-btn" [attr.aria-expanded]="open.date" (click)="toggleSection('date')">
+      <i class="bi bi-calendar3 af-ico"></i>
+      <span>Date Filter</span>
+      @if (dateCount > 0) {
+        <em class="af-count">{{ dateCount }}</em>
+      }
+      <i class="bi af-chev" [class.bi-chevron-up]="open.date" [class.bi-chevron-down]="!open.date"></i>
+    </button>
+
+    @if (open.date) {
+      <div class="af-body">
+        <label class="af-label" for="af-dateBy">Filter By</label>
+        <div class="af-select">
+          <select id="af-dateBy" [ngModel]="filter.dateBy" (ngModelChange)="setDateBy($event)">
+            <option value="post">Post Date</option>
+            <option value="deadline">Last Date</option>
+          </select>
+          <i class="bi bi-chevron-down"></i>
+        </div>
+
+        <label class="af-label" for="af-from">From</label>
+        <input id="af-from" class="af-input" type="date" [ngModel]="filter.from" (ngModelChange)="setFrom($event)" />
+
+        <label class="af-label" for="af-to">To</label>
+        <input id="af-to" class="af-input" type="date" [ngModel]="filter.to" (ngModelChange)="setTo($event)" />
+      </div>
+    }
+  </section>
+
+  <!-- =====================================================
+       STATES
+       ===================================================== -->
+  <section class="af-sec">
+    <button type="button" class="af-sec-btn" [attr.aria-expanded]="open.states" (click)="toggleSection('states')">
+      <i class="bi bi-geo-alt af-ico"></i>
+      <span>States</span>
+      @if (filter.states.length > 0) {
+        <em class="af-count">{{ filter.states.length }}</em>
+      }
+      <i class="bi af-chev" [class.bi-chevron-up]="open.states" [class.bi-chevron-down]="!open.states"></i>
+    </button>
+
+    @if (open.states) {
+      <div class="af-body">
+        <input class="af-input" type="text" placeholder="Search States..." [(ngModel)]="stateSearch" />
+
+        <div class="af-list">
+          @for (s of filteredStates; track s.id) {
+            <label class="af-check">
+              <input type="checkbox" [checked]="isChecked(filter.states, s.id)" (change)="toggleItem(filter.states, s.id)" />
+              <span>{{ s.name }}</span>
+            </label>
+          } @empty {
+            <div class="af-empty">No states found</div>
+          }
+        </div>
+      </div>
+    }
+  </section>
+
+  <!-- =====================================================
+       AREA OF INTEREST
+       ===================================================== -->
+  <section class="af-sec">
+    <button type="button" class="af-sec-btn" [attr.aria-expanded]="open.areas" (click)="toggleSection('areas')">
+      <i class="bi bi-bullseye af-ico"></i>
+      <span>Area of Interest</span>
+      @if (filter.areas.length > 0) {
+        <em class="af-count">{{ filter.areas.length }}</em>
+      }
+      <i class="bi af-chev" [class.bi-chevron-up]="open.areas" [class.bi-chevron-down]="!open.areas"></i>
+    </button>
+
+    @if (open.areas) {
+      <div class="af-body">
+        <input class="af-input" type="text" placeholder="Search Area of Interest..." [(ngModel)]="areaSearch" />
+
+        <div class="af-list">
+          @for (a of filteredAreas; track a.id) {
+            <label class="af-check">
+              <input type="checkbox" [checked]="isChecked(filter.areas, a.id)" (change)="toggleItem(filter.areas, a.id)" />
+              <span>{{ a.name }}</span>
+            </label>
+          } @empty {
+            <div class="af-empty">No areas found</div>
+          }
+        </div>
+      </div>
+    }
+  </section>
+
+  <!-- =====================================================
+       GRANT SIZE
+       ===================================================== -->
+  <section class="af-sec">
+    <button type="button" class="af-sec-btn" [attr.aria-expanded]="open.size" (click)="toggleSection('size')">
+      <i class="bi bi-currency-dollar af-ico"></i>
+      <span>Grant Size</span>
+      @if (filter.grantSizes.length > 0) {
+        <em class="af-count">{{ filter.grantSizes.length }}</em>
+      }
+      <i class="bi af-chev" [class.bi-chevron-up]="open.size" [class.bi-chevron-down]="!open.size"></i>
+    </button>
+
+    @if (open.size) {
+      <div class="af-body af-body-tight">
+        @for (g of grantSizes; track g.key) {
+          <label class="af-check">
+            <input type="checkbox" [checked]="filter.grantSizes.includes(g.key)" (change)="toggleSize(g.key)" />
+            <span>{{ g.label }}</span>
+          </label>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- =====================================================
+       DONOR AGENCY
+       ===================================================== -->
+  <section class="af-sec">
+    <button type="button" class="af-sec-btn" [attr.aria-expanded]="open.donor" (click)="toggleSection('donor')">
+      <i class="bi bi-bank af-ico"></i>
+      <span>Donor Agency</span>
+      @if (filter.donors.length > 0) {
+        <em class="af-count">{{ filter.donors.length }}</em>
+      }
+      <i class="bi af-chev" [class.bi-chevron-up]="open.donor" [class.bi-chevron-down]="!open.donor"></i>
+    </button>
+
+    @if (open.donor) {
+      <div class="af-body">
+        <input class="af-input" type="text" placeholder="Search Donor Agency..." [(ngModel)]="donorSearch" />
+
+        <div class="af-list">
+          @for (d of filteredDonors; track d.id) {
+            <label class="af-check">
+              <input type="checkbox" [checked]="isChecked(filter.donors, d.id)" (change)="toggleItem(filter.donors, d.id)" />
+              <span>{{ d.name }}</span>
+            </label>
+          } @empty {
+            <div class="af-empty">No donors found</div>
+          }
+        </div>
+      </div>
+    }
+  </section>
+
+</aside>

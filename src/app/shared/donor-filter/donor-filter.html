@@ -1,0 +1,71 @@
+<aside class="af">
+  <!-- Heading -->
+  <div class="af-head">
+    <b>{{ filterTitle }}</b>
+    <button type="button" class="af-clear" [disabled]="totalActive === 0" (click)="clearAll()">
+      Clear all
+    </button>
+  </div>
+
+  <!-- Sections -->
+  @for (sec of sections; track sec.key) {
+    <section class="af-sec">
+      <button
+        type="button"
+        class="af-sec-btn"
+        [attr.aria-expanded]="open[sec.key]"
+        (click)="toggleSection(sec.key)"
+      >
+        <i class="bi af-ico" [class]="'bi af-ico ' + sec.icon"></i>
+        <span>{{ sec.label }}</span>
+        @if (value[sec.key].length > 0) {
+          <em class="af-count">{{ value[sec.key].length }}</em>
+        }
+        <i
+          class="bi af-chev"
+          [class.bi-chevron-up]="open[sec.key]"
+          [class.bi-chevron-down]="!open[sec.key]"
+        ></i>
+      </button>
+
+      @if (open[sec.key]) {
+        <div class="af-body">
+          <input
+            class="af-input"
+            type="text"
+            [placeholder]="sec.placeholder"
+            [(ngModel)]="search[sec.key]"
+          />
+
+          <div class="af-list">
+            @for (item of listFor(sec.key); track item) {
+              <label class="af-check">
+                <input
+                  type="checkbox"
+                  [checked]="value[sec.key].includes(item)"
+                  (change)="toggle(sec.key, item)"
+                />
+                <span>{{ item }}</span>
+              </label>
+            } @empty {
+              <div class="af-empty">{{ sec.empty }}</div>
+            }
+          </div>
+        </div>
+      }
+    </section>
+  }
+
+  <!-- Popular searches -->
+  @if (popular.length > 0) {
+    <section class="af-sec af-pop">
+      <h4 class="af-pop-title">{{ popularTitle }}</h4>
+      @for (p of popular; track p.label) {
+        <button type="button" class="af-pop-btn" (click)="popularPick.emit(p)">
+          <i class="bi bi-check-circle"></i>
+          <span>{{ p.label }}</span>
+        </button>
+      }
+    </section>
+  }
+</aside>

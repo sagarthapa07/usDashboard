@@ -1,0 +1,60 @@
+@if (totalItems > 0) {
+  <div class="pg">
+
+    <!-- Show [10 v] -->
+    <div class="pg-size">
+      <span>Show</span>
+
+      <div class="dd" [class.open]="isOpen">
+        <button type="button" class="dd-btn" aria-haspopup="listbox" [attr.aria-expanded]="isOpen" (click)="toggle()">
+          {{ pageSize }}
+          <i class="bi bi-chevron-down"></i>
+        </button>
+
+        <ul class="dd-list" role="listbox">
+          @for (s of sizes; track s) {
+            <li>
+              <button type="button" role="option" [class.on]="s === pageSize" [attr.aria-selected]="s === pageSize" (click)="pickSize(s)">
+                {{ s }}
+                @if (s === pageSize) {
+                  <i class="bi bi-check2"></i>
+                }
+              </button>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+
+    <!-- Prev 1 2 … 9 10 Next -->
+    <nav class="pg-nav" aria-label="Pagination">
+      <button type="button" class="pg-btn" [disabled]="currentPage === 1" (click)="goTo(currentPage - 1)">‹ Prev</button>
+
+      @for (p of pages; track $index) {
+        @if (p === '…') {
+          <span class="pg-dots">…</span>
+        } @else {
+          <button type="button" class="pg-btn" [class.on]="p === currentPage" (click)="goTo(p)">{{ p }}</button>
+        }
+      }
+
+      <button type="button" class="pg-btn" [disabled]="currentPage === totalPages" (click)="goTo(currentPage + 1)">Next ›</button>
+    </nav>
+
+    <!-- Page [1] Go -->
+    <div class="pg-go">
+      <span>Page</span>
+      <input
+        #go
+        type="number"
+        min="1"
+        [max]="totalPages"
+        [value]="currentPage"
+        aria-label="Go to page"
+        (keydown.enter)="goTo(go.value)"
+      />
+      <button type="button" class="pg-btn" (click)="goTo(go.value)">Go</button>
+    </div>
+
+  </div>
+}

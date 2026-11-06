@@ -1,0 +1,56 @@
+<section class="sh">
+
+  <small class="sh-eyebrow">FUNDING OPPORTUNITIES FOR A STRONGER TOMORROW</small>
+  <h2 class="sh-title">Advanced Grant Search</h2>
+  <p class="sh-sub">Search, then tick the boxes to narrow down thousands of grants.</p>
+
+  <!-- Search box -->
+  <div class="sh-search">
+    <i class="bi bi-search sh-search-ico"></i>
+
+    <div class="sh-input-wrap">
+      <input
+        type="text"
+        [(ngModel)]="keyword"
+        (keyup.enter)="onSearch()"
+        aria-label="Search grants"
+      />
+      @if (!keyword) {
+        <span class="sh-hint">
+          Type here: <b class="c1">education</b>, <b class="c2">health</b>, <b class="c3">women</b>...
+        </span>
+      }
+    </div>
+
+    <button type="button" class="sh-btn" (click)="onSearch()">Search</button>
+  </div>
+
+  <!-- Type chips -->
+  <div class="sh-chips">
+    @for (t of types; track t.key) {
+      <button
+        type="button"
+        class="sh-chip"
+        [class.on]="type === t.key"
+        [attr.aria-pressed]="type === t.key"
+        (click)="setType(t.key)"
+      >
+        <i class="bi {{ t.icon }}"></i>{{ t.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Toggles -->
+  <div class="sh-toggles">
+    <button type="button" class="sh-toggle" [class.on]="closingSoon" [attr.aria-pressed]="closingSoon" (click)="toggleClosing()">
+      <i class="bi" [class.bi-circle]="!closingSoon" [class.bi-check-circle-fill]="closingSoon"></i>
+      Closing in 30 days
+    </button>
+
+    <button type="button" class="sh-toggle" [class.on]="includeExpired" [attr.aria-pressed]="includeExpired" (click)="toggleExpired()">
+      <i class="bi" [class.bi-circle]="!includeExpired" [class.bi-check-circle-fill]="includeExpired"></i>
+      Include expired
+    </button>
+  </div>
+
+</section>

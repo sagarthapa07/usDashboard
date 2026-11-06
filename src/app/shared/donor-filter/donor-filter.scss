@@ -1,0 +1,224 @@
+:host {
+  display: block;
+}
+
+/* =============== Main box =============== */
+.af {
+  font-family: var(--fontFamily);
+  background: var(--cardBgClr);
+  border: var(--border);
+  border-radius: 14px;
+  padding: 4px 16px 8px;
+  color: var(--textClr);
+
+  button,
+  input,
+  select,
+  label {
+    font-family: inherit;
+  }
+}
+
+/* =============== Heading: Filters + Clear all =============== */
+.af-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0 10px;
+
+  b {
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
+
+.af-clear {
+  border: 0;
+  background: none;
+  padding: 2px 0;
+  color: var(--dangerClr);
+  font: 600 12.5px var(--fontFamily);
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #4f8cff;
+    outline-offset: 2px;
+  }
+}
+
+/* =============== Section =============== */
+.af-sec {
+  border-top: var(--border);
+}
+
+.af-sec-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 13px 0;
+  border: 0;
+  background: none;
+  color: var(--textClr);
+  font: 700 13.5px var(--fontFamily);
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--primaryClr);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #4f8cff;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+}
+
+.af-ico {
+  flex: 0 0 auto;
+  font-size: 16px;
+  color: var(--primaryClr);
+}
+
+.af-chev {
+  margin-left: auto;
+  flex: 0 0 auto;
+  font-size: 14px;
+  color: var(--mutedClr);
+}
+
+/* Selected count badge */
+.af-count {
+  background: var(--primaryClr);
+  color: var(--whiteClr);
+  font: 700 10.5px/18px var(--fontFamily);
+  min-width: 18px;
+  padding: 0 5px;
+  text-align: center;
+  border-radius: 9px;
+  font-style: normal;
+}
+
+/* =============== Section ka andar ka hissa =============== */
+.af-body {
+  display: grid;
+  gap: 8px;
+  padding: 0 0 14px;
+}
+
+.af-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: var(--border);
+  border-radius: var(--radiusSm);
+  background: var(--cardBgClr);
+  color: var(--textClr);
+  font: 500 13px var(--fontFamily);
+
+  &::placeholder {
+    color: var(--mutedClr);
+    font-weight: 400;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--primaryClr);
+  }
+}
+
+/* =============== Checkbox list =============== */
+.af-list {
+  max-height: 176px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  border: var(--border);
+  border-radius: var(--radiusSm);
+  padding: 4px;
+}
+
+.af-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--textClr);
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background: var(--primaryLightClr);
+  }
+
+  input {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--primaryClr);
+    cursor: pointer;
+  }
+
+  &:has(input:checked) {
+    color: var(--primaryClr);
+    font-weight: 600;
+  }
+}
+
+.af-empty {
+  padding: 14px 8px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--mutedClr);
+}
+
+/* =============== Popular searches =============== */
+.af-pop {
+  padding-bottom: 6px;
+}
+
+.af-pop-title {
+  margin: 0;
+  padding: 14px 0 6px;
+  font: 700 var(--subTitleFont) / 1.2 var(--headingFontFamily);
+  color: var(--navyClr);
+}
+
+.af-pop-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 0;
+  border: 0;
+  border-bottom: var(--border);
+  background: none;
+  color: var(--menuTextClr);
+  font: 500 13px / 1.35 var(--fontFamily);
+  text-align: left;
+  cursor: pointer;
+
+  .bi {
+    flex: 0 0 auto;
+    margin-top: 1px;
+    color: var(--primaryClr);
+  }
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &:hover {
+    color: var(--primaryClr);
+  }
+}

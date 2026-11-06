@@ -1,0 +1,44 @@
+<div class="filter-box">
+  <!-- State -->
+  <div class="field">
+    <label for="state">State</label>
+    <div class="select-wrap">
+      <select id="state" [(ngModel)]="filter.state" name="state">
+        <option value="">{{ loadingStates ? 'Loading...' : 'Select State...' }}</option>
+        <option *ngFor="let s of states" [value]="s.id">{{ s.name }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Area of Interest -->
+  <div class="field">
+    <label for="area">Area of Interest</label>
+    <div class="select-wrap">
+      <select id="area" [(ngModel)]="filter.areaOfInterest" name="area">
+        <option value="">{{ loadingAreas ? 'Loading...' : 'Areas of Interest...' }}</option>
+        <option *ngFor="let a of areas" [value]="a.id">{{ a.name }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Published From -->
+  <div class="field">
+    <label for="from">Published From</label>
+    <input id="from" type="date" [(ngModel)]="filter.publishedFrom" name="from" />
+  </div>
+
+  <!-- Published To -->
+  <div class="field">
+    <label for="to">Published To</label>
+    <input id="to" type="date" [(ngModel)]="filter.publishedTo" name="to" />
+  </div>
+
+  <!-- Buttons -->
+  <div class="actions">
+    <a class="adv-link" routerLink="/advanced-search">Advanced Search →</a>
+    <div class="btns">
+      <button type="button" class="btn btn-primary" (click)="onSearch()">Search</button>
+      <button type="button" class="btn btn-light" (click)="onReset()">Reset</button>
+    </div>
+  </div>
+</div>

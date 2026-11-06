@@ -1,0 +1,125 @@
+<div class="py-wrap">
+<header class="py-hd">
+  <h1 class="py-t">{{ text.title }}</h1>
+  <p class="py-s">{{ text.subtitle }}</p>
+</header>
+
+  <div class="py-grid">
+    <!-- LEFT: card on file -->
+    <section class="py-card" aria-labelledby="py-h">
+      <div class="py-top">
+        <h3 id="py-h">{{ text.cardTitle }}</h3>
+        <span class="py-st" [class.py-off]="!plan.autopay">
+          <i></i>{{ plan.autopay ? text.autopayOn : text.autopayOff }}
+        </span>
+      </div>
+
+      <div class="py-body">
+        <div class="py-cc" [class.py-flip]="flipping" role="img" [attr.aria-label]="cardLabel">
+          <div class="py-r">
+            <span class="py-brand">{{ card.brand }}</span>
+            <svg width="38" height="28" viewBox="0 0 38 28" aria-hidden="true">
+              <rect x="1" y="1" width="36" height="26" rx="5" fill="#e6c76a" stroke="#c9a640" />
+              <path d="M1 10h36M1 18h36M14 1v26M24 1v26" stroke="#c9a640" stroke-width="1" fill="none" />
+            </svg>
+          </div>
+          <div class="py-num">{{ maskedNumber }}</div>
+          <div class="py-r">
+            <div>
+              <small>{{ text.holderLabel }}</small>
+              <b>{{ holder }}</b>
+            </div>
+            <div>
+              <small>{{ text.expiresLabel }}</small>
+              <b>{{ card.exp }}</b>
+            </div>
+          </div>
+        </div>
+
+        <dl class="py-dl">
+          <div>
+            <dt>{{ text.planLabel }}</dt>
+            <dd>{{ plan.plan }}</dd>
+          </div>
+          <div>
+            <dt>{{ text.renewalLabel }}</dt>
+            <dd>{{ plan.nextRenewal | date: 'MMM d, y' }}</dd>
+          </div>
+          <div>
+            <dt>{{ text.receiptsLabel }}</dt>
+            <dd>{{ email }}</dd>
+          </div>
+          <div>
+            <dt>{{ text.updatedLabel }}</dt>
+            <dd>{{ card.updatedOn | date: 'MMM d, y' }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="py-act">
+        <button type="button" class="py-btn" (click)="openDialog()">{{ text.updateBtn }}</button>
+        <span class="py-note">{{ text.note }}</span>
+      </div>
+    </section>
+
+    <!-- RIGHT: info -->
+    <aside class="py-side">
+      <section class="py-card">
+        <h3>{{ text.howTitle }}</h3>
+        <ol class="py-steps">
+          @for (s of text.steps; track s.title) {
+            <li>
+              <div>
+                <b>{{ s.title }}</b>
+                <span>{{ s.text }}</span>
+              </div>
+            </li>
+          }
+        </ol>
+      </section>
+
+      <section class="py-card py-sec">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="4" y="11" width="16" height="10" rx="2" />
+          <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+        </svg>
+        <div>
+          <b>{{ text.secTitle }}</b>
+          <p>{{ text.secText }}</p>
+        </div>
+      </section>
+
+      <section class="py-card">
+        <a class="py-link" routerLink="/my-invoices">
+          <span>{{ text.invoicesLink }}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m9 6 6 6-6 6" />
+          </svg>
+        </a>
+      </section>
+    </aside>
+  </div>
+
+  <!-- Confirm dialog -->
+  @if (dialogOpen) {
+    <div class="py-ov" (click)="onBackdrop($event)">
+      <div class="py-dg" role="dialog" aria-modal="true" aria-labelledby="py-dt" aria-describedby="py-dd">
+        <h3 id="py-dt">{{ text.dialogTitle }}</h3>
+        <p id="py-dd">{{ text.dialogText }}</p>
+        <div class="py-row">
+          <button type="button" class="py-btn py-g" [disabled]="loading" (click)="closeDialog()">
+            {{ text.dialogNo }}
+          </button>
+          <button type="button" class="py-btn py-go" [disabled]="loading" (click)="go()">
+            @if (loading) { <span class="py-sp"></span>{{ text.dialogGoing }} } @else { {{ text.dialogGo }} }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Toast -->
+  <div class="py-tt" [class.py-on]="toastOn" role="status" aria-live="polite">{{ text.toastUpdated }}</div>
+</div>

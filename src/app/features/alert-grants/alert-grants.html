@@ -1,0 +1,238 @@
+<div class="lt-page" [class.filters-open]="filtersOpen" [class.detail-open]="detailOpen">
+
+  <!-- ============ HEADER (gradient) ============ -->
+  <div class="ag-head">
+    <div>
+      <h1>{{ text.title }}</h1>
+      <p>{{ text.subtitle }}</p>
+      <div class="ag-chips">
+        @for (a of myAreas; track a) {
+          <span>{{ a }}</span>
+        } @empty {
+          <small>{{ text.noAreaChips }}</small>
+        }
+        @if (myStates.length) {
+          <small>States tracked: {{ myStates.length }}</small>
+        }
+      </div>
+    </div>
+    <app-buttons (click)="editAlerts()">{{ text.editBtn }}</app-buttons>
+  </div>
+
+  @if (!myAreas.length) {
+    <!-- Koi alert area set nahi -->
+    <div class="no-result ag-setup">
+      <i class="bi bi-bell"></i>
+      <span>{{ text.noAreasText }}</span>
+      <app-buttons (click)="editAlerts()">{{ text.setupBtn }}</app-buttons>
+    </div>
+  } @else {
+
+    <!-- ============ MOBILE: Filters button ============ -->
+    <button
+      type="button"
+      class="lt-filter-toggle"
+      [attr.aria-expanded]="filtersOpen"
+      (click)="toggleFilters()"
+    >
+      <i class="bi bi-funnel"></i>
+      Filters
+      @if (activeFilterCount) {
+        <span class="cnt">{{ activeFilterCount }}</span>
+      }
+      <i class="bi bi-chevron-down chev"></i>
+    </button>
+
+    <!-- ============ FILTER BAR ============ -->
+    <div class="lt-filter">
+      <div class="lt-field">
+        <label for="ag-state">{{ text.stateLabel }}</label>
+        <select id="ag-state" [(ngModel)]="draft.state" name="state">
+          <option value="">{{ text.stateAll }}</option>
+          @for (s of myStates; track s) {
+            <option [value]="s">{{ s }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="lt-field">
+        <label for="ag-area">{{ text.areaLabel }}</label>
+        <select id="ag-area" [(ngModel)]="draft.area" name="area">
+          <option value="">{{ text.areaAll }}</option>
+          @for (a of myAreas; track a) {
+            <option [value]="a">{{ a }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="lt-field">
+        <label for="ag-from">{{ text.fromLabel }}</label>
+        <input id="ag-from" type="date" [(ngModel)]="draft.from" name="from" />
+      </div>
+
+      <div class="lt-field">
+        <label for="ag-to">{{ text.toLabel }}</label>
+        <input id="ag-to" type="date" [(ngModel)]="draft.to" name="to" />
+      </div>
+
+      <div class="lt-actions">
+        <div class="lt-btns">
+          <app-buttons (click)="onSearch()">{{ text.searchBtn }}</app-buttons>
+          <app-buttons variant="outline" (click)="onReset()">{{ text.resetBtn }}</app-buttons>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ LIST + DETAILS ============ -->
+    <div class="lt-split">
+
+      <!-- LEFT: Matching Grants -->
+      <section class="lt-list">
+        <div class="lt-list-head">
+          <div>
+            <h2>{{ text.listTitle }}</h2>
+            <small>Showing {{ pagedCards.length }} of {{ results.length }} matching grants</small>
+          </div>
+
+          <select aria-label="Sort by" [ngModel]="sortKey" (ngModelChange)="onSort($event)" name="sort">
+            @for (o of sortOptions; track o.key) {
+              <option [value]="o.key">{{ o.label }}</option>
+            }
+          </select>
+        </div>
+
+        @if (results.length) {
+          <app-table [grants]="pagedCards" [selectedId]="selected?.id ?? null" (select)="onSelect($event)"></app-table>
+        } @else {
+          <div class="no-result">
+            <i class="bi bi-inbox"></i>
+            <span>{{ text.noMatchText }}</span>
+          </div>
+        }
+
+        <app-pagination
+          [totalItems]="results.length"
+          [pageSize]="pageSize"
+          [currentPage]="currentPage"
+          (pageChange)="onPageChange($event)"
+          (pageSizeChange)="onPageSizeChange($event)"
+        ></app-pagination>
+      </section>
+
+      <!-- RIGHT: Details panel -->
+      @if (selected; as g) {
+        <aside class="lt-detail" id="lt-detail">
+
+          <!-- MOBILE: wapas list par -->
+          <button type="button" class="d-back" (click)="closeDetail()">
+            <i class="bi bi-arrow-left"></i> Back to results
+          </button>
+
+          <!-- Top row: type, status, save -->
+          <div class="d-head">
+            <span class="d-type">{{ g.type ?? 'Grant' }}</span>
+            @if (isClosingSoon(g)) {
+              <b class="d-status soon">● CLOSING SOON</b>
+            } @else if (!g.deadline) {
+              <b class="d-status">● ONGOING</b>
+            } @else {
+              <b class="d-status">● OPEN</b>
+            }
+            @if (g.isNew) {
+              <span class="d-new">NEW</span>
+            }
+            <app-buttons
+              class="d-save"
+              variant="outline"
+              size="sm"
+              [icon]="g.isFav ? 'bi-bookmark-fill' : 'bi-bookmark'"
+              (click)="toggleSave(g)"
+            >
+              {{ g.isFav ? 'Saved' : 'Save' }}
+            </app-buttons>
+          </div>
+
+          <!-- Title + donor -->
+          <h2>{{ g.title }}</h2>
+          <div class="d-by"><b>{{ g.donor }}</b> • Posted {{ g.posted | date: 'MMM d, y' }}</div>
+
+          <!-- 3 stat boxes -->
+          <div class="d-stats">
+            <div class="st st-green">
+              <small>Grant Range</small>
+              <b>{{ g.amount }}</b>
+            </div>
+            <div class="st st-orange">
+              <small>Deadline</small>
+              <b>{{ g.deadline ? (g.deadline | date: 'MMM d, y') : 'Ongoing' }}</b>
+            </div>
+            <div class="st">
+              <small>Time left</small>
+              <b>{{ leftLabel(g) }}</b>
+            </div>
+          </div>
+
+          <!-- Location + focus area + kis alert area se match hua -->
+          <div class="d-tags">
+            <span><i class="bi bi-geo-alt"></i>{{ g.state }}</span>
+            <span><i class="bi bi-tag"></i>{{ g.category }}</span>
+            @for (m of matchedAreas(g); track m) {
+              <span class="alert"><i class="bi bi-bell"></i>{{ m }}</span>
+            }
+          </div>
+
+          <!-- Grant Intro -->
+          <div class="d-sec">
+            <h4>Grant Intro</h4>
+            <p>{{ g.description ?? g.title }} {{ g.donor }} invites proposals that strengthen communities.</p>
+          </div>
+
+          <!-- Funding -->
+          <div class="d-sec">
+            <h4>Funding</h4>
+            <dl>
+              <div><dt>Grant Range</dt><dd>{{ g.amount }}</dd></div>
+              <div><dt>Grant Type</dt><dd>{{ g.type ?? 'Grant' }}</dd></div>
+              <div><dt>Focus Area</dt><dd>{{ g.category }}</dd></div>
+              <div><dt>Location</dt><dd>{{ g.state }}</dd></div>
+            </dl>
+          </div>
+
+          <!-- Donor -->
+          <div class="d-sec">
+            <h4>Donor</h4>
+            <dl>
+              <div><dt>Donor Name</dt><dd>{{ g.donor }}</dd></div>
+              <div><dt>Donor Type</dt><dd>{{ sourceLabel(g) }}</dd></div>
+            </dl>
+          </div>
+
+          <!-- Dates -->
+          <div class="d-sec">
+            <h4>Dates</h4>
+            <dl>
+              <div><dt>Deadline</dt><dd class="warn">{{ g.deadline ? (g.deadline | date: 'MMM d, y') : 'Ongoing' }}</dd></div>
+              <div><dt>Post Date</dt><dd>{{ g.posted | date: 'MMM d, y' }}</dd></div>
+            </dl>
+          </div>
+
+          <!-- Eligibility -->
+          <div class="d-sec">
+            <h4>Eligibility</h4>
+            <ul>
+              @for (e of eligibilityOf(g); track e) {
+                <li>{{ e }}</li>
+              }
+            </ul>
+          </div>
+
+          <!-- Actions -->
+          <div class="d-actions">
+            <app-buttons (click)="onView(g)">View Full Details →</app-buttons>
+            <app-buttons variant="outline" icon="bi-bell" (click)="editAlerts()">Edit Alerts</app-buttons>
+          </div>
+        </aside>
+      }
+    </div>
+  }
+</div>

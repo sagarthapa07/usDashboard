@@ -1,3 +1,57 @@
 import { Routes } from '@angular/router';
+import { Dashboard } from './features/dashboard/dashboard';
+import { LeatestGrant } from './features/leatest-grant/leatest-grant';
+import { UpcomingDeadline } from './features/upcoming-deadlines/upcoming-deadlines';
+import { DeadlineFreeGrant } from './features/deadline-free-grants/deadline-free-grants';
+import { DeadlineCalendar } from './features/deadline-calendar/deadline-calendar';
+import { GrantsForORG } from './features/grants-for-org/grants-for-org';
+import { GrantsForBUSI } from './features/grants-for-busi/grants-for-busi';
+import { GrantsForINDI } from './features/grants-for-indi/grants-for-indi';
+import { GrantDetails } from './features/grant-details/grant-details';
+import { AdvanceSearch } from './features/advance-search/advance-search';
+import { MyGrant } from './features/my-grant/my-grant';
+import { MyFavorites } from './features/my-favorites/my-favorites';
+import { MyArchives } from './features/my-archives/my-archives';
+import { SavedSearch } from './features/saved-search/saved-search';
+import { DownloadList } from './features/download-list/download-list';
+import { MyInvoices } from './features/my-invoices/my-invoices';
+import { DonorSearch } from './features/donor-search/donor-search';
+import { FundingAlert } from './features/funding-alert/funding-alert';
+import { AlertGrants } from './features/alert-grants/alert-grants';
+import { UpdateProfile } from './features/update-profile/update-profile';
+import { UpdatePayment } from './features/update-payment/update-payment';
+import { ChangePassword } from './features/change-password/change-password';
+import { SampleProposals } from './features/sample-proposal/sample-proposal';
+import { Ebooks } from './features/e-books/e-books';
+import { TrainingVideos } from './features/training-videos/training-videos';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'dashboard', component: Dashboard },
+  { path: 'latest', component: LeatestGrant },
+  { path: 'grants/upcoming-deadline', component: UpcomingDeadline },
+  { path: 'grants/deadline-free', component: DeadlineFreeGrant },
+  { path: 'grants/deadline-calendar', component: DeadlineCalendar },
+  { path: 'grants-org', component: GrantsForORG },
+  { path: 'grants-biz', component: GrantsForBUSI },
+  { path: 'grants-ind', component: GrantsForINDI },
+  { path: 'grant/:id', component: GrantDetails },
+  { path: 'advanced-search', component: AdvanceSearch },
+  { path: 'my-grants', component: MyGrant },
+  { path: 'my-favorites', component: MyFavorites },
+  { path: 'my-archives', component: MyArchives },
+  { path: 'saved-searches', component: SavedSearch },
+  { path: 'download-list', component: DownloadList },
+  { path: 'my-invoices', component: MyInvoices },
+  { path: 'donor-search', component: DonorSearch },
+  { path: 'funding-alerts', component: FundingAlert },
+  { path: 'alert-grants', component: AlertGrants },
+  { path: 'update-profile', component: UpdateProfile },
+  { path: 'update-payment', component: UpdatePayment },
+  { path: 'change-password', component: ChangePassword },
+  { path: 'sample-proposals', component: SampleProposals },
+  { path: 'ebooks', component: Ebooks },
+  { path: 'training-videos', component: TrainingVideos },
+
+  { path: '**', redirectTo: 'dashboard' },
+];

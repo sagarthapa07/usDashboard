@@ -1,0 +1,22 @@
+<div class="app">
+
+  <!-- LEFT: Sidebar -->
+  <app-leftbar
+    [isCollapsed]="isSidebarCollapsed"
+    [isOpen]="isMobileMenuOpen">
+  </app-leftbar>
+
+  <!-- RIGHT: Topbar + page + footer -->
+  <div class="content">
+    <app-topbar
+      [isSidebarClosed]="isSidebarCollapsed"
+      (menuToggle)="toggleSidebar()">
+    </app-topbar>
+
+    <main class="main">
+      <ng-content></ng-content>
+    </main>
+
+    <app-footer></app-footer>
+  </div>
+</div>

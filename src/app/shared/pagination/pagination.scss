@@ -1,0 +1,228 @@
+:host {
+  display: block;
+}
+
+.pg {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  font-size: var(--bodyFont);
+  color: var(--mutedClr);
+}
+
+/* =============== Show [10 v] =============== */
+.pg-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dd {
+  position: relative;
+}
+
+.dd-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 72px;
+  height: 34px;
+  padding: 0 10px 0 12px;
+  font: 600 var(--bodyFont) var(--fontFamily);
+  color: var(--textClr);
+  background: var(--cardBgClr);
+  border: var(--border);
+  border-radius: var(--radiusSm);
+
+  .bi {
+    font-size: 13px;
+    color: var(--mutedClr);
+    transition: transform 0.2s;
+  }
+
+  &:hover {
+    border-color: var(--primaryClr);
+  }
+}
+
+.dd.open .dd-btn {
+  border-color: var(--primaryClr);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primaryClr) 15%, transparent);
+
+  .bi {
+    transform: rotate(180deg);
+    color: var(--primaryClr);
+  }
+}
+
+/* List button ke upar khulti hai (design jaisa) */
+.dd-list {
+  display: none;
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 6px);
+  z-index: 40;
+  min-width: 100%;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--cardBgClr);
+  border: var(--border);
+  border-radius: var(--radiusSm);
+  box-shadow: 0 10px 28px rgba(15, 31, 56, 0.16);
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    font: 500 var(--bodyFont) var(--fontFamily);
+    color: var(--textClr);
+    text-align: left;
+    background: none;
+    border: 0;
+    border-radius: 6px;
+
+    &:hover {
+      background: var(--primaryLightClr);
+      color: var(--primaryClr);
+    }
+
+    &.on {
+      background: var(--primaryLightClr);
+      color: var(--primaryClr);
+      font-weight: 700;
+    }
+
+    .bi {
+      font-size: 14px;
+    }
+  }
+}
+
+.dd.open .dd-list {
+  display: block;
+}
+
+/* =============== Prev 1 2 … Next =============== */
+.pg-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.pg-btn {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  font: 600 var(--bodyFont) var(--fontFamily);
+  color: var(--textClr);
+  background: var(--cardBgClr);
+  border: var(--border);
+  border-radius: var(--radiusSm);
+
+  &:hover:not(:disabled):not(.on) {
+    border-color: var(--primaryClr);
+    color: var(--primaryClr);
+  }
+
+  &.on {
+    background: var(--primaryClr);
+    border-color: var(--primaryClr);
+    color: var(--whiteClr);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.pg-dots {
+  padding: 0 4px;
+  color: var(--mutedClr);
+}
+
+/* =============== Page [1] Go =============== */
+.pg-go {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  input {
+    width: 60px;
+    height: 34px;
+    padding: 0 6px;
+    font: 600 var(--bodyFont) var(--fontFamily);
+    color: var(--textClr);
+    text-align: center;
+    background: var(--cardBgClr);
+    border: var(--border);
+    border-radius: var(--radiusSm);
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--primaryClr);
+      outline-offset: 2px;
+    }
+  }
+}
+
+/* =============== Mobile =============== */
+@media (max-width: 700px) {
+  .pg {
+    gap: 14px 10px;
+    justify-content: space-between; 
+  }
+
+  .pg-nav {
+    order: -1;
+    flex: 0 0 100%;
+    gap: 6px;
+  }
+
+  /* Tap karne layak bade buttons */
+  .pg-btn {
+    min-width: 40px;
+    height: 40px;
+  }
+
+  /* Prev aur Next thode chaude */
+  .pg-nav .pg-btn:first-child,
+  .pg-nav .pg-btn:last-child {
+    padding: 0 14px;
+  }
+
+  .dd-btn {
+    height: 40px;
+  }
+
+  .pg-go input {
+    height: 40px;
+  }
+}
+
+/* Bahut chhoti screen: dono groups neeche wrap ho sakte hain */
+@media (max-width: 380px) {
+  .pg-size,
+  .pg-go {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+
+  .pg-nav .pg-btn:first-child,
+  .pg-nav .pg-btn:last-child {
+    padding: 0 10px;
+  }
+}

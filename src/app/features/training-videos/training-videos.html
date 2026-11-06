@@ -1,0 +1,191 @@
+<div class="tv-page">
+  <!-- ============ HERO + FILTERS (ek hi box) ============ -->
+  <section class="tv-hero">
+    <span class="tv-eyebrow">{{ text.eyebrow }}</span>
+    <h1>{{ titleStart }} <span>{{ titleAccent }}</span></h1>
+    <p>{{ text.subtitle }}</p>
+
+    <div class="tv-filter" role="search">
+      <div class="tv-field">
+        <label for="tv-a">{{ text.areaLabel }}</label>
+        <select id="tv-a" (change)="onArea($any($event.target).value)">
+          <option value="" [selected]="!selectedArea()">{{ text.areaAll }}</option>
+          @for (c of categories; track c.name) {
+            <option [value]="c.name" [selected]="selectedArea() === c.name">{{ c.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="tv-field tv-search">
+        <label for="tv-q">{{ text.searchLabel }}</label>
+        <i class="bi bi-search tv-si" aria-hidden="true"></i>
+        <input
+          id="tv-q"
+          type="search"
+          autocomplete="off"
+          [placeholder]="text.searchPlaceholder"
+          [attr.aria-label]="text.searchAria"
+          [value]="query()"
+          (input)="onQuery($any($event.target).value)"
+          (keydown.enter)="onSearch()"
+        />
+      </div>
+
+      <div class="tv-btns">
+        <app-buttons (click)="onSearch()">{{ text.searchBtn }}</app-buttons>
+        <app-buttons variant="outline" (click)="reset()">{{ text.resetBtn }}</app-buttons>
+      </div>
+    </div>
+
+    <!-- ============ Area pills ============ -->
+    <div class="tv-pills" role="group" [attr.aria-label]="text.areaLabel">
+      <button type="button" class="tv-chip" [class.on]="!areas().length" (click)="togglePill(null)">
+        {{ text.pillAll }}<small>{{ videos.length }}</small>
+      </button>
+      @for (c of categories; track c.name) {
+        <button type="button" class="tv-chip" [class.on]="areas().includes(c.name)" (click)="togglePill(c.name)">
+          {{ c.name }}<small>{{ countOf(c.name) }}</small>
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- ============ Listing head ============ -->
+  <div class="tv-list-head">
+    <div>
+      <h2>{{ text.pillAll }}</h2>
+      <small aria-live="polite">
+        {{ text.showingLabel }} {{ pageItems().length }} {{ text.ofLabel }} {{ total() }}
+        {{ total() === 1 ? text.countSingular : text.countPlural }}
+      </small>
+    </div>
+
+    <select [attr.aria-label]="text.sortLabel" (change)="onSort($any($event.target).value)">
+      @for (o of sortOptions; track o.key) {
+        <option [value]="o.key" [selected]="sort() === o.key">{{ o.label }}</option>
+      }
+    </select>
+  </div>
+
+  <!-- ============ Video grid ============ -->
+  <ul class="tv-g">
+    @for (v of pageItems(); track v.id) {
+      <li>
+        <button type="button" class="tv-c" [attr.aria-label]="text.playAria + ' ' + v.title" (click)="open(v)">
+          <div class="tv-th" [style.--a]="colors(v).from" [style.--b]="colors(v).to">
+            <span class="tv-who">{{ v.presenter }}</span>
+            <div class="tv-sl"><b>{{ v.title }}</b></div>
+            <span class="tv-play"><i class="bi bi-play-fill"></i></span>
+            <span class="tv-dur">{{ v.minutes }} {{ text.minutesUnit }}</span>
+          </div>
+          <div class="tv-i">
+            <span class="tv-k">{{ v.category }}</span>
+            <h3>{{ v.title }}</h3>
+            <small>{{ v.postedOn | date: 'mediumDate' }}</small>
+          </div>
+        </button>
+      </li>
+    } @empty {
+      <li class="tv-e">
+        <b>{{ text.emptyTitle }}</b>
+        {{ text.emptyText }}
+      </li>
+    }
+  </ul>
+
+  <!-- ============ Pagination (shared) ============ -->
+  <app-pagination
+    [totalItems]="total()"
+    [pageSize]="pageSize()"
+    [currentPage]="currentPage()"
+    (pageChange)="goTo($event)"
+    (pageSizeChange)="onPageSize($event)"
+  ></app-pagination>
+</div>
+
+<!-- ===== Video popup ===== -->
+@if (active(); as v) {
+  <div class="tv-m" role="dialog" aria-modal="true" [attr.aria-label]="text.modalTitlePrefix + v.title" (click)="onBackdrop($event)">
+    <div class="tv-md">
+      <!-- Title + heart + close (ek hi row me, barabar aligned) -->
+      <div class="tv-hd">
+        <h2>{{ text.modalTitlePrefix }}{{ v.title }}</h2>
+        <div class="tv-hbtns">
+          <button
+            type="button"
+            class="tv-ib tv-fv"
+            [class.on]="isFav(v.id)"
+            [attr.aria-pressed]="isFav(v.id)"
+            [attr.aria-label]="text.favAria"
+            [title]="text.favAria"
+            (click)="toggleFav(v.id)"
+          >
+            <i class="bi" [class.bi-heart]="!isFav(v.id)" [class.bi-heart-fill]="isFav(v.id)"></i>
+          </button>
+          <button type="button" class="tv-ib" [attr.aria-label]="text.closeBtn" (click)="close()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <p class="tv-ds">{{ description(v) }}</p>
+
+      <div class="tv-body">
+        <!-- LEFT: video -->
+        <div class="tv-pw">
+          <!-- har video ke liye player naya banta hai -->
+          @for (k of [v.id]; track k) {
+            @if (embedUrl(); as emb) {
+              <div class="tv-pl">
+                <iframe [src]="emb" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen [title]="v.title"></iframe>
+              </div>
+            } @else {
+              <app-video-player
+                [src]="v.videoUrl || demoUrl"
+                [videoTitle]="v.title"
+                [captions]="v.captions ?? []"
+                [demoNote]="v.videoUrl ? '' : 'Demo video · videoUrl me apne video ka link daalo'"
+                [errorTitle]="text.videoErrorTitle"
+                [errorText]="text.videoErrorText"
+              />
+            }
+          }
+        </div>
+
+        <!-- RIGHT: trainer + attachments -->
+        <div class="tv-side">
+          <section class="tv-tr">
+            <div class="tv-trh">
+              <div class="tv-ph">
+                @if (presenter()?.photo) {
+                  <img [src]="presenter()!.photo!" [alt]="v.presenter" />
+                } @else {
+                  <div class="tv-av" [style.--a]="colors(v).from" [style.--b]="colors(v).to" aria-hidden="true">
+                    {{ initials(v.presenter) }}
+                  </div>
+                }
+              </div>
+              <div class="tv-tt">
+                <b>{{ v.presenter }}</b>
+                <small>{{ presenter()?.role || text.defaultRole }}</small>
+              </div>
+            </div>
+            <p class="tv-bio">{{ presenter()?.bio }}</p>
+          </section>
+
+          <section class="tv-at">
+            <h3>{{ text.attachmentsTitle }}</h3>
+            <div class="tv-al">
+              @for (a of attachments(v); track a.name) {
+                <a class="tv-ab" [href]="a.url || '#'" download (click)="onAttachment($event, a)">
+                  <i class="bi bi-download"></i>
+                  {{ a.name }}
+                </a>
+              }
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+}

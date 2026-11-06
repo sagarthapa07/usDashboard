@@ -1,0 +1,53 @@
+<footer class="ft">
+  <div class="ft-in">
+
+    <!-- Brand + about + social -->
+    <div class="ft-brand">
+      <div class="ft-logo-row">
+        <span class="ft-logo">{{ brand.logo }}</span>
+        <div>
+          <b>{{ brand.name }}</b>
+          <small>{{ brand.tagline }}</small>
+        </div>
+      </div>
+      <p>{{ info.about }}</p>
+      <div class="ft-social">
+        @for (s of info.social; track s) {
+          <a href="#" [attr.aria-label]="s" (click)="$event.preventDefault()">{{ s }}</a>
+        }
+      </div>
+    </div>
+
+    <!-- Link columns -->
+    @for (col of info.columns; track col.title) {
+      <div class="ft-col">
+        <h5>{{ col.title }}</h5>
+        @for (l of col.links; track l) {
+          <a href="#" (click)="$event.preventDefault()">{{ l }}</a>
+        }
+      </div>
+    }
+
+    <!-- Contact -->
+    <div class="ft-col ft-contact">
+      <h5>Contact Us</h5>
+      <b>Email</b>
+      <span>{{ info.email }}</span>
+      <b>Phone</b>
+      <span>{{ info.phone }}</span>
+      <b>Address</b>
+      <span>{{ info.address }}</span>
+      <button type="button" class="ft-help">{{ info.helpLabel }}</button>
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="ft-bottom">
+    <span>© {{ year }} {{ brand.name }}. All rights reserved.</span>
+    <div class="ft-legal">
+      @for (l of info.legal; track l) {
+        <a href="#" (click)="$event.preventDefault()">{{ l }}</a>
+      }
+    </div>
+  </div>
+</footer>

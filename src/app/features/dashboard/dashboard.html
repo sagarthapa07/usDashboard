@@ -1,0 +1,111 @@
+<div class="dash-hero">
+  <app-search-hero (searchChange)="onSearchBar($event)"></app-search-hero>
+</div>
+
+<div class="dash-layout">
+
+  <!-- ============ LEFT: Filters ============ -->
+  <app-advanced-filter
+    class="dash-filter"
+    [states]="states"
+    [areas]="areas"
+    [donors]="donors"
+    (filterChange)="onFilter($event)"
+  ></app-advanced-filter>
+
+  <!-- ============ RIGHT: Grants + Resources ============ -->
+  <main class="dash-main">
+
+    <!-- Title + view switcher -->
+    <div class="toolbar">
+      <h2 class="result-title">
+        {{ greeting }} <small>{{ filteredCards.length }} grants found</small>
+      </h2>
+
+      <div class="view-switch">
+        <button type="button" [class.on]="viewMode === 'tile'" (click)="setView('tile')" aria-label="Tile view">
+          <i class="bi bi-grid"></i>
+        </button>
+        <button type="button" [class.on]="viewMode === 'detailed'" (click)="setView('detailed')" aria-label="Detailed view">
+          <i class="bi bi-grid-3x3-gap"></i>
+        </button>
+        <button type="button" [class.on]="viewMode === 'table'" (click)="setView('table')" aria-label="Table view">
+          <i class="bi bi-list-ul"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Grants -->
+    @if (viewMode === 'table') {
+      <app-table [grants]="pagedCards" (select)="onView($event)"></app-table>
+    } @else {
+      <div class="cards-grid" [class.detailed]="viewMode === 'detailed'">
+        @for (c of pagedCards; track c.id) {
+          <app-card
+            [grant]="c"
+            [variant]="viewMode"
+            (favToggle)="onFavToggle($event)"
+            (view)="onView($event)"
+          ></app-card>
+        } @empty {
+          <div class="no-result">
+            <i class="bi bi-inbox"></i>
+            <span>Koi grant nahi mila. Filter badal ke dekho.</span>
+          </div>
+        }
+      </div>
+    }
+
+    <app-pagination
+      [totalItems]="filteredCards.length"
+      [pageSize]="pageSize"
+      [currentPage]="currentPage"
+      (pageChange)="onPageChange($event)"
+      (pageSizeChange)="onPageSizeChange($event)"
+    ></app-pagination>
+
+    <section class="res-section">
+      <h2 class="result-title">Resources <small>Learn, write and prepare</small></h2>
+
+      <div class="type-tabs">
+        @for (t of resourceTypes; track t.key) {
+          <button type="button" [class.on]="activeResource === t.key" (click)="setResource(t.key)">
+            {{ t.label }}
+          </button>
+        }
+      </div>
+
+      <app-resource-list
+        [items]="resourceItems"
+        [type]="activeResource"
+        [view]="resourceView"
+        (openItem)="onResourceOpen($event)"
+        (download)="onResourceDownload($event)"
+        (favToggle)="onResourceFav($event)"
+      ></app-resource-list>
+    </section>
+
+  </main>
+</div>
+
+
+<div style="display:flex; flex-wrap:wrap; gap:10px; padding:20px; background:#fff;">
+  <app-buttons>Primary</app-buttons>
+  <app-buttons variant="secondary" icon="bi-download">Secondary</app-buttons>
+  <app-buttons variant="outline" icon="bi-arrow-clockwise">Outline</app-buttons>
+  <app-buttons variant="neutral" icon="bi-bookmark">Neutral</app-buttons>
+  <app-buttons variant="ghost">Ghost</app-buttons>
+  <app-buttons variant="danger">Danger</app-buttons>
+  <app-buttons variant="danger-outline">Danger outline</app-buttons>
+  <app-buttons variant="success">Success</app-buttons>
+  <app-buttons variant="navy" icon="bi-headset">Need help?</app-buttons>
+  <app-buttons variant="link" iconEnd="bi-arrow-right">Link</app-buttons>
+  <app-buttons variant="link-danger">Clear all</app-buttons>
+  <app-buttons variant="chip" icon="bi-grid" [active]="true">Chip</app-buttons>
+  <app-buttons variant="pill">Pill</app-buttons>
+  <app-buttons variant="toggle" icon="bi-circle">Toggle</app-buttons>
+  <app-buttons [loading]="true">Loading</app-buttons>
+  <app-buttons [disabled]="true">Disabled</app-buttons>
+  <app-buttons variant="neutral" [iconOnly]="true" icon="bi-bookmark" ariaLabel="Save"></app-buttons>
+  <app-buttons variant="neutral" [iconOnly]="true" [round]="true" icon="bi-heart" ariaLabel="Like"></app-buttons>
+</div>

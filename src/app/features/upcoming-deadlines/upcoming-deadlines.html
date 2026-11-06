@@ -1,0 +1,297 @@
+<div class="lt-page" [class.filters-open]="filtersOpen" [class.detail-open]="detailOpen">
+  <!-- ============ HERO + FILTERS (ek hi box) ============ -->
+  <section class="lt-hero">
+    <span class="lt-eyebrow">DON'T MISS THE WINDOW</span>
+    <h1>Upcoming <span>Deadlines</span></h1>
+    <p>Grants closing soon. Filter by deadline and open any grant to see its details.</p>
+
+    <!-- MOBILE: Filters button (desktop par chhupa rehta hai) -->
+    <button
+      type="button"
+      class="lt-filter-toggle"
+      [attr.aria-expanded]="filtersOpen"
+      (click)="toggleFilters()"
+    >
+      <i class="bi bi-funnel"></i>
+      Filters
+      @if (activeFilterCount) {
+        <span class="cnt">{{ activeFilterCount }}</span>
+      }
+      <i class="bi bi-chevron-down chev"></i>
+    </button>
+
+    <div class="lt-filter">
+      <div class="lt-field">
+        <label for="up-state">State</label>
+        <select id="up-state" [(ngModel)]="draft.state" name="state">
+          <option value="">Select State…</option>
+          @for (s of states; track s.id) {
+            <option [value]="s.name">{{ s.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="lt-field">
+        <label for="up-area">Area of Interest</label>
+        <select id="up-area" [(ngModel)]="draft.area" name="area">
+          <option value="">Areas of Interest…</option>
+          @for (a of areas; track a.id) {
+            <option [value]="a.name">{{ a.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="lt-field">
+        <label for="up-from">Deadline From</label>
+        <input id="up-from" type="date" [(ngModel)]="draft.from" name="from" />
+      </div>
+
+      <div class="lt-field">
+        <label for="up-to">Deadline To</label>
+        <input id="up-to" type="date" [(ngModel)]="draft.to" name="to" />
+      </div>
+
+      <div class="lt-actions">
+        <app-buttons variant="link" iconEnd="bi-arrow-right" (click)="onAdvanced()"
+          >Advanced Search</app-buttons
+        >
+        <div class="lt-btns">
+          <app-buttons (click)="onSearch()">Search</app-buttons>
+          <app-buttons variant="outline" (click)="onReset()">Reset</app-buttons>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLOSING WITHIN chips (ab hero ke andar) -->
+    <div class="chips" role="group" aria-label="Closing within">
+      <span>Closing within</span>
+      @for (w of windows; track w.days) {
+        <button type="button" [class.on]="activeWindow === w.days" (click)="setWindow(w.days)">
+          {{ w.label }}
+        </button>
+      }
+    </div>
+  </section>
+
+
+  <!-- ============ LIST + DETAILS ============ -->
+  <div class="lt-split">
+    <!-- LEFT: Grants Closing Soon -->
+    <section class="lt-list">
+      <div class="lt-list-head">
+        <div>
+          <h2>Grants Closing Soon</h2>
+          <small>Showing {{ pagedCards.length }} of {{ filteredCards.length }} results</small>
+        </div>
+
+        <select
+          aria-label="Sort by"
+          [ngModel]="sortKey"
+          (ngModelChange)="onSort($event)"
+          name="sort"
+        >
+          @for (o of sortOptions; track o.key) {
+            <option [value]="o.key">{{ o.label }}</option>
+          }
+        </select>
+      </div>
+
+      @if (filteredCards.length) {
+        <div class="lr-list">
+          @for (g of pagedCards; track g.id) {
+            <button
+              type="button"
+              class="lr"
+              [class.on]="isSelected(g)"
+              [class.t1]="urgency(g) === 'u1'"
+              [class.t2]="urgency(g) === 'u2'"
+              (click)="onSelect(g)"
+            >
+              <div class="lrt" [class]="'tone-' + g.tone">
+                <i class="bi" [class]="g.icon ?? 'bi-geo-alt'"></i>
+              </div>
+
+              <div class="lrb">
+                <div class="lrg">
+                  @if (isSelected(g)) {
+                    <span class="s1">SELECTED</span>
+                  }
+                  <span class="pill" [class]="urgency(g)">{{ leftLabel(g) }}</span>
+                  <span>{{ g.type ?? 'Grant' }}</span>
+                </div>
+
+                <h3>{{ g.title }}</h3>
+
+                <div class="lrm">
+                  <span class="a">{{ g.amount }}</span>
+                  <span class="d">Due {{ g.deadline | date: 'MMM d, y' }}</span>
+                  <span class="n">{{ g.donor }}</span>
+                </div>
+
+                @if (isSelected(g) && g.description) {
+                  <p>{{ g.description }}</p>
+                }
+              </div>
+            </button>
+          }
+        </div>
+      } @else {
+        <div class="no-result">
+          <i class="bi bi-inbox"></i>
+          <span>No upcoming grants match these filters.</span>
+        </div>
+      }
+
+      <app-pagination
+        [totalItems]="filteredCards.length"
+        [pageSize]="pageSize"
+        [currentPage]="currentPage"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+      ></app-pagination>
+    </section>
+
+    <!-- RIGHT: Details panel -->
+    @if (selected; as g) {
+      <aside class="lt-detail">
+        <!-- MOBILE: wapas list par (desktop par chhupa rehta hai) -->
+        <button type="button" class="d-back" (click)="closeDetail()">
+          <i class="bi bi-arrow-left"></i> Back to results
+        </button>
+
+        <!-- Top row: type, status, save -->
+        <div class="d-head">
+          <span class="d-type">{{ g.type ?? 'Grant' }}</span>
+          <b class="d-status" [class]="statusClass(g)">● {{ statusLabel(g) }}</b>
+          @if (g.isNew) {
+            <span class="d-new">NEW</span>
+          }
+          <app-buttons
+            class="d-save"
+            variant="outline"
+            size="sm"
+            [icon]="g.isFav ? 'bi-bookmark-fill' : 'bi-bookmark'"
+            (click)="toggleSave(g)"
+          >
+            {{ g.isFav ? 'Saved' : 'Save' }}
+          </app-buttons>
+        </div>
+
+        <!-- Rangeen banner: kitne din bache -->
+        <div class="d-banner" [class]="urgency(g)">
+          <i class="bi bi-calendar-event"></i>
+          <span>{{ bannerText(g) }}</span>
+        </div>
+
+        <h2>{{ g.title }}</h2>
+        <div class="d-by">
+          <b>{{ g.donor }}</b> • Posted {{ g.posted | date: 'MMM d, y' }}
+        </div>
+
+        <!-- 3 stat boxes -->
+        <div class="d-stats">
+          <div class="st st-green">
+            <small>Grant Range</small>
+            <b>{{ g.amount }}</b>
+          </div>
+          <div class="st st-orange">
+            <small>Deadline</small>
+            <b>{{ g.deadline | date: 'MMM d, y' }}</b>
+          </div>
+          <div class="st" [class]="urgency(g)">
+            <small>Time left</small>
+            <b>{{ timeLeftShort(g) }}</b>
+          </div>
+        </div>
+
+        <div class="d-tags">
+          <span><i class="bi bi-geo-alt"></i>{{ g.state }}</span>
+          <span><i class="bi bi-tag"></i>{{ g.category }}</span>
+        </div>
+
+        <div class="d-sec">
+          <h4>Grant Intro</h4>
+          <p>
+            {{ g.description ?? g.title }} {{ g.donor }} invites proposals that strengthen
+            communities.
+          </p>
+        </div>
+
+        <div class="d-sec">
+          <h4>Funding</h4>
+          <dl>
+            <div>
+              <dt>Grant Range</dt>
+              <dd>{{ g.amount }}</dd>
+            </div>
+            <div>
+              <dt>Grant Type</dt>
+              <dd>{{ g.type ?? 'Grant' }}</dd>
+            </div>
+            <div>
+              <dt>Focus Area</dt>
+              <dd>{{ g.category }}</dd>
+            </div>
+            <div>
+              <dt>Location</dt>
+              <dd>{{ g.state }}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="d-sec">
+          <h4>Donor</h4>
+          <dl>
+            <div>
+              <dt>Donor Name</dt>
+              <dd>{{ g.donor }}</dd>
+            </div>
+            <div>
+              <dt>Donor Type</dt>
+              <dd>{{ sourceLabel(g) }}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="d-sec">
+          <h4>Dates</h4>
+          <dl>
+            <div>
+              <dt>Deadline</dt>
+              <dd class="warn">{{ g.deadline | date: 'MMM d, y' }}</dd>
+            </div>
+            <div>
+              <dt>Time Left</dt>
+              <dd [class]="'tl ' + urgency(g)">{{ timeLeftShort(g) }}</dd>
+            </div>
+            <div>
+              <dt>Post Date</dt>
+              <dd>{{ g.posted | date: 'MMM d, y' }}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="d-sec">
+          <h4>Eligibility</h4>
+          <ul>
+            @for (e of eligibilityOf(g); track $index) {
+              <li>{{ e }}</li>
+            }
+          </ul>
+        </div>
+
+        <!-- Actions: Remind me -->
+        <div class="d-actions">
+          <app-buttons (click)="onView(g)">View Full Details →</app-buttons>
+          <app-buttons
+            variant="outline"
+            [icon]="isReminded(g) ? 'bi-bell-fill' : 'bi-bell'"
+            (click)="toggleReminder(g)"
+          >
+            {{ isReminded(g) ? 'Reminder set' : 'Remind me' }}
+          </app-buttons>
+        </div>
+      </aside>
+    }
+  </div>
+</div>

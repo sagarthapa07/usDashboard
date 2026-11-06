@@ -1,0 +1,145 @@
+<section class="mg">
+  <!-- ================= HEADER ================= -->
+  <header class="head">
+    <div>
+      <h1>My Grants</h1>
+      <p>Grants you’ve saved. Track deadlines and apply on time.</p>
+    </div>
+    <button type="button" class="btn-primary" (click)="browse()">Browse more grants</button>
+  </header>
+
+  <!-- ================= STATS ================= -->
+  <div class="stats">
+    <div class="stat">
+      <span class="num">{{ items.length }}</span>
+      <div>
+        <b>Saved grants</b>
+        <small>in your list</small>
+      </div>
+    </div>
+
+    <div class="stat">
+      <span class="num">{{ closingSoonCount }}</span>
+      <div>
+        <b>Closing soon</b>
+        <small>within {{ closingDays }} days</small>
+      </div>
+    </div>
+
+    <div class="stat dark">
+      @if (nextDeadline; as nd) {
+        <span class="num">{{ nd.deadline | date: 'MMM d' }}</span>
+        <div class="next">
+          <b>Next deadline</b>
+          <small>{{ nd.title }}</small>
+        </div>
+      } @else {
+        <span class="num">—</span>
+        <div class="next">
+          <b>Next deadline</b>
+          <small>No upcoming deadlines</small>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- ================= PANEL ================= -->
+  <div class="panel">
+    <!-- toolbar -->
+    <div class="toolbar">
+      <div class="search">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          name="kw"
+          [(ngModel)]="keyword"
+          placeholder="Search saved grants by title or donor..."
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="seg">
+        <button type="button" [class.active]="filter === 'all'" (click)="setFilter('all')">
+          All
+        </button>
+        <button type="button" [class.active]="filter === 'closing'" (click)="setFilter('closing')">
+          Closing soon
+        </button>
+      </div>
+
+      <span class="sel">
+        <select [(ngModel)]="sortKey" name="sort" aria-label="Sort grants">
+          @for (o of sortOptions; track o.key) {
+            <option [ngValue]="o.key">{{ o.label }}</option>
+          }
+        </select>
+        <i class="bi bi-chevron-down"></i>
+      </span>
+    </div>
+
+    <p class="count">Showing {{ filtered.length }} of {{ items.length }} saved grants</p>
+
+    <!-- list -->
+    <div class="list">
+      @for (g of filtered; track g.id) {
+        <article class="item">
+          <div class="thumb" [ngClass]="'th-' + g.thumb">
+            <i class="bi" [ngClass]="thumbIcon(g)"></i>
+            <button
+              type="button"
+              class="heart"
+              [class.on]="g.favorite"
+              (click)="toggleFavorite(g)"
+              [attr.aria-label]="g.favorite ? 'Remove from favorites' : 'Add to favorites'"
+            >
+              <i class="bi" [ngClass]="g.favorite ? 'bi-heart-fill' : 'bi-heart'"></i>
+            </button>
+          </div>
+
+          <div class="info">
+            <h3 (click)="viewGrant(g)" tabindex="0" (keydown.enter)="viewGrant(g)">
+              {{ g.title }}
+            </h3>
+            <p class="desc">{{ g.description }}</p>
+
+            <div class="meta">
+              <span class="amt"><i class="bi bi-currency-dollar"></i>{{ g.amount }}</span>
+              <span class="due"
+                ><i class="bi bi-calendar3"></i>Due {{ g.deadline | date: 'MMM d, y' }}</span
+              >
+              <span class="chip" [ngClass]="chipClass(g)">{{ daysText(g) }}</span>
+              <span class="cat">{{ g.category }}</span>
+            </div>
+
+            <a class="donor" href="#" (click)="$event.preventDefault()">{{ g.donor }}</a>
+          </div>
+
+          <div class="acts">
+            <button type="button" class="b-view" (click)="viewGrant(g)">View<br />Grant</button>
+            <button type="button" class="b-remove" (click)="remove(g)">
+              <i class="bi bi-bookmark"></i> Remove
+            </button>
+            <button type="button" class="b-archive" (click)="archive(g)">
+              <i class="bi bi-archive"></i> Archive
+            </button>
+          </div>
+        </article>
+      } @empty {
+        <div class="empty">
+          <i class="bi bi-bookmark"></i>
+          @if (items.length === 0) {
+            <h3>No saved grants yet</h3>
+            <p>Save a grant from any list and it will show up here.</p>
+            <button type="button" class="btn-primary" (click)="browse()">Browse grants</button>
+          } @else {
+            <h3>No grants match your search</h3>
+            <p>Try a different keyword or switch back to All.</p>
+            <button type="button" class="btn-primary" (click)="setFilter('all'); keyword = ''">
+              Show all
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</section>

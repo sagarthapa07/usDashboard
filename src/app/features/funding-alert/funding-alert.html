@@ -1,0 +1,141 @@
+<div class="fa">
+  <!-- ========== HERO ========== -->
+  <section class="fa-hero">
+    <div class="fa-hero-txt">
+      <h1 class="fa-t">
+        {{ text.title }}
+        <span
+          class="fa-inf"
+          [class.on]="tipOpen"
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="text.tipTitle"
+          aria-describedby="fa-tip"
+          (click)="toggleTip($event)"
+          (keydown.enter)="toggleTip($event)"
+        >
+          i
+          <span class="fa-tip" id="fa-tip" role="tooltip" (click)="$event.stopPropagation()">
+            <b>{{ text.tipTitle }}</b>
+            {{ text.tipText }}
+          </span>
+        </span>
+      </h1>
+      <p class="fa-s">
+        Pick up to {{ max }} states and {{ max }} thematic areas. Hover over the <b>i</b> icon to
+        learn how this feature works.
+      </p>
+    </div>
+
+    <button class="btn" type="button" (click)="openTutorial()">{{ text.tutorialBtn }}</button>
+  </section>
+
+  <!-- ========== SUMMARY CARDS ========== -->
+  <div class="fa-sum">
+    <div class="fa-st">
+      <i class="fa-ic"><i class="bi bi-geo-alt"></i></i>
+      <b>{{ statesCount }}/{{ max }}</b>
+      <span>States<small>being tracked</small></span>
+    </div>
+
+    <div class="fa-st gn">
+      <i class="fa-ic"><i class="bi bi-list-ul"></i></i>
+      <b>{{ areasCount }}/{{ max }}</b>
+      <span>Thematic areas<small>being tracked</small></span>
+    </div>
+
+    <div class="fa-st dk">
+      <i class="fa-ic"><i class="bi bi-envelope"></i></i>
+      <b>{{ frequency }}</b>
+      <span>Email digest<small>sent to your inbox</small></span>
+    </div>
+  </div>
+
+  <!-- ========== PICKERS (Countries + Thematic areas) ========== -->
+  <div class="fa-g">
+    <section class="fa-c" *ngFor="let s of sections; trackBy: trackByKey">
+      <ng-container *ngIf="visible(s) as list">
+        <!-- Header -->
+        <div class="fa-ph">
+          <span class="fa-pi"><i class="bi" [ngClass]="s.cfg.icon"></i></span>
+          <h2>{{ s.cfg.title }}</h2>
+        </div>
+
+        <!-- Search -->
+        <label class="fa-bx">
+          <i class="bi bi-search"></i>
+          <input
+            type="text"
+            autocomplete="off"
+            [attr.aria-label]="s.cfg.placeholder"
+            [placeholder]="s.cfg.placeholder"
+            [value]="s.query"
+            (input)="onSearch(s, $event)"
+          />
+        </label>
+
+        <!-- Checkbox list (scrollable) -->
+        <div class="fa-list" role="group" [attr.aria-label]="s.cfg.title">
+          <label class="fa-row" *ngFor="let o of list" [class.ds]="!isSelected(s, o) && isFull(s)">
+            <input type="checkbox" [checked]="isSelected(s, o)" (change)="toggle(s, o, $event)" />
+            <span class="fa-cb"></span>
+            <span class="fa-lb">{{ o }}</span>
+          </label>
+
+          <div class="fa-no" *ngIf="!list.length">
+            No match for “{{ s.query }}”. Try a shorter word.
+          </div>
+        </div>
+
+        <div class="fa-sel">
+          <div class="fa-bar">
+            <span>
+              Selected: <b>{{ s.draft.length }}</b> of {{ max }} {{ s.cfg.noun }}
+              <ng-container *ngIf="isFull(s)">
+                · <span class="fa-lim">Limit reached</span></ng-container
+              >
+            </span>
+            <button class="fa-clr" type="button" [disabled]="!s.draft.length" (click)="clearAll(s)">
+              Clear all
+            </button>
+          </div>
+
+          <div class="fa-ch" aria-live="polite">
+            <span class="fa-chip" *ngFor="let v of s.draft">
+              {{ v }}
+              <button type="button" [attr.aria-label]="'Remove ' + v" (click)="toggle(s, v)">
+                ×
+              </button>
+            </span>
+
+            <div class="fa-em" *ngIf="!s.draft.length">{{ s.cfg.emptyText }}</div>
+          </div>
+        </div>
+      </ng-container>
+    </section>
+  </div>
+
+  <!-- ========== HOW IT WORKS ========== -->
+  <section class="fa-c fa-hw">
+    <h3>{{ text.howTitle }}</h3>
+    <p class="fa-sb">{{ text.howSub }}</p>
+    <div class="fa-stp">
+      <div *ngFor="let st of text.steps; let i = index">
+        <span class="fa-n">{{ i + 1 }}</span>
+        <b>{{ st.title }}</b>
+        <p>{{ st.text }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== STICKY SAVE BAR ========== -->
+  <div class="fa-sv" *ngIf="dirty">
+    <span>{{ text.unsaved }}</span>
+    <span class="fa-sv-btns">
+      <button class="btn o" type="button" (click)="discard()">Discard</button>
+      <button class="btn" type="button" (click)="save()">Save changes</button>
+    </span>
+  </div>
+</div>
+
+<div id="fa-toast" role="status" *ngIf="toastMsg">{{ toastMsg }}</div>

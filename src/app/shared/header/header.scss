@@ -1,0 +1,32 @@
+:host {
+  display: block;
+}
+
+.app {
+  display: flex;
+  align-items: flex-start;
+  min-height: 100vh;
+  overflow-x: clip; /* clip scroll box nahi banata, isliye sticky chalta rahega */
+}
+
+/* Sirf EK baar, aur overflow-y yahan nahi hona chahiye */
+.content {
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column; /* footer chhote page par bhi neeche rahega */
+}
+
+/* Topbar scroll karne par upar chipka rahe */
+app-topbar {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.main {
+  flex: 1;
+  padding: 8px 24px 28px;
+}

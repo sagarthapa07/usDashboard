@@ -1,0 +1,434 @@
+:host {
+  display: block;
+
+  // Tokens se bane extra shades (naye hex nahi)
+  --pyInputBd: color-mix(in srgb, var(--mutedClr) 35%, var(--whiteClr));
+  --pyHeroBd: color-mix(in srgb, var(--primaryClr) 18%, var(--whiteClr));
+  --pyOkBg: color-mix(in srgb, var(--successClr) 10%, var(--whiteClr));
+  --pyOverlay: color-mix(in srgb, var(--navyHoverClr) 55%, transparent);
+  --pyCardShadow: color-mix(in srgb, var(--navyClr) 28%, transparent);
+
+  // Design ke exact sizes, tokens se
+  --pyFs13: calc(var(--bodyFont) - 1px);
+  --pyFs125: calc(var(--smallFont) + 0.5px);
+}
+
+.py-wrap {
+  width: 100%;
+}
+
+.py-hd {
+  margin-bottom: 20px;
+  padding: 22px 24px;
+  border-radius: var(--radius);
+  background: linear-gradient(120deg, var(--heroBgClr1), var(--heroBgClr2));
+  border: 1px solid var(--pyHeroBd);
+}
+.py-t {
+  margin: 0;
+  font-size: calc(var(--headingFont) + 2px);
+  line-height: 1.2;
+  font-weight: 700;
+}
+.py-s {
+  margin: 4px 0 0;
+  color: var(--menuTextClr);
+}
+
+.py-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 20px;
+  align-items: start;
+}
+
+.py-card {
+  background: var(--cardBgClr);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+
+  h3 {
+    font-size: calc(var(--subTitleFont) - 1px);
+    line-height: 1.3;
+    font-weight: 700;
+  }
+}
+
+/* ---------- card on file ---------- */
+.py-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 24px;
+  border-bottom: var(--border);
+}
+
+.py-st {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--pyOkBg);
+  color: var(--successClr);
+  border-radius: 99px;
+  padding: 3px 11px;
+  font-size: var(--pyFs125);
+  font-weight: 600;
+
+  i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  &.py-off {
+    background: var(--bgClr);
+    color: var(--mutedClr);
+  }
+}
+
+.py-body {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  gap: 28px;
+  padding: 24px;
+  align-items: center;
+}
+
+.py-cc {
+  aspect-ratio: 1.586;
+  border-radius: 16px;
+  padding: 20px 22px;
+  color: var(--whiteClr);
+  background:
+    radial-gradient(
+      120% 90% at 100% 0,
+      color-mix(in srgb, var(--whiteClr) 18%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(135deg, var(--navyHoverClr), var(--primaryClr));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 14px 30px var(--pyCardShadow);
+  transition:
+    transform 0.45s,
+    opacity 0.3s;
+
+  &.py-flip {
+    transform: rotateY(90deg);
+    opacity: 0;
+  }
+
+  small {
+    display: block;
+    font-size: var(--smallFont);
+    opacity: 0.75;
+    margin-bottom: 2px;
+  }
+  b {
+    font-size: var(--bodyFont);
+    font-weight: 600;
+  }
+}
+
+.py-r {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.py-brand {
+  font-family: var(--headingFontFamily);
+  font-size: 20px;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1;
+}
+
+.py-num {
+  font-family: var(--fontFamily);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.09em;
+  white-space: nowrap;
+}
+
+.py-dl {
+  margin: 0;
+  display: grid;
+  gap: 14px;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding-bottom: 14px;
+    border-bottom: var(--border);
+
+    &:last-child {
+      border: 0;
+      padding: 0;
+    }
+  }
+  dt {
+    color: var(--mutedClr);
+    font-size: var(--pyFs125);
+  }
+  dd {
+    margin: 0;
+    font-weight: 600;
+    word-break: break-word;
+  }
+}
+
+.py-act {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 18px 24px;
+  border-top: var(--border);
+  background: var(--bgClr);
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+.py-note {
+  color: var(--mutedClr);
+  font-size: var(--pyFs13);
+  flex: 1;
+  min-width: 220px;
+}
+
+/* ---------- buttons ---------- */
+.py-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: var(--bodyFont);
+  font-weight: 600;
+  border: 1.5px solid var(--primaryClr);
+  background: var(--primaryClr);
+  color: var(--whiteClr);
+  border-radius: var(--radiusSm);
+  padding: 10px 22px;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) {
+    background: var(--primaryHoverClr);
+  }
+  &:disabled {
+    opacity: 0.75;
+    cursor: progress;
+  }
+
+  &.py-g {
+    background: var(--cardBgClr);
+    color: var(--menuTextClr);
+    border-color: var(--pyInputBd);
+
+    &:hover:not(:disabled) {
+      background: var(--primaryLightClr);
+      border-color: var(--primaryClr);
+      color: var(--primaryClr);
+    }
+  }
+}
+
+/* ---------- side cards ---------- */
+.py-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .py-card {
+    padding: 20px;
+  }
+}
+
+.py-steps {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+  counter-reset: s;
+
+  li {
+    display: flex;
+    gap: 12px;
+    counter-increment: s;
+
+    &::before {
+      content: counter(s);
+      flex: none;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--primaryLightClr);
+      color: var(--primaryClr);
+      font-weight: 700;
+      font-size: var(--pyFs13);
+      display: grid;
+      place-items: center;
+    }
+  }
+  b {
+    display: block;
+    font-size: var(--bodyFont);
+  }
+  span {
+    color: var(--mutedClr);
+    font-size: var(--pyFs13);
+  }
+}
+
+.py-sec {
+  display: flex;
+  gap: 12px;
+  background: var(--heroBgClr1);
+  border-color: var(--pyHeroBd);
+
+  svg {
+    flex: none;
+    color: var(--primaryClr);
+    margin-top: 2px;
+  }
+  b {
+    display: block;
+    font-size: var(--bodyFont);
+  }
+  p {
+    margin: 3px 0 0;
+    color: var(--menuTextClr);
+    font-size: var(--pyFs13);
+  }
+}
+
+.py-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--primaryClr);
+  font-weight: 600;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--primaryClr);
+  outline-offset: 2px;
+}
+
+/* ---------- dialog + toast ---------- */
+.py-ov {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: var(--pyOverlay);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.py-dg {
+  background: var(--cardBgClr);
+  border-radius: 14px;
+  max-width: 440px;
+  width: 100%;
+  padding: 24px;
+  box-shadow: 0 24px 60px var(--pyOverlay);
+  color: var(--textClr);
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    line-height: 1.25;
+    font-weight: 700;
+  }
+  p {
+    margin: 0 0 18px;
+    color: var(--menuTextClr);
+  }
+  .py-row {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+}
+
+.py-tt {
+  position: fixed;
+  top: calc(var(--topbarHeight) + 10px + env(safe-area-inset-top, 0px));
+  right: 20px;
+  z-index: 310;
+  background: var(--successClr);
+  color: var(--whiteClr);
+  padding: 11px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--successClr) 30%, transparent);
+  opacity: 0;
+  transform: translateY(-12px);
+  pointer-events: none;
+  transition: all 0.3s;
+
+  &.py-on {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.py-sp {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--whiteClr) 40%, transparent);
+  border-top-color: var(--whiteClr);
+  animation: pyspin 0.7s linear infinite;
+}
+@keyframes pyspin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 1000px) {
+  .py-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .py-hd {
+    padding: 18px 16px;
+  }
+  .py-wrap {
+    padding: 16px 12px;
+  }
+  .py-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .py-num {
+    font-size: 17px;
+  }
+  .py-tt {
+    right: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+  .py-sp {
+    animation-duration: 1.6s;
+  }
+}

@@ -1,0 +1,115 @@
+/* =====================================================
+   GLOBAL THEME FILE
+   Saare colors, fonts aur sizes yahan se control honge.
+   Kisi bhi component me use karne ke liye: var(--primaryClr)
+   ===================================================== */
+
+:root {
+  /* ---------- Font Sizes ---------- */
+  --bodyFont: 14px;
+  --headingFont: 24px;
+  --subTitleFont: 18px;
+  --detailFont: 16px;
+  --smallFont: 12px;
+  --lineHeight: 150%;
+
+  /* ---------- Font Family ---------- */
+  --fontFamily: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --headingFontFamily: 'Source Serif 4', Georgia, serif;
+
+  /* ---------- Main Theme Colors ---------- */
+  --primaryClr: #2a5b9d;        /* main blue (buttons, links, active menu) */
+  --primaryHoverClr: #234e88;   /* hover par thoda dark blue */
+  --primaryLightClr: #e8f0fa;   /* light blue (menu hover/active background) */
+  --navyClr: #0f2a47;           /* dark navy (logo, help button) */
+  --navyHoverClr: #0b2038;
+
+  /* ---------- Background Colors ---------- */
+  --bgClr: #f4f6fa;             /* page ka background */
+  --cardBgClr: #ffffff;         /* card, sidebar, topbar ka background */
+  --heroBgClr1: #eaf2fc;        /* hero banner gradient start */
+  --heroBgClr2: #dce9f9;        /* hero banner gradient end */
+
+  /* ---------- Text Colors ---------- */
+  --textClr: #0f1f38;           /* main text */
+  --mutedClr: #64748b;          /* halka grey text (subtitle, hint) */
+  --menuTextClr: #334155;       /* sidebar menu text */
+  --whiteClr: #ffffff;
+
+  /* ---------- Status Colors ---------- */
+  --successClr: #15803d;        /* green (amount, success) */
+  --warningClr: #c2410c;        /* orange (due date) */
+  --dangerClr: #dc2626;         /* red (error, notification badge) */
+
+  /* ---------- Border, Radius, Shadow ---------- */
+  --borderClr: #e3e8ef;
+  --border: 1px solid var(--borderClr);
+  --radius: 12px;
+  --radiusSm: 8px;
+  --shadow: 0 1px 2px rgba(15, 31, 56, 0.05);
+
+  /* ---------- Layout Sizes ---------- */
+  --sidebarWidth: 210px;
+  --topbarHeight: 60px;
+}
+
+/* ---------- Basic Reset ---------- */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bgClr);
+  color: var(--textClr);
+  font-family: var(--fontFamily);
+  font-size: var(--bodyFont);
+  line-height: var(--lineHeight);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--headingFontFamily);
+  margin: 0;
+}
+
+a {
+  color: var(--primaryClr);
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ---------- Common Reusable Classes ---------- */
+.card {
+  background: var(--cardBgClr);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+.btn {
+  background: var(--primaryClr);
+  color: var(--whiteClr);
+  border: 1px solid var(--primaryClr);
+  border-radius: var(--radiusSm);
+  padding: 8px 14px;
+  font-size: var(--bodyFont);
+  font-weight: 500;
+
+  &:hover {
+    background: var(--primaryHoverClr);
+  }
+}
+
+.text-muted {
+  color: var(--mutedClr);
+}

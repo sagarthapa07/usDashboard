@@ -1,0 +1,22 @@
+<button
+  [attr.type]="type"
+  [class]="classes"
+  [disabled]="disabled || loading"
+  [attr.aria-label]="ariaLabel || null"
+  [attr.aria-pressed]="isToggle ? active : null"
+  [attr.aria-busy]="loading || null"
+>
+  @if (loading) {
+    <span class="ub-spin"></span>
+  } @else if (icon) {
+    <i class="bi {{ icon }}"></i>
+  }
+
+  @if (!iconOnly) {
+    <span class="ub-label"><ng-content /></span>
+  }
+
+  @if (iconEnd && !loading) {
+    <i class="bi {{ iconEnd }}"></i>
+  }
+</button>

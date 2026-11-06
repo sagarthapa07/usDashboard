@@ -1,0 +1,112 @@
+@if (isBook) {
+
+  <!-- ============ PROPOSAL / EBOOK ============ -->
+  <article class="rc rc-book">
+    <div class="rc-cover tone-{{ item.tone }}">
+      <span class="rc-spiral"></span>
+      <div class="rc-cover-in">
+        <em class="rc-cover-label">{{ item.type === 'ebook' ? 'EBOOK' : 'SAMPLE PROPOSAL' }}</em>
+        <b class="rc-cover-title">{{ item.title }}</b>
+        <i class="bi {{ item.icon }} rc-cover-icon"></i>
+        <span class="rc-cover-brand">GrantsforUS</span>
+      </div>
+    </div>
+
+    <div class="rc-info">
+      <h3 class="rc-title">{{ item.title }}</h3>
+
+      <div class="rc-tags">
+        @for (t of item.tags ?? []; track t) {
+          <span class="rc-tag tag-{{ tagTone(t) }}">{{ t }}</span>
+        }
+      </div>
+
+      <ul class="rc-meta">
+        <li><i class="bi bi-file-earmark-text"></i>PDF · {{ item.fileSize }}</li>
+        <li><i class="bi bi-list-ul"></i>{{ item.pages }} Pages</li>
+        <li><i class="bi bi-calendar3"></i>Updated: {{ item.date | date: 'MMM dd, y' }}</li>
+      </ul>
+
+      <button type="button" class="rc-btn rc-btn-main" (click)="onOpen()">
+        <i class="bi bi-eye"></i>{{ item.type === 'ebook' ? 'View eBook' : 'View Proposal' }}
+      </button>
+      <button type="button" class="rc-btn rc-btn-soft" (click)="onDownload($event)">
+        <i class="bi bi-download"></i>Download PDF
+      </button>
+    </div>
+  </article>
+
+} @else if (item.type === 'video') {
+
+  <!-- ============ TRAINING VIDEO ============ -->
+  <article class="rc rc-video rc-click" tabindex="0" (click)="onOpen()" (keydown.enter)="onOpen()">
+    <div class="rc-thumb tone-{{ item.tone }}">
+      <span class="rc-presenter">{{ item.presenter }}</span>
+      <div class="rc-thumb-title">{{ item.title }}</div>
+      <span class="rc-play"><i class="bi bi-play-fill"></i></span>
+      <span class="rc-dur">{{ item.minutes }} min</span>
+    </div>
+
+    <div class="rc-body">
+      <span class="rc-cat">{{ item.category }}</span>
+      <h3 class="rc-title">{{ item.title }}</h3>
+      <small class="rc-date">{{ item.date | date: 'MMM d, y' }}</small>
+    </div>
+  </article>
+
+} @else if (item.type === 'article') {
+
+  <!-- ============ ARTICLE ============ -->
+  <article class="rc rc-article rc-click" tabindex="0" (click)="onOpen()" (keydown.enter)="onOpen()">
+    <div class="rc-banner tone-{{ item.tone }}">
+      <button type="button" class="rc-fav" [class.on]="item.isFav" (click)="onFav($event)" aria-label="Save article">
+        <i class="bi" [class.bi-heart]="!item.isFav" [class.bi-heart-fill]="item.isFav"></i>
+      </button>
+      <i class="bi {{ item.icon }} rc-banner-icon"></i>
+      <span class="rc-chip-in">{{ item.category }}</span>
+    </div>
+
+    <div class="rc-body">
+      <h3 class="rc-title">{{ item.title }}</h3>
+      <p class="rc-excerpt">{{ item.excerpt }}</p>
+
+      <div class="rc-foot">
+        <span class="rc-foot-meta"><i class="bi bi-calendar3"></i>{{ item.date | date: 'MMMM d, y' }}</span>
+        <span class="rc-foot-meta"><i class="bi bi-clock"></i>{{ item.readMinutes }} min read</span>
+        <span class="rc-go"><i class="bi bi-arrow-right"></i></span>
+      </div>
+    </div>
+  </article>
+
+} @else {
+
+  <!-- ============ COURSE ============ -->
+  <article class="rc rc-course rc-click" tabindex="0" (click)="onOpen()" (keydown.enter)="onOpen()">
+    <div class="rc-banner tone-{{ item.tone }}">
+      @if (item.quick) {
+        <span class="rc-quick"><i class="bi bi-lightning-charge-fill"></i>Quick course</span>
+      }
+      <button type="button" class="rc-fav" [class.on]="item.isFav" (click)="onFav($event)" aria-label="Save course">
+        <i class="bi" [class.bi-bookmark]="!item.isFav" [class.bi-bookmark-fill]="item.isFav"></i>
+      </button>
+      <i class="bi {{ item.icon }} rc-banner-icon"></i>
+      <span class="rc-mins"><i class="bi bi-clock"></i>{{ item.minutes }} min</span>
+    </div>
+
+    <div class="rc-body">
+      <span class="rc-tag tag-{{ tagTone(item.category ?? '') }} rc-tag-fit">{{ item.category }}</span>
+      <h3 class="rc-title">{{ item.title }}</h3>
+      <p class="rc-excerpt">{{ item.excerpt }}</p>
+
+      <div class="rc-author">
+        <span class="rc-avatar">{{ initials }}</span>{{ item.author }}
+      </div>
+
+      <div class="rc-foot rc-foot-line">
+        <span class="rc-foot-meta">{{ item.minutes }} minutes</span>
+        <span class="rc-start">Start course <i class="bi bi-arrow-right"></i></span>
+      </div>
+    </div>
+  </article>
+
+}

@@ -1,0 +1,46 @@
+:host {
+  display: block;
+}
+
+.gt {
+  font-family: var(--fontFamily);
+  background: var(--cardBgClr);
+  border: var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  
+}
+
+
+.gt-row {
+  border-bottom: var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &:hover {
+    background: #f8fafc;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #4f8cff;
+    outline-offset: -2px;
+  }
+}
+
+.gt-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 16px;
+  color: var(--mutedClr);
+  font-size: 13.5px;
+
+  .bi {
+    font-size: 28px;
+  }
+}

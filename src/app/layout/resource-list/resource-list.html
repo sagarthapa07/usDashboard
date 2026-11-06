@@ -1,0 +1,70 @@
+@if (view === 'cards') {
+
+  <div class="rl-grid" [attr.data-type]="type">
+    @for (it of items; track it.id) {
+      <app-resource-card
+        [item]="it"
+        (openItem)="openItem.emit($event)"
+        (download)="download.emit($event)"
+        (favToggle)="favToggle.emit($event)"
+      ></app-resource-card>
+    } @empty {
+      <div class="rl-empty"><i class="bi bi-inbox"></i><span>No resources found</span></div>
+    }
+  </div>
+
+} @else {
+
+  <div class="rt-wrap">
+    <table class="rt">
+      <thead>
+        <tr>
+          <th>Resource</th>
+          <th>Category</th>
+          <th>Details</th>
+          <th>Date</th>
+          <th class="rt-right">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (it of items; track it.id) {
+          <tr tabindex="0" (click)="openItem.emit(it)" (keydown.enter)="openItem.emit(it)">
+            <td>
+              <div class="rt-name">
+                <span class="rt-ico tone-{{ it.tone }}"><i class="bi {{ it.icon }}"></i></span>
+                <b>{{ it.title }}</b>
+              </div>
+            </td>
+            <td>
+              <div class="rt-chips">
+                @if (it.tags?.length) {
+                  @for (t of it.tags; track t) {
+                    <span class="rt-chip">{{ t }}</span>
+                  }
+                } @else {
+                  <span class="rt-chip">{{ it.category }}</span>
+                }
+              </div>
+            </td>
+            <td class="rt-muted">{{ details(it) }}</td>
+            <td class="rt-muted rt-nowrap">{{ it.date | date: 'MMM d, y' }}</td>
+            <td class="rt-right rt-nowrap">
+              @if (isBookItem(it)) {
+                <button type="button" class="rt-icon-btn" (click)="onDownload($event, it)" aria-label="Download PDF">
+                  <i class="bi bi-download"></i>
+                </button>
+              }
+              <button type="button" class="rt-btn" (click)="openItem.emit(it)">{{ actionLabel(it) }}</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5">
+              <div class="rl-empty"><i class="bi bi-inbox"></i><span>No resources found</span></div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

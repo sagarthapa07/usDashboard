@@ -1,0 +1,169 @@
+/* =============== Layout: left filter + right content =============== */
+.dash-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  padding: 20px 24px;
+  font-family: var(--fontFamily);
+}
+
+/* Filter scroll karne par upar chipka rahe */
+.dash-filter {
+  position: sticky;
+  top: 76px;
+  max-height: calc(100vh - 92px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  border-radius: 14px;
+}
+
+.dash-main {
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+}
+
+/* Tablet / mobile: filter upar, content neeche */
+@media (max-width: 1000px) {
+  .dash-layout {
+    grid-template-columns: 1fr;
+    padding: 16px 12px;
+  }
+
+  .dash-filter {
+    position: static;
+    max-height: none;
+  }
+}
+
+/* =============== Title + view switcher =============== */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.result-title {
+  font-family: inherit;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--textClr);
+
+  small {
+    display: block;
+    margin-top: 2px;
+    font-size: 12.5px;
+    font-weight: 400;
+    color: var(--mutedClr);
+  }
+}
+
+.view-switch {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--cardBgClr);
+  border: var(--border);
+  border-radius: var(--radiusSm);
+
+  button {
+    width: 34px;
+    height: 32px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--menuTextClr);
+    font-size: 16px;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--primaryLightClr);
+      color: var(--primaryClr);
+    }
+
+    &.on {
+      background: var(--primaryClr);
+      color: var(--whiteClr);
+    }
+  }
+}
+
+/* =============== Cards grid =============== */
+.cards-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+
+  &.detailed {
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  }
+}
+
+/* Filter ke baad kuch na mile to */
+.no-result {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 16px;
+  background: var(--cardBgClr);
+  border: var(--border);
+  border-radius: 14px;
+  color: var(--mutedClr);
+  font-size: 13.5px;
+
+  .bi {
+    font-size: 28px;
+  }
+}
+
+/* =============== Resources section =============== */
+.res-section {
+  display: grid;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.type-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  button {
+    height: 36px;
+    padding: 0 16px;
+    border: var(--border);
+    border-radius: 999px;
+    background: var(--cardBgClr);
+    color: var(--textClr);
+    font: 500 13.5px var(--fontFamily);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--primaryLightClr);
+      color: var(--primaryClr);
+    }
+
+    &.on {
+      background: var(--primaryClr);
+      border-color: var(--primaryClr);
+      color: var(--whiteClr);
+      font-weight: 600;
+    }
+  }
+}
+
+/* =============== Top search bar ka wrapper =============== */
+.dash-hero {
+  padding: 20px 24px 0;
+}
+
+@media (max-width: 1000px) {
+  .dash-hero {
+    padding: 16px 12px 0;
+  }
+}

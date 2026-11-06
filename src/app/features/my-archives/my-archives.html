@@ -1,0 +1,135 @@
+<section class="ma">
+
+  <!-- ================= HEADER ================= -->
+  <header class="head">
+    <div>
+      <h1>My Archives</h1>
+      <p>Grants you’ve archived. Restore them to My Grants whenever you need them again.</p>
+    </div>
+    <button type="button" class="btn-primary" (click)="goToMyGrants()">Go to My Grants</button>
+  </header>
+
+  <!-- ================= STATS ================= -->
+  <div class="stats">
+    <div class="stat">
+      <span class="num">{{ items.length }}</span>
+      <div>
+        <b>Archived grants</b>
+        <small>in your archive</small>
+      </div>
+    </div>
+
+    <div class="stat">
+      <span class="num">{{ openCount }}</span>
+      <div>
+        <b>Still open</b>
+        <small>deadline not passed</small>
+      </div>
+    </div>
+
+    <div class="stat dark">
+      @if (lastArchived; as la) {
+        <span class="num">{{ la.archivedOn | date: 'MMM d' }}</span>
+        <div class="next">
+          <b>Last archived</b>
+          <small>{{ la.title }}</small>
+        </div>
+      } @else {
+        <span class="num">—</span>
+        <div class="next">
+          <b>Last archived</b>
+          <small>Nothing archived yet</small>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- ================= PANEL ================= -->
+  <div class="panel">
+
+    <div class="toolbar">
+      <div class="search">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          name="kw"
+          [(ngModel)]="keyword"
+          placeholder="Search archived grants by title or donor..."
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="seg">
+        <button type="button" [class.active]="filter === 'all'" (click)="setFilter('all')">All</button>
+        <button type="button" [class.active]="filter === 'open'" (click)="setFilter('open')">Still open</button>
+        <button type="button" [class.active]="filter === 'closed'" (click)="setFilter('closed')">Closed</button>
+      </div>
+
+      <span class="sel">
+        <select [(ngModel)]="sortKey" name="sort" aria-label="Sort archived grants">
+          @for (o of sortOptions; track o.key) {
+            <option [ngValue]="o.key">{{ o.label }}</option>
+          }
+        </select>
+        <i class="bi bi-chevron-down"></i>
+      </span>
+    </div>
+
+    <p class="count">Showing {{ filtered.length }} of {{ items.length }} archived grants</p>
+
+    <div class="list">
+      @for (g of filtered; track g.id) {
+        <article class="item">
+
+          <div class="thumb" [ngClass]="'tn-' + g.tone">
+            <i class="bi" [ngClass]="g.icon"></i>
+            <span class="arch-tag"><i class="bi bi-archive"></i> Archived</span>
+          </div>
+
+          <div class="info">
+            <h3 (click)="viewGrant(g)" tabindex="0" (keydown.enter)="viewGrant(g)">{{ g.title }}</h3>
+            <p class="desc">{{ g.description }}</p>
+
+            <div class="meta">
+              <span class="amt"><i class="bi bi-currency-dollar"></i>{{ g.amount }}</span>
+              <span class="due"><i class="bi bi-calendar3"></i>Due {{ g.deadline | date: 'MMM d, y' }}</span>
+              <span class="chip" [ngClass]="chipClass(g)">{{ daysText(g) }}</span>
+              <span class="cat">{{ g.category }}</span>
+            </div>
+
+            <a class="donor" href="#" (click)="$event.preventDefault()">{{ g.donor }}</a>
+          </div>
+
+          <div class="acts">
+            <button type="button" class="b-view" (click)="viewGrant(g)">View<br />Grant</button>
+            <button type="button" class="b-restore" (click)="restore(g)">
+              <i class="bi bi-bookmark"></i> Restore
+            </button>
+            <button
+              type="button"
+              class="b-delete"
+              [class.confirm]="confirmId === g.id"
+              (click)="askDelete(g)"
+              (blur)="confirmId = null"
+            >
+              <i class="bi bi-trash3"></i> {{ confirmId === g.id ? 'Confirm?' : 'Delete' }}
+            </button>
+          </div>
+        </article>
+      } @empty {
+        <div class="empty">
+          <i class="bi bi-archive"></i>
+          @if (items.length === 0) {
+            <h3>Your archive is empty</h3>
+            <p>Archive a grant from My Grants and it will show up here.</p>
+            <button type="button" class="btn-primary" (click)="goToMyGrants()">Go to My Grants</button>
+          } @else {
+            <h3>No archived grants match</h3>
+            <p>Try a different keyword or switch back to All.</p>
+            <button type="button" class="btn-primary" (click)="setFilter('all'); keyword = ''">Show all</button>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</section>

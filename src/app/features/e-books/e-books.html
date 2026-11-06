@@ -1,0 +1,189 @@
+<section class="lib-in">
+  <!-- ===== Hero: eyebrow + title + search + area dropdown + pills ===== -->
+  <header class="hero">
+    <span class="eyebrow">{{ text.eyebrow }}</span>
+    <h1>Grant <span>EBooks</span></h1>
+    <p>{{ text.subtitle }}</p>
+
+    <form class="hero-f" role="search" (submit)="$event.preventDefault()">
+      <label class="spx-s">
+        <i class="bi bi-search" aria-hidden="true"></i>
+        <input
+          type="search"
+          [placeholder]="text.searchPlaceholder"
+          [attr.aria-label]="text.searchAria"
+          autocomplete="off"
+          [value]="query()"
+          (input)="onSearch($any($event.target).value)"
+        />
+      </label>
+
+      <div class="lfld">
+        <label id="eb-area-label">{{ text.areaLabel }}</label>
+        <div class="amb" [class.open]="areaOpen()">
+          <button
+            type="button"
+            class="amt"
+            aria-haspopup="listbox"
+            [attr.aria-expanded]="areaOpen()"
+            aria-labelledby="eb-area-label"
+            (click)="toggleAreaMenu($event)"
+          >
+            <span class="amv">{{ areaLabel() }}</span>
+            <i class="bi bi-chevron-down" aria-hidden="true"></i>
+          </button>
+
+          <div class="amp" (click)="$event.stopPropagation()">
+            <label class="amo">
+              <input
+                type="checkbox"
+                [checked]="allVisibleChecked()"
+                (change)="toggleAllVisible($any($event.target).checked)"
+              />
+              <span>{{ text.selectAll }}</span>
+            </label>
+            <input
+              #areaSearchEl
+              class="ams"
+              type="search"
+              [placeholder]="text.areaSearchPlaceholder"
+              [attr.aria-label]="text.areaLabel"
+              autocomplete="off"
+              [value]="areaQuery()"
+              (input)="areaQuery.set($any($event.target).value)"
+            />
+            <div class="aml">
+              @for (a of visibleAreas(); track a) {
+                <label class="amo">
+                  <input
+                    type="checkbox"
+                    [checked]="selected().has(a)"
+                    (change)="toggleArea(a, $any($event.target).checked)"
+                  />
+                  <span>{{ a }}</span>
+                </label>
+              } @empty {
+                <div class="am-none">{{ text.areaNothing }}</div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Pills -->
+    <div class="pl2" role="group" [attr.aria-label]="text.areaLabel">
+      <button type="button" class="pill" [class.sel]="!selected().size" (click)="pickPill('')">
+        {{ text.pillAll }}
+      </button>
+
+      @for (a of mainAreas; track a) {
+        <button type="button" class="pill" [class.sel]="singleSelected() === a" (click)="pickPill(a)">
+          {{ a }}
+        </button>
+      }
+
+      @if (extraAreas().length) {
+        <div class="more">
+          <button
+            type="button"
+            class="pill"
+            [class.sel]="singleInExtra()"
+            aria-haspopup="true"
+            [attr.aria-expanded]="moreOpen()"
+            (click)="toggleMore($event)"
+          >
+            {{ singleInExtra() ? singleSelected() : text.pillMore }}
+            <i class="bi bi-chevron-down" aria-hidden="true"></i>
+          </button>
+          <div class="menu" [class.show]="moreOpen()">
+            @for (a of extraAreas(); track a) {
+              <button type="button" [class.sel]="singleSelected() === a" (click)="pickPill(a)">
+                {{ a }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </header>
+
+  <!-- ===== Count ===== -->
+  <p class="rc" #countEl aria-live="polite">
+    @if (filtered().length) {
+      Showing {{ paged().length }} of {{ filtered().length }}
+      {{ filtered().length === 1 ? text.countSingular : text.countPlural }}
+    }
+  </p>
+
+  <!-- ===== Cards ===== -->
+  <ul class="gd">
+    @if (loading()) {
+      <li class="emp">{{ text.loading }}</li>
+    } @else {
+      @for (b of paged(); track b.id) {
+        <li class="spc">
+          <a class="spc-cv" href="#" tabindex="-1" [attr.aria-label]="text.viewBtn + ': ' + b.title" (click)="$event.preventDefault(); viewEbook(b)">
+            @if (b.coverImg) {
+              <div class="bk3 im"><img [src]="b.coverImg" [alt]="'Cover of ' + b.title" loading="lazy" /></div>
+            } @else {
+              <div class="bk3" [style.--c]="b.colorFrom" [style.--c2]="b.colorTo" aria-hidden="true">
+                <i class="k1"></i>
+                <div class="bk3-f">
+                  <span class="bk3-t">{{ text.coverTag }}</span>
+                  <b>{{ b.title }}</b>
+                  <div class="bk3-p">
+                    <svg viewBox="0 0 100 60" preserveAspectRatio="none">
+                      <path d="M0 40Q25 22 50 36T100 28V60H0Z" fill="rgba(0,0,0,.2)" />
+                      <path d="M0 48Q30 34 60 46T100 40V60H0Z" fill="rgba(0,0,0,.32)" />
+                    </svg>
+                    <i class="bi bk3-ic" [class]="iconFor(b.area)"></i>
+                  </div>
+                  <em>{{ text.coverBrand }}</em>
+                </div>
+              </div>
+            }
+          </a>
+
+          <div class="spc-b">
+            <h2 (click)="viewEbook(b)">{{ b.title }}</h2>
+
+            <div class="spc-tg">
+              <span [style.background]="tagColor(b.area).bg" [style.color]="tagColor(b.area).text">{{ b.area }}</span>
+              <span class="b">{{ b.subArea }}</span>
+            </div>
+
+            <ul class="spc-m">
+              <li><i class="bi bi-file-earmark-text"></i>{{ text.pdfLabel }} <i class="dot">·</i> {{ b.fileSize }}</li>
+              <li><i class="bi bi-list-ul"></i>{{ b.pages }} {{ text.pagesLabel }}</li>
+              <li><i class="bi bi-calendar3"></i>{{ text.updatedLabel }} {{ b.updatedOn | date: 'MMM dd, yyyy' }}</li>
+            </ul>
+
+            <a class="spc-v" href="#" (click)="$event.preventDefault(); viewEbook(b)">
+              <i class="bi bi-eye"></i>{{ text.viewBtn }}
+            </a>
+
+            <button type="button" class="spc-d" (click)="downloadEbook(b)">
+              <i class="bi bi-download"></i>{{ text.downloadBtn }}
+            </button>
+          </div>
+        </li>
+      } @empty {
+        <li class="emp">
+          <b>{{ text.emptyTitle }}</b>
+          {{ text.emptyText }}<br />
+          <button type="button" class="lbtn p" (click)="resetFilters()">{{ text.emptyBtn }}</button>
+        </li>
+      }
+    }
+  </ul>
+
+  <!-- ===== Pagination (niche) ===== -->
+  <app-pagination
+    [totalItems]="filtered().length"
+    [pageSize]="pageSize()"
+    [currentPage]="currentPage()"
+    (pageChange)="onPageChange($event)"
+    (pageSizeChange)="onPageSizeChange($event)"
+  ></app-pagination>
+</section>

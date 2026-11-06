@@ -1,0 +1,172 @@
+<section class="fv">
+
+  <!-- ================= HEADER ================= -->
+  <header class="head">
+    <div>
+      <h1>My Favorites</h1>
+      <p>Everything you’ve hearted, in one place. Open a collection to manage it.</p>
+    </div>
+
+    <div class="head-r">
+      <div class="search">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          name="gkw"
+          [(ngModel)]="keyword"
+          (keyup.enter)="openSearch()"
+          placeholder="Search all your favorites..."
+          autocomplete="off"
+        />
+      </div>
+      <div class="total"><b>{{ items.length }}</b><span>items saved</span></div>
+    </div>
+  </header>
+
+  <!-- ================= BOARD ================= -->
+  <div class="board">
+
+    <!-- Closing soon -->
+    <section class="hero">
+      <div class="hero-head">
+        <span class="h-ico"><i class="bi bi-clock"></i></span>
+        <h2>Closing soon</h2>
+      </div>
+      <p class="hero-sub">Saved grants with the nearest deadlines.</p>
+
+      <div class="deadlines">
+        @for (g of closing; track g.id) {
+          <button type="button" class="dl" (click)="openItem(g)">
+            <span class="dbox">
+              <small>{{ g.deadline | date: 'MMM' }}</small>
+              <b>{{ g.deadline | date: 'd' }}</b>
+            </span>
+            <span class="dtxt">
+              <b>{{ g.title }}</b>
+              <small>{{ g.meta }}</small>
+            </span>
+            <span class="dchip" [ngClass]="chipClass(g.deadline!)">{{ daysText(g.deadline!) }}</span>
+          </button>
+        } @empty {
+          <p class="hero-empty">No upcoming deadlines in your favorites.</p>
+        }
+      </div>
+
+      <button type="button" class="hero-link" (click)="open('funding')">
+        View all saved grants <i class="bi bi-chevron-right"></i>
+      </button>
+    </section>
+
+    <!-- Collection cards -->
+    @for (c of collections; track c.kind) {
+      <article
+        class="fc"
+        [ngClass]="['k-' + c.kind, openKind === c.kind ? 'active' : '', count(c.kind) === 0 ? 'is-empty' : '']"
+        role="button"
+        tabindex="0"
+        (click)="count(c.kind) > 0 && open(c.kind)"
+        (keydown.enter)="count(c.kind) > 0 && open(c.kind)"
+      >
+        <div class="fc-top">
+          <span class="ico"><i class="bi" [ngClass]="c.icon"></i></span>
+          <h3>{{ c.label }}</h3>
+          <span class="num">{{ count(c.kind) }}</span>
+        </div>
+
+        @if (count(c.kind) > 0) {
+          @if (c.preview > 0) {
+            <ul class="peek">
+              @for (it of preview(c); track it.id) {
+                <li>{{ it.title }}</li>
+              }
+            </ul>
+          }
+
+          <div class="stack" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span class="front"><i class="bi" [ngClass]="c.icon"></i></span>
+          </div>
+
+          <span class="open">Open collection <i class="bi bi-chevron-right"></i></span>
+        } @else {
+          <p class="none">{{ c.emptyText ?? 'Nothing saved here yet.' }}</p>
+          <button type="button" class="open" (click)="browse(); $event.stopPropagation()">
+            {{ c.emptyCta ?? 'Browse' }} <i class="bi bi-chevron-right"></i>
+          </button>
+        }
+      </article>
+    }
+  </div>
+
+  <!-- ================= DRAWER ================= -->
+  @if (openKind) {
+    <div class="overlay" (click)="close()"></div>
+
+    <aside class="drawer" [ngClass]="'k-' + openKind" role="dialog" aria-modal="true" [attr.aria-label]="drawerTitle">
+      <header class="d-head">
+        <span class="ico"><i class="bi" [ngClass]="drawerIcon"></i></span>
+        <div>
+          <h2>{{ drawerTitle }}</h2>
+          <small>{{ drawerTotal }} items saved</small>
+        </div>
+        <button type="button" class="x-btn" (click)="close()" aria-label="Close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </header>
+
+      <div class="d-tools">
+        <div class="search">
+          <i class="bi bi-search"></i>
+          <input
+            type="text"
+            name="dkw"
+            [(ngModel)]="drawerKeyword"
+            placeholder="Search in this collection..."
+            autocomplete="off"
+          />
+        </div>
+        <span class="sel">
+          <select [(ngModel)]="drawerSort" name="dsort" aria-label="Sort">
+            @for (o of sortOptions; track o.key) {
+              <option [ngValue]="o.key">{{ o.label }}</option>
+            }
+          </select>
+          <i class="bi bi-chevron-down"></i>
+        </span>
+      </div>
+
+      <div class="d-list">
+        @for (it of drawerItems; track it.id) {
+          <article class="fi" [ngClass]="'k-' + it.kind">
+            <div class="thumb" [ngClass]="'tn-' + it.tone"><i class="bi" [ngClass]="it.icon"></i></div>
+
+            <div class="txt">
+              <small class="kind">{{ singleLabel(it) }}</small>
+              <h4 (click)="openItem(it)" tabindex="0" (keydown.enter)="openItem(it)">{{ it.title }}</h4>
+              <p>
+                {{ it.meta }}
+                @if (it.deadline) { · Due {{ it.deadline | date: 'MMM d, y' }} }
+              </p>
+            </div>
+
+            <div class="acts">
+              <button type="button" class="heart" (click)="unfavorite(it)" aria-label="Remove from favorites" title="Remove from favorites">
+                <i class="bi bi-heart-fill"></i>
+              </button>
+              <button type="button" class="arch" (click)="archive(it)" aria-label="Archive" title="Archive">
+                <i class="bi bi-archive"></i>
+              </button>
+            </div>
+          </article>
+        } @empty {
+          <div class="d-empty">
+            <i class="bi bi-heart"></i>
+            <h3>Nothing here</h3>
+            <p>No favorites match this view.</p>
+          </div>
+        }
+      </div>
+    </aside>
+  }
+</section>

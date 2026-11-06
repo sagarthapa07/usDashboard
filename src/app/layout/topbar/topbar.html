@@ -1,0 +1,83 @@
+<header class="topbar">
+  <!-- Burger button -->
+  <button class="burger" type="button" aria-label="Show or hide menu" (click)="onBurgerClick()">
+    <i class="bi bi-list"></i>
+  </button>
+
+  <!-- Brand logo: click par Dashboard khulega -->
+  <a
+    [attr.href]="homePath"
+    class="brand"
+    [class.show-brand]="isSidebarClosed"
+    aria-label="GrantsforUS home"
+    (click)="goTo($event, homePath)"
+  >
+    <span class="logo">G</span>
+    <span class="brand-name">
+      <b>GrantsforUS</b>
+      <small>Funding workspace</small>
+    </span>
+  </a>
+
+  <!-- Breadcrumb: Home › Account › Change Password -->
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a [attr.href]="homePath" (click)="goTo($event, homePath)">Home</a>
+    @for (c of crumbs; track $index; let last = $last) {
+      <i class="bi bi-chevron-right sep"></i>
+      <span class="crumb" [class.current]="last">{{ c }}</span>
+    }
+  </nav>
+
+  <!-- Search box -->
+  <div class="search-box">
+    <i class="bi bi-search"></i>
+    <input type="text" placeholder="Search grants, donors, or grant ID…" />
+    <kbd>⌘ K</kbd>
+  </div>
+
+  <!-- Help / Support -->
+  <div class="help">
+    <i class="bi bi-question-circle"></i>
+    <span>Help / Support</span>
+  </div>
+
+  <!-- Notification bell -->
+  <div class="bell">
+    <i class="bi bi-bell"></i>
+    <em *ngIf="notificationCount > 0">{{ notificationCount }}</em>
+  </div>
+
+  <!-- User profile + dropdown -->
+  <div class="profile" [class.open]="isUserMenuOpen">
+    <button class="user-btn" type="button" (click)="toggleUserMenu()">
+      <span class="avatar">{{ user.initials }}</span>
+      <span class="user-info">
+        <b>{{ user.name }}</b>
+        <small>{{ user.plan }}</small>
+      </span>
+      <i class="bi bi-chevron-down chevron"></i>
+    </button>
+
+    <div class="dropdown">
+      <div class="dropdown-head">
+        <span class="avatar">{{ user.initials }}</span>
+        <div>
+          <b>{{ user.name }}</b>
+          <small>{{ user.plan }}</small>
+        </div>
+      </div>
+
+      <a
+        *ngFor="let item of menuLinks"
+        [attr.href]="item.path"
+        [class.active]="isActive(item.path)"
+        [attr.aria-current]="isActive(item.path) ? 'page' : null"
+        (click)="goTo($event, item.path)"
+      >
+        {{ item.label }}
+      </a>
+
+      <a href="#" class="sign-out" (click)="onSignOut($event)">Sign out</a>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,189 @@
+<div
+  #root
+  class="vp"
+  tabindex="0"
+  [class.pl]="playing()"
+  [class.vp-pfs]="pfs()"
+  [class.vp-idle]="idle()"
+  [attr.aria-label]="'Video player: ' + videoTitle()"
+  (keydown)="onKey($event)"
+  (mousemove)="wake()"
+  (pointerdown)="onRootPointerDown($event)"
+>
+  <video
+    #vid
+    playsinline
+    preload="metadata"
+    [src]="src()"
+    (click)="onVideoClick()"
+    (dblclick)="onVideoDbl()"
+    (timeupdate)="sync()"
+    (progress)="sync()"
+    (durationchange)="sync()"
+    (loadedmetadata)="onMeta()"
+    (play)="onPlayState()"
+    (pause)="onPlayState()"
+    (ended)="onEnded()"
+    (volumechange)="onVolume()"
+    (ratechange)="onRate()"
+    (waiting)="loading.set(true)"
+    (canplay)="loading.set(false)"
+    (playing)="loading.set(false)"
+    (error)="onError()"
+  >
+    @for (c of captions(); track c.src) {
+      <track kind="subtitles" [label]="c.label" [attr.srclang]="c.lang" [src]="c.src" [default]="!!c.isDefault" />
+    }
+  </video>
+
+  <!-- bada play / replay button -->
+  <button type="button" class="vp-big" (click)="toggle()" [attr.aria-label]="ended() ? 'Replay' : 'Play'">
+    @if (ended()) {
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.6-5.9M4 4v5h5"/></svg>
+    } @else {
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    }
+  </button>
+
+  @if (loading() && !error()) {
+    <div class="vp-sp"></div>
+  }
+
+  @if (error()) {
+    <div class="vp-err">
+      <b>{{ errorTitle() }}</b>
+      <span>{{ errorText() }}</span>
+    </div>
+  }
+
+  @if (demoNote()) {
+    <div class="vp-tag">{{ demoNote() }}</div>
+  }
+
+  <div class="vp-ctl">
+    <!-- play / pause -->
+    <button type="button" class="vp-b" (click)="toggle()" [attr.aria-label]="playing() ? 'Pause' : 'Play'">
+      @if (ended()) {
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.6-5.9M4 4v5h5"/></svg>
+      } @else if (playing()) {
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+      } @else {
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      }
+    </button>
+
+    <span class="vp-t">{{ tf(current()) }} / {{ tf(duration()) }}</span>
+
+    <!-- seek bar -->
+    <div
+      class="vp-pr"
+      role="slider"
+      tabindex="0"
+      aria-label="Seek"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      [attr.aria-valuenow]="round(pct())"
+      [attr.aria-valuetext]="tf(current()) + ' of ' + tf(duration())"
+      (pointerdown)="onSeekDown($event)"
+      (pointermove)="onSeekMove($event)"
+      (pointerup)="onSeekUp()"
+      (pointercancel)="onSeekUp()"
+      (keydown)="onSeekKey($event)"
+    >
+      <div class="vp-bf" [style.width.%]="buffered()"></div>
+      <div class="vp-pg" [style.width.%]="pct()"></div>
+      <div class="vp-kn" [style.left.%]="pct()"></div>
+      <span class="vp-tp" [style.left.%]="hoverPct()">{{ hoverText() }}</span>
+    </div>
+
+    <!-- captions -->
+    <button
+      type="button"
+      class="vp-b"
+      [class.on]="ccIndex() >= 0"
+      [class.off]="!hasCC()"
+      [title]="hasCC() ? 'Captions (c)' : 'Captions not available'"
+      aria-label="Captions"
+      (click)="toggleCC()"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M10.5 10.2a2.2 2.2 0 1 0 0 3.6M17.5 10.2a2.2 2.2 0 1 0 0 3.6" stroke-linecap="round"/></svg>
+    </button>
+
+    <!-- volume -->
+    <div class="vp-vol">
+      <button type="button" class="vp-b" title="Mute (m)" aria-label="Mute" (click)="toggleMute()">
+        @switch (volLevel()) {
+          @case ('m') {
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 4V5L7 9z"/><path d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          }
+          @case ('l') {
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 4V5L7 9z"/><path d="M16 9a4 4 0 0 1 0 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          }
+          @default {
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 4V5L7 9z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          }
+        }
+      </button>
+      <input
+        class="vp-vr"
+        type="range"
+        min="0"
+        max="1"
+        step="0.05"
+        aria-label="Volume"
+        [value]="muted() ? 0 : volume()"
+        (input)="onVolInput($any($event.target).value)"
+      />
+    </div>
+
+    <!-- picture in picture -->
+    @if (pipOk) {
+      <button type="button" class="vp-b vp-pip" title="Picture in picture" aria-label="Picture in picture" (click)="togglePip()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><rect x="12" y="11" width="7" height="6" rx="1" fill="currentColor"/></svg>
+      </button>
+    }
+
+    <!-- settings -->
+    <div class="vp-sw">
+      <button type="button" class="vp-b" title="Settings" aria-label="Settings" (click)="toggleMenu()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg>
+      </button>
+
+      @if (menuOpen()) {
+        <div class="vp-menu">
+          <div class="vp-mh">Playback speed</div>
+          @for (r of rates; track r) {
+            <button type="button" class="vp-mo" [class.on]="rate() === r" (click)="setRate(r)">
+              {{ r === 1 ? 'Normal' : r + 'x' }}
+            </button>
+          }
+
+          @if (hasCC()) {
+            <div class="vp-mh">Captions</div>
+            <button type="button" class="vp-mo" [class.on]="ccIndex() < 0" (click)="setCC(-1)">Off</button>
+            @for (t of trackList(); track $index) {
+              <button type="button" class="vp-mo" [class.on]="ccIndex() === $index" (click)="setCC($index)">
+                {{ t.label }}
+              </button>
+            }
+          }
+        </div>
+      }
+    </div>
+
+    <!-- fullscreen -->
+    <button
+      type="button"
+      class="vp-b"
+      title="Full screen (f)"
+      [attr.aria-label]="isFull() ? 'Exit full screen' : 'Full screen'"
+      (click)="toggleFs()"
+    >
+      @if (isFull()) {
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>
+      } @else {
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      }
+    </button>
+  </div>
+</div>

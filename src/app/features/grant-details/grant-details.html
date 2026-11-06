@@ -1,0 +1,242 @@
+@if (detail; as d) {
+  <div class="gd-page">
+    <!-- ============ LEFT / MAIN COLUMN ============ -->
+    <div class="gd-main">
+      <!-- ---------- Hero card ---------- -->
+      <section class="gd-card gd-hero">
+        <div class="hero-img">
+          @if (d.image) {
+            <img [src]="d.image" alt="" />
+          } @else {
+            <div class="hero-art" aria-hidden="true">
+              @for (b of bars; track $index) {
+                <span [style.height.px]="b.h" [style.background]="b.c"></span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="hero-body">
+          <h1>{{ d.title }}</h1>
+          <p class="hero-intro">{{ d.intro }}</p>
+
+          <div class="meta">
+            <div>
+              <small>Post Date</small>
+              <b>{{ d.posted | date: 'MMMM d, y' }}</b>
+            </div>
+            <div>
+              <small>Grant Size</small>
+              <b>{{ d.grantSize }}</b>
+            </div>
+            <div>
+              <small>Deadline Date</small>
+              <b>{{ d.deadline ? (d.deadline | date: 'MMMM d, y') : 'Ongoing' }}</b>
+            </div>
+            <div>
+              <small>Grant Duration</small>
+              <b>{{ d.duration }}</b>
+            </div>
+            <div>
+              <small>Donor Name</small>
+              <b>{{ d.donor }}</b>
+            </div>
+            <div>
+              <small>Category</small>
+              <b>{{ d.category }}</b>
+            </div>
+          </div>
+        </div>
+      </section>
+
+  
+      <!-- ---------- Overview ---------- -->
+      <section class="gd-card gd-overview">
+        <h2>Overview</h2>
+
+        @for (b of d.overview; track $index) {
+          @switch (b.type) {
+            @case ('h') {
+              <h4>{{ b.text }}</h4>
+            }
+            @case ('sub') {
+              <h5>{{ b.text }}</h5>
+            }
+            @case ('ul') {
+              <ul>
+                @for (item of b.items ?? []; track $index) {
+                  <li>{{ item }}</li>
+                }
+              </ul>
+            }
+            @case ('link') {
+              <p>
+                {{ b.text }}
+                @if (b.url) {
+                  <a [href]="b.url" target="_blank" rel="noopener">{{ b.name }}</a>
+                } @else {
+                  {{ b.name }}
+                }
+                {{ b.after }}
+              </p>
+            }
+            @default {
+              <p>{{ b.text }}</p>
+            }
+          }
+        }
+      </section>
+
+      <!-- ---------- Related State-Based Donors ---------- -->
+      @if (d.relatedState.length) {
+        <section class="gd-card gd-rail">
+          <div class="rail-head">
+            <div>
+              <h2>Related State-Based Donors</h2>
+              <small>Similar grants available in your region</small>
+            </div>
+            <div class="rail-arrows">
+              <button type="button" aria-label="Previous" (click)="prev('state')">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <button type="button" aria-label="Next" (click)="next('state')">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="rail-grid" [style.--cols]="perPage">
+            @for (r of visible('state'); track r.id) {
+              <article class="rc" (click)="openRelated(r)">
+                <div class="rc-top tone-{{ r.tone }}">
+                  <i class="bi {{ r.icon }} rc-ico"></i>
+                  <span class="rc-label">{{ r.label }}</span>
+                </div>
+                <h3 class="rc-title">{{ r.title }}</h3>
+                <div class="rc-foot">
+                  <i class="bi bi-calendar3"></i>
+                  <span>Post Date: {{ r.posted | date: 'MMMM d, y' }}</span>
+                </div>
+              </article>
+            }
+          </div>
+
+          @if (pageCount('state') > 1) {
+            <div class="rail-dots">
+              @for (i of dots('state'); track i) {
+                <button
+                  type="button"
+                  [class.on]="page.state === i"
+                  [attr.aria-label]="'Page ' + (i + 1)"
+                  (click)="goTo('state', i)"
+                ></button>
+              }
+            </div>
+          }
+        </section>
+      }
+
+      <!-- ---------- Related Thematic Areas ---------- -->
+      @if (d.relatedThematic.length) {
+        <section class="gd-card gd-rail">
+          <div class="rail-head">
+            <div>
+              <h2>Related Thematic Areas Of Work/Interest Donors</h2>
+              <small>Grants matching similar focus areas and categories</small>
+            </div>
+            <div class="rail-arrows">
+              <button type="button" aria-label="Previous" (click)="prev('thematic')">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <button type="button" aria-label="Next" (click)="next('thematic')">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="rail-grid" [style.--cols]="perPage">
+            @for (r of visible('thematic'); track r.id) {
+              <article class="rc" (click)="openRelated(r)">
+                <div class="rc-top tone-{{ r.tone }}">
+                  <i class="bi {{ r.icon }} rc-ico"></i>
+                  <span class="rc-label">{{ r.label }}</span>
+                </div>
+                <h3 class="rc-title">{{ r.title }}</h3>
+                <div class="rc-foot">
+                  <i class="bi bi-calendar3"></i>
+                  <span>Post Date: {{ r.posted | date: 'MMMM d, y' }}</span>
+                </div>
+              </article>
+            }
+          </div>
+
+          @if (pageCount('thematic') > 1) {
+            <div class="rail-dots">
+              @for (i of dots('thematic'); track i) {
+                <button
+                  type="button"
+                  [class.on]="page.thematic === i"
+                  [attr.aria-label]="'Page ' + (i + 1)"
+                  (click)="goTo('thematic', i)"
+                ></button>
+              }
+            </div>
+          }
+        </section>
+      }
+    </div>
+
+    <!-- ============ RIGHT / SIDEBAR ============ -->
+    <aside class="gd-side">
+      <section class="gd-card side-card">
+        <h3>Focus Area(s) of Interest</h3>
+        <div class="chip-scroll">
+          @for (f of d.focusAreas; track f) {
+            <span class="chip-check"><i class="bi bi-check-circle-fill"></i>{{ f }}</span>
+          }
+        </div>
+      </section>
+
+      <section class="gd-card side-card">
+        <h3>Focus County(ies)</h3>
+        <div class="chip-row">
+          @for (c of d.counties; track c) {
+            <span class="chip">{{ c }}</span>
+          }
+        </div>
+      </section>
+
+      <section class="gd-card side-card">
+        <h3>Focus State(s)</h3>
+        <div class="chip-row">
+          @for (s of d.states; track s) {
+            <span class="chip">{{ s }}</span>
+          }
+        </div>
+      </section>
+
+      <section class="gd-card side-card">
+        <h3>Actions</h3>
+        <div class="actions">
+          <button type="button" class="act primary" (click)="visitWebsite()">
+            Visit Official Website
+          </button>
+          <button type="button" class="act" (click)="copyUrl()">
+            {{ copied ? 'Copied!' : 'Copy Grant URL' }}
+          </button>
+          <button type="button" class="act" (click)="setAlert()">Set Grant Alert</button>
+          <button type="button" class="act" (click)="toggleSave()">
+            {{ saved ? 'Saved' : 'Save Grant' }}
+          </button>
+        </div>
+      </section>
+    </aside>
+  </div>
+} @else {
+  <div class="gd-missing">
+    <i class="bi bi-inbox"></i>
+    <h2>Grant not found</h2>
+    <p>Ye grant ab available nahi hai ya link galat hai.</p>
+    <button type="button" class="act primary" (click)="goBack()">Back to Latest Grants</button>
+  </div>
+}

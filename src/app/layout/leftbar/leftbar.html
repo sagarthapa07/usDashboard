@@ -1,0 +1,111 @@
+<nav class="nav" [class.collapsed]="isCollapsed" [class.open]="isOpen">
+  <div class="nav-in">
+
+    <!-- Brand / Logo -->
+    <div class="brand" (click)="setActive('dash')">
+      <div class="logo">{{ brand.logo }}</div>
+      <div>
+        <b>{{ brand.name }}</b>
+        <small>{{ brand.tagline }}</small>
+      </div>
+    </div>
+
+    <div class="panels">
+
+      <!-- =====================================================
+           PANEL 1: MAIN MENU (data: mainMenu)
+           ===================================================== -->
+      <div class="panel" [class.cur]="currentPanel === 'root'" [class.prv]="isPrev('root')">
+
+        @for (entry of mainMenu; track $index) {
+
+          @if (entry.type === 'label') {
+            <!-- Section heading: Menu / My Workspace / Account -->
+            <div class="group-label" [class.first]="$first">{{ entry.label }}</div>
+
+          } @else if (entry.type === 'link') {
+            <!-- Normal link -->
+            <a href="#" class="item" [class.on]="activeKey === entry.key" (click)="onLink($event, entry.key)">
+              <i class="bi {{ entry.icon }} ico"></i>{{ entry.label }}
+            </a>
+
+          } @else {
+            <!-- Drill button: naya panel kholta hai -->
+            <button type="button" class="item" (click)="goTo(entry.panel)">
+              <i class="bi {{ entry.icon }} ico"></i>{{ entry.label }}
+              @if (entry.badge) {
+                <em class="badge">{{ entry.badge }}</em>
+              }
+              <i class="bi bi-chevron-right chev"></i>
+            </button>
+          }
+
+        }
+      </div>
+
+      <!-- =====================================================
+           BAAKI PANELS: Grants, Resources, Alerts, Profile (data: panels)
+           ===================================================== -->
+      @for (panel of panels; track panel.id) {
+        <div class="panel" [class.cur]="currentPanel === panel.id" [class.prv]="isPrev(panel.id)">
+
+          <!-- Back button -->
+          <button type="button" class="back-btn" (click)="goBack()">
+            <i class="bi bi-chevron-left"></i>Menu
+          </button>
+
+          <!-- Panel heading -->
+          <div class="panel-head">
+            <div class="panel-icon"><i class="bi {{ panel.icon }}"></i></div>
+            <div>
+              <b>{{ panel.title }}</b>
+              <small>{{ panel.subtitle }}</small>
+            </div>
+          </div>
+
+          <div class="panel-list">
+
+            <!-- Accordion groups -->
+            @for (group of panel.groups; track group.id) {
+              <div class="accordion" [class.open]="openGroup === group.id">
+                <button type="button" class="item acc-btn"
+                        [attr.aria-expanded]="openGroup === group.id"
+                        (click)="toggleGroup(group.id)">
+                  {{ group.label }}
+                  <i class="bi bi-chevron-down chev"></i>
+                </button>
+
+                <div class="acc-body">
+                  <div class="acc-inner">
+                    <div class="sub-list">
+                      @for (link of group.links; track link.key) {
+                        <a href="#" class="item" [class.on]="activeKey === link.key" (click)="onLink($event, link.key)">
+                          {{ link.label }}
+                        </a>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Normal links -->
+            @for (link of panel.links; track link.key) {
+              <a href="#" class="item" [class.on]="activeKey === link.key" (click)="onLink($event, link.key)">
+                {{ link.label }}
+              </a>
+            }
+
+          </div>
+        </div>
+      }
+
+    </div>
+
+    <!-- Need help button (hamesha neeche) -->
+    <a href="#" class="item help-btn" (click)="$event.preventDefault()">
+      <i class="bi {{ helpButton.icon }} ico"></i>{{ helpButton.label }}
+    </a>
+
+  </div>
+</nav>
