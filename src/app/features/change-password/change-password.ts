@@ -21,6 +21,12 @@ import {
 
 type ServerErr = { msg: string; val: string } | null;
 
+interface PasswordFieldDef {
+  key: PasswordFieldKey;
+  label: string;
+  autocomplete: string;
+} 
+
 
 @Component({
   selector: 'app-change-password',

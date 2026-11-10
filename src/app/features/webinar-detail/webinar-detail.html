@@ -1,0 +1,236 @@
+@if (loading()) {
+  <div class="wd-empty">{{ text.loading }}</div>
+} @else if (webinar(); as w) {
+  @let c = cat()!;
+  @let ct = content()!;
+  @let st = status();
+
+  <!-- Reading progress bar -->
+  <div class="wd-prog" aria-hidden="true">
+    <i [style.width.%]="progress()" [style]="themeVars()"></i>
+  </div>
+
+  <div class="wd-wrap" [style]="themeVars()">
+    <!-- =============== Hero =============== -->
+    <header class="wd-hero">
+      <i class="bi wd-ico" [class]="c.icon"></i>
+
+      <a class="wd-back" [routerLink]="listRoute">
+        <i class="bi bi-chevron-left"></i>{{ text.backBtn }}
+      </a>
+
+      <span class="wd-pill">{{ c.label }}</span>
+      <span class="wd-st" [class.r]="st === 'recorded'">{{ statusBadge() }}</span>
+
+      <h1 class="wd-h1" tabindex="-1">Webinar on topic: “{{ w.title }}”</h1>
+
+      <div class="wd-meta">
+        <span class="wd-by"><i class="wd-av">{{ trainerInitials() }}</i>{{ w.trainer.name }}</span>
+        <span><i class="bi bi-calendar3"></i>{{ text.postedLabel }} {{ w.postedOn | date: 'longDate' }}</span>
+        <span><i class="bi bi-clock"></i>{{ w.minutes }} min</span>
+        <span><i class="bi bi-globe2"></i>{{ text.online }}</span>
+      </div>
+    </header>
+
+    <div class="wd-grid">
+      <!-- =============== Main article =============== -->
+      <article class="wd-card wd-art" id="wd-body">
+        <p class="wd-lead">{{ ct.lead }}</p>
+
+        <div class="wd-facts">
+          <div class="wd-fact">
+            <small><i class="bi bi-calendar3"></i>{{ st === 'recorded' ? text.factRecorded : text.factDate }}</small>
+            <b>{{ dateFull(startMs()) }}</b>
+          </div>
+          <div class="wd-fact">
+            <small><i class="bi bi-clock"></i>{{ st === 'recorded' ? text.factLength : text.factTime }}</small>
+            <b>
+              @if (st === 'recorded') {
+                {{ w.minutes }} {{ text.minuteSession }}
+              } @else {
+                {{ timeOf(startMs()) }} – {{ timeOf(endMs()) }} GMT
+              }
+            </b>
+            @if (st !== 'recorded') {
+              <em>{{ text.yourTime }} {{ localTime(startMs()) }}</em>
+            }
+          </div>
+          <div class="wd-fact">
+            <small><i class="bi bi-globe2"></i>{{ text.factFormat }}</small>
+            <b>{{ st === 'recorded' ? text.formatRecorded : text.formatLive }}</b>
+          </div>
+        </div>
+
+        <p>{{ ct.body }}</p>
+
+        <h2 id="wd-s0">{{ text.aimTitle }}</h2>
+        <div class="wd-key"><p>{{ ct.aim }}</p></div>
+
+        <h2 id="wd-s1">{{ text.objectivesTitle }}</h2>
+        <ul class="wd-obj">
+          @for (o of ct.objectives; track $index) {
+            <li>{{ o }}</li>
+          }
+        </ul>
+
+        <h2 id="wd-s2">{{ text.subjectsTitle }}</h2>
+        <ul class="wd-sub">
+          @for (s of ct.subjects; track $index) {
+            <li>{{ s }}</li>
+          }
+        </ul>
+
+        <h2 id="wd-s3">{{ text.trainerTitle }}</h2>
+        <div class="wd-tr">
+          @if (w.trainer.photo) {
+            <img class="wd-photo" [src]="w.trainer.photo" [alt]="w.trainer.name" />
+          } @else {
+            <i class="wd-av">{{ trainerInitials() }}</i>
+          }
+          <div>
+            <h3>{{ w.trainer.name }}</h3>
+            <p class="rl">{{ w.trainer.role }}</p>
+            @for (p of w.trainer.bio; track $index) {
+              <p>{{ p }}</p>
+            }
+            <div class="wd-tg">
+              @for (t of w.trainer.tags; track t) {
+                <span>{{ t }}</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Before you join -->
+        <div class="wd-ckb" id="wd-ck">
+          <h3>{{ text.checklistTitle }}</h3>
+          <small>{{ readyLabel() }}</small>
+          @for (item of text.checklist; track $index) {
+            <label class="wd-ck">
+              <input type="checkbox" [checked]="checked()[$index]" (change)="toggleCheck($index)" />
+              <span>{{ item }}</span>
+            </label>
+          }
+        </div>
+
+        <!-- Bottom CTA -->
+        <div class="wd-cta">
+          <div>
+            <b>{{ st === 'recorded' ? text.ctaRecordedTitle : text.ctaUpcomingTitle }}</b>
+            <span>
+              @if (st === 'recorded') {
+                {{ text.ctaRecordedSub }}
+              } @else {
+                {{ dateFull(startMs()) }} · {{ timeOf(startMs()) }} GMT
+              }
+            </span>
+          </div>
+          <button type="button" class="wd-btn" (click)="onRegister()">{{ registerLabel() }}</button>
+        </div>
+
+        <!-- Newer / older -->
+        <nav class="wd-pn" aria-label="More webinars">
+          <button type="button" [disabled]="!newer()" (click)="goTo(newer())">
+            <small>{{ text.newer }}</small>
+            <b>{{ newer()?.title ?? text.atNewest }}</b>
+          </button>
+          <button type="button" class="r" [disabled]="!older()" (click)="goTo(older())">
+            <small>{{ text.older }}</small>
+            <b>{{ older()?.title ?? text.atOldest }}</b>
+          </button>
+        </nav>
+      </article>
+
+      <!-- =============== Sidebar =============== -->
+      <aside class="wd-side">
+        <section class="wd-card wd-box">
+          <h3>
+            {{ st === 'upcoming' ? text.startsIn : st === 'live' ? text.happeningNow : text.ended }}
+          </h3>
+
+          @if (st === 'upcoming') {
+            <div class="wd-cd">
+              <div><b>{{ countdown().d }}</b><small>{{ text.days }}</small></div>
+              <div><b>{{ countdown().h }}</b><small>{{ text.hrs }}</small></div>
+              <div><b>{{ countdown().m }}</b><small>{{ text.min }}</small></div>
+              <div><b>{{ countdown().s }}</b><small>{{ text.sec }}</small></div>
+            </div>
+          }
+
+          <p class="wd-when">
+            <b>{{ dateFull(startMs()) }}</b><br />
+            @if (st === 'recorded') {
+              {{ w.minutes }} minutes
+            } @else {
+              {{ timeOf(startMs()) }} – {{ timeOf(endMs()) }} GMT
+            }
+          </p>
+
+          <button
+            type="button"
+            class="wd-reg"
+            [class.d]="isRegistered() && st !== 'recorded'"
+            (click)="onRegister()"
+          >
+            {{ registerLabel() }}
+          </button>
+
+          <div class="wd-acts">
+            @if (st !== 'recorded') {
+              <a [href]="calendarUrl()" target="_blank" rel="noopener">
+                <i class="bi bi-calendar-plus"></i>{{ text.addCalendar }}
+              </a>
+            }
+            <button type="button" class="wd-fv" [class.on]="isFav()" [attr.aria-pressed]="isFav()" (click)="toggleFav()">
+              <i class="bi" [class]="isFav() ? 'bi-heart-fill' : 'bi-heart'"></i>
+              {{ isFav() ? text.favBtnOn : text.favBtn }}
+            </button>
+            <button type="button" (click)="copyLink()">
+              <i class="bi bi-link-45deg"></i>{{ text.copyBtn }}
+            </button>
+          </div>
+        </section>
+
+        <section class="wd-card wd-box wd-toc-box">
+          <h3>{{ text.tocTitle }}</h3>
+          <ul class="wd-toc">
+            @for (item of tocItems(); track item.id) {
+              <li>
+                <a
+                  [href]="'#' + item.id"
+                  [class.on]="activeSection() === item.id"
+                  (click)="scrollToSection(item.id, $event)"
+                  >{{ item.label }}</a
+                >
+              </li>
+            }
+          </ul>
+        </section>
+
+        <section class="wd-card wd-box">
+          <h3>{{ text.moreTitle }}</h3>
+          <div class="wd-rel">
+            @for (x of related(); track x.id) {
+              <button type="button" (click)="goTo(x)">
+                <span class="ico" [style.--rc]="catOf(x).color"><i class="bi" [class]="catOf(x).icon"></i></span>
+                <span>
+                  <b>{{ x.title }}</b>
+                  <small>{{ catOf(x).label }}, {{ x.minutes }} min</small>
+                </span>
+              </button>
+            }
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="wd-tt" [class.on]="toast()" role="status" aria-live="polite">{{ toast() }}</div>
+} @else {
+  <div class="wd-empty">
+    <h2>{{ text.notFoundTitle }}</h2>
+    <p>{{ text.notFoundText }}</p>
+    <a class="wd-back dark" [routerLink]="listRoute"><i class="bi bi-chevron-left"></i>{{ text.backBtn }}</a>
+  </div>
+}

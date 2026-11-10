@@ -897,3 +897,302 @@ export interface TrainingVideoPageText {
   videoErrorTitle: string;
   videoErrorText: string;
 }
+/* =====================================================
+   datatype.ts ke ekdum END me ye paste karo
+   ===================================================== */
+
+/* ===== ARTICLES ===== */
+export type ArticleCategoryKey =
+  | 'alerts'
+  | 'proposal'
+  | 'regional'
+  | 'thematic'
+  | 'tips'
+  | 'stories';
+
+// 'all' sirf filter chips ke liye hai (article ki apni category 'all' nahi hoti)
+export type ArticleFilterKey = 'all' | ArticleCategoryKey;
+
+export type ArticleSortKey = 'newest' | 'oldest' | 'az' | 'quick';
+
+export interface ArticleSortOption {
+  key: ArticleSortKey;
+  label: string;
+}
+
+export interface ArticleCategory {
+  key: ArticleFilterKey;
+  label: string; // chip / pill ka naam
+  icon: string; // bootstrap icon
+  color: string; // main colour (text, button, border)
+  tint: string; // halka background colour
+  from: string; // gradient start (thumbnail / hero)
+  to: string; // gradient end
+  blurb: string; // card ke neeche chhota description (article ka apna summary na ho to)
+}
+
+export interface ArticleSection {
+  heading: string;
+  text: string;
+}
+
+export interface ArticleAuthor {
+  name: string;
+  role: string;
+  bio: string;
+}
+
+// Article ka poora body (details page me dikhta hai)
+export interface ArticleBody {
+  lead: string; // bada pehla paragraph
+  keyTakeaways: string[];
+  sections: ArticleSection[];
+  quote: string; // pehle section ke baad ka quote
+  checklist: string[]; // "Before you apply" checkboxes
+}
+
+export interface Article {
+  id: number;
+  title: string;
+  category: ArticleCategoryKey;
+  publishedOn: string; // YYYY-MM-DD
+  readMinutes: number;
+  author: ArticleAuthor;
+  body: ArticleBody;
+  summary?: string; // nahi diya to category ka blurb dikhega
+  coverImg?: string; // real image ka url (hai to wahi dikhegi, nahi to gradient + icon)
+}
+
+export interface ArticleStat {
+  icon: string; // bootstrap icon
+  title: string; // {count} = total articles, {topics} = total topics
+  sub: string;
+  color: string;
+  tint: string;
+}
+
+export interface ArticlePageText {
+  title: string;
+  subtitle: string;
+  searchPlaceholder: string;
+  searchAria: string;
+  listTitle: string;
+  sortLabel: string;
+  showLabel: string;
+  perPageSuffix: string;
+  pageOf: string; // {p} aur {t} replace hote hain
+  featuredTag: string;
+  minRead: string;
+  emptyText: string;
+  favAria: string;
+  loading: string;
+  prevAria: string;
+  nextAria: string;
+  eyebrow: string;
+  resetBtn: string;
+  showingLabel: string;
+  ofLabel: string;
+  countSingular: string;
+  countPlural: string;
+}
+
+export interface ArticleDetailText {
+  backBtn: string;
+  keyTitle: string;
+  tocTitle: string;
+  actionsTitle: string;
+  favBtn: string;
+  favBtnOn: string;
+  copyBtn: string;
+  printBtn: string;
+  moreTitle: string;
+  grantsTitle: string;
+  grantsIntro: string;
+  closes: string;
+  checklistTitle: string;
+  readyText: string; // {n} aur {total} replace hote hain
+  allReady: string;
+  ctaTitle: string;
+  ctaText: string;
+  ctaBtn: string;
+  writtenBy: string;
+  newer: string;
+  older: string;
+  atNewest: string;
+  atOldest: string;
+  minRead: string;
+  linkCopied: string;
+  copyFailed: string;
+  loading: string;
+  notFoundTitle: string;
+  notFoundText: string;
+}
+/* =====================================================
+   datatype.ts ke ekdum END me ye paste karo
+   ===================================================== */
+
+/* ===== WEBINARS ===== */
+export type WebinarCategoryKey =
+  | 'leadership'
+  | 'donor'
+  | 'proposal'
+  | 'design'
+  | 'mne'
+  | 'storytelling';
+
+// 'all' sirf filter chips ke liye hai (webinar ki apni category 'all' nahi hoti)
+export type WebinarFilterKey = 'all' | WebinarCategoryKey;
+
+// Status filter (All / Upcoming / Recorded) + card ka status
+export type WebinarStatus = 'upcoming' | 'live' | 'recorded';
+export type WebinarStatusFilter = 'all' | 'upcoming' | 'recorded';
+
+export type WebinarSortKey = 'newest' | 'oldest' | 'az' | 'shortest';
+
+export interface WebinarSortOption {
+  key: WebinarSortKey;
+  label: string;
+}
+
+export interface WebinarStatusOption {
+  key: WebinarStatusFilter;
+  label: string;
+}
+
+export interface WebinarCategory {
+  key: WebinarFilterKey;
+  label: string; // chip / pill ka naam
+  icon: string; // bootstrap icon
+  color: string; // main colour (text, button, border)
+  tint: string; // halka background colour
+  from: string; // gradient start (thumbnail / hero)
+  to: string; // gradient end
+  blurb: string; // card ke neeche chhota description (webinar ka apna summary na ho to)
+}
+
+// Trainer / presenter
+export interface WebinarTrainer {
+  name: string;
+  role: string;
+  bio: string[]; // har item ek paragraph
+  tags: string[];
+  photo?: string; // real photo ka url (nahi hai to initials dikhenge)
+}
+
+// Category ke hisaab se default aim / objectives / subjects (webinar ka apna na ho to ye dikhega)
+export interface WebinarCategoryContent {
+  aim: string;
+  objectives: string[];
+  subjects: string[];
+}
+
+export interface Webinar {
+  id: number;
+  title: string;
+  category: WebinarCategoryKey;
+  date: string; // YYYY-MM-DD (webinar ki date)
+  postedOn: string; // YYYY-MM-DD (page par kab post hua)
+  minutes: number; // session ki length
+  trainer: WebinarTrainer;
+  summary?: string; // nahi diya to category ka blurb dikhega
+  lead?: string; // details page ka bada pehla paragraph
+  body?: string; // lead ke neeche ka paragraph
+  aim?: string;
+  objectives?: string[];
+  subjects?: string[];
+  videoUrl?: string; // recording ka link (YouTube / Vimeo / .mp4)
+  registerUrl?: string; // upcoming webinar ka registration link
+}
+
+export interface WebinarStat {
+  icon: string; // bootstrap icon
+  title: string; // {count} = total webinars, {upcoming} = upcoming ginti
+  sub: string;
+  color: string;
+  tint: string;
+}
+
+export interface WebinarPageText {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  searchPlaceholder: string;
+  searchAria: string;
+  listTitle: string;
+  statusAria: string;
+  sortLabel: string;
+  showLabel: string;
+  perPageSuffix: string;
+  showingLabel: string;
+  ofLabel: string;
+  countSingular: string;
+  countPlural: string;
+  pageOf: string;
+  tagNext: string;
+  tagFeatured: string;
+  upcomingBadge: string;
+  recordedBadge: string;
+  liveBadge: string;
+  minUnit: string;
+  emptyText: string;
+  loading: string;
+  prevAria: string;
+  nextAria: string;
+}
+
+export interface WebinarDetailText {
+  backBtn: string;
+  badgeUpcoming: string;
+  badgeLive: string;
+  badgeRecorded: string;
+  postedLabel: string;
+  online: string;
+  factDate: string;
+  factRecorded: string;
+  factTime: string;
+  factLength: string;
+  factFormat: string;
+  formatLive: string;
+  formatRecorded: string;
+  yourTime: string;
+  recordedOn: string;
+  minuteSession: string;
+  aimTitle: string;
+  objectivesTitle: string;
+  subjectsTitle: string;
+  trainerTitle: string;
+  checklistTitle: string;
+  checklist: string[];
+  readyText: string; // {n} aur {total} replace hote hain
+  allReady: string;
+  ctaUpcomingTitle: string;
+  ctaRecordedTitle: string;
+  ctaRecordedSub: string;
+  btnRegister: string;
+  btnRegistered: string;
+  btnWatch: string;
+  startsIn: string;
+  happeningNow: string;
+  ended: string;
+  days: string;
+  hrs: string;
+  min: string;
+  sec: string;
+  addCalendar: string;
+  favBtn: string;
+  favBtnOn: string;
+  copyBtn: string;
+  tocTitle: string;
+  moreTitle: string;
+  newer: string;
+  older: string;
+  atNewest: string;
+  atOldest: string;
+  linkCopied: string;
+  copyFailed: string;
+  registered: string;
+  unregistered: string;
+  loading: string;
+  notFoundTitle: string;
+  notFoundText: string;
+}

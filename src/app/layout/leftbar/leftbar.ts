@@ -9,6 +9,7 @@ import {
   MOCK_HELP_BUTTON,
   MOCK_MAIN_MENU,
   MOCK_PANELS,
+  ROUTE_PARENTS,
 } from '../../core/mock-data';
 
 @Component({
@@ -39,7 +40,7 @@ export class Leftbar {
   openGroup = ''; // kaunsa accordion khula hai
 
   constructor(private router: Router) {
-    // Page khulte hi URL se sahi link highlight karo
+    // Page khulte hi (refresh ke baad bhi) URL se sahi link highlight karo
     this.syncFromUrl(this.router.url);
 
     // Page badalne par bhi
@@ -95,16 +96,22 @@ export class Leftbar {
     this.activeKey = key;
 
     const path = MENU_ROUTES[key];
-    console.log('Clicked:', key, '→ path:', path);
-
     if (path) {
-      this.router.navigateByUrl(path).then((ok) => console.log('Navigation:', ok));
+      this.router.navigateByUrl(path);
     }
   }
 
+  /* Detail page (/article/3) ko uske parent list page (/articles) me badlo */
+  private resolvePath(path: string): string {
+    for (const [child, parent] of Object.entries(ROUTE_PARENTS)) {
+      if (path === child || path.startsWith(child + '/')) return parent;
+    }
+    return path;
+  }
 
   private syncFromUrl(url: string): void {
-    const path = url.split('?')[0].split('#')[0];
+    const rawPath = url.split('?')[0].split('#')[0];
+    const path = this.resolvePath(rawPath);
 
     // Is path ki saari keys (duplicate ho to bhi chalega)
     const keys = Object.keys(MENU_ROUTES).filter((k) => MENU_ROUTES[k] === path);

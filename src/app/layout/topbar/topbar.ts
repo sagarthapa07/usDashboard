@@ -12,6 +12,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { TopbarMenuLink, TopbarUser } from '../../../datatype';
+import { ARTICLE_ROUTE_DETAIL, WEBINAR_ROUTE_DETAIL } from '../../core/mock-data';
+
 import {
   MOCK_NOTIFICATION_COUNT,
   MOCK_PAGE_CRUMBS,
@@ -74,6 +76,17 @@ export class Topbar implements OnInit {
   private setCrumbs(url: string): void {
     const path = this.cleanPath(url);
     this.currentPath = path;
+
+    if (path === WEBINAR_ROUTE_DETAIL || path.startsWith(WEBINAR_ROUTE_DETAIL + '/')) {
+      this.crumbs = ['Resources', 'Webinars', 'Webinar details'];
+      return;
+    }
+
+    const base = ARTICLE_ROUTE_DETAIL;
+    if (path === base || path.startsWith(base + '/')) {
+      this.crumbs = ['Resources', 'Articles', 'Article details'];
+      return;
+    }
 
     let crumbs = MOCK_PAGE_CRUMBS[path];
     if (!crumbs && path.startsWith('/grant/')) {

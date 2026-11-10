@@ -1,1 +1,180 @@
-<p>articles works!</p>
+<!-- Thumbnail (gradient + icon, ya cover image) -->
+<ng-template #thumb let-a let-pill="pill">
+  <div class="kh-th" [class]="'kh-th v' + (a.id % 3)">
+    @if (a.coverImg) {
+      <img class="cover" [src]="a.coverImg" alt="" />
+    } @else {
+      <i class="bi ic" [class]="getCat(a.category).icon"></i>
+    }
+    @if (pill) {
+      <span class="kh-pill">{{ getCat(a.category).label }}</span>
+      <button
+        type="button"
+        class="fv-h"
+        [class.on]="isFav(a.id)"
+        [attr.aria-pressed]="isFav(a.id)"
+        [attr.aria-label]="text.favAria"
+        [title]="text.favAria"
+        (click)="toggleFav(a.id, $event)"
+      >
+        <i class="bi" [class]="isFav(a.id) ? 'bi-heart-fill' : 'bi-heart'"></i>
+      </button>
+    }
+  </div>
+</ng-template>
+
+<!-- Date + read time -->
+<ng-template #meta let-a>
+  <span><i class="bi bi-calendar3"></i>{{ a.publishedOn | date: 'longDate' }}</span>
+  <span><i class="bi bi-clock"></i>{{ a.readMinutes }} {{ text.minRead }}</span>
+</ng-template>
+
+<div class="lib-in">
+  <!-- ===== Hero: title + stats + chips + search ===== -->
+  <section class="kh-hero">
+    <div class="kh-top">
+      <div class="kh-txt">
+        <h1>{{ text.title }}</h1>
+        <p>{{ text.subtitle }}</p>
+        <div class="kh-st">
+          @for (s of statCards(); track s.sub) {
+            <div [style]="{ '--c': s.color, '--b': s.tint }">
+              <span class="ico"><i class="bi" [class]="s.icon"></i></span>
+              <span>
+                <b>{{ s.title }}</b>
+                <small>{{ s.sub }}</small>
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="art" aria-hidden="true">
+        <span class="blob"></span>
+        <span class="chip c1"><i class="bi bi-globe2"></i></span>
+        <span class="chip c2"><i class="bi bi-lightbulb"></i></span>
+        <span class="chip c3"><i class="bi bi-file-earmark-text"></i></span>
+        <i class="bi bi-flower2 main"></i>
+      </div>
+    </div>
+
+    <div class="kh-bar">
+      <div class="kh-ch" role="group" [attr.aria-label]="text.title">
+        @for (c of categories; track c.key) {
+          <button
+            type="button"
+            [class.on]="category() === c.key"
+            [attr.aria-pressed]="category() === c.key"
+            [style]="{ '--c': c.color, '--t': c.tint }"
+            (click)="setCategory(c.key)"
+          >
+            <i class="bi" [class]="c.icon"></i>{{ c.label }}
+          </button>
+        }
+      </div>
+
+      <div class="kh-s">
+        <i class="bi bi-search"></i>
+        <input
+          type="search"
+          autocomplete="off"
+          [placeholder]="text.searchPlaceholder"
+          [attr.aria-label]="text.searchAria"
+          [value]="query()"
+          (input)="onSearch($any($event.target).value)"
+        />
+      </div>
+    </div>
+  </section>
+
+  @if (loading()) {
+    <div class="kh-e">{{ text.loading }}</div>
+  } @else {
+    <!-- ===== Featured (1 bada + 2 chhote) ===== -->
+    @if (showFeatured()) {
+      @let big = featured()[0];
+      <div class="kh-ft">
+        <button type="button" class="kh-big" [style]="vars(getCat(big.category))" (click)="open(big)">
+          <div class="bg"><i class="bi" [class]="getCat(big.category).icon"></i></div>
+          <span class="kh-tag">{{ text.featuredTag }}</span>
+          <h2>{{ big.title }}</h2>
+          <p>{{ summaryOf(big) }}</p>
+          <div class="kh-mt">
+            <ng-container *ngTemplateOutlet="meta; context: { $implicit: big }"></ng-container>
+            <span class="go"><i class="bi bi-arrow-right"></i></span>
+          </div>
+        </button>
+
+        <div class="kh-side">
+          @for (a of featured().slice(1); track a.id) {
+            <button type="button" class="kh-row" [style]="vars(getCat(a.category))" (click)="open(a)">
+              <ng-container *ngTemplateOutlet="thumb; context: { $implicit: a, pill: false }"></ng-container>
+              <div class="kh-bd">
+                <span class="kh-pill">{{ getCat(a.category).label }}</span>
+                <h3>{{ a.title }}</h3>
+                <p>{{ summaryOf(a) }}</p>
+                <div class="kh-ft2">
+                  <ng-container *ngTemplateOutlet="meta; context: { $implicit: a }"></ng-container>
+                  <span class="kh-ar"><i class="bi bi-arrow-right"></i></span>
+                </div>
+              </div>
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ===== Listing head ===== -->
+    <div class="kh-hd">
+      <div>
+        <h2>{{ text.listTitle }}</h2>
+        <small aria-live="polite">
+          {{ text.showingLabel }} {{ shownCount() }} {{ text.ofLabel }} {{ filtered().length }}
+          {{ filtered().length === 1 ? text.countSingular : text.countPlural }}
+        </small>
+      </div>
+      <select [attr.aria-label]="text.sortLabel" (change)="onSort($any($event.target).value)">
+        @for (o of sortOptions; track o.key) {
+          <option [value]="o.key" [selected]="sort() === o.key">{{ o.label }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- ===== Grid ===== -->
+    <div class="kh-g">
+      @if (noResults()) {
+        <div class="kh-e">{{ text.emptyText }}</div>
+      } @else {
+        @for (a of pageItems(); track a.id) {
+          <article
+            class="kh-c"
+            tabindex="0"
+            role="link"
+            [style]="vars(getCat(a.category))"
+            (click)="open(a)"
+            (keydown.enter)="open(a)"
+          >
+            <ng-container *ngTemplateOutlet="thumb; context: { $implicit: a, pill: true }"></ng-container>
+            <div class="kh-bd">
+              <h3>{{ a.title }}</h3>
+              <p>{{ summaryOf(a) }}</p>
+              <div class="kh-ft2">
+                <ng-container *ngTemplateOutlet="meta; context: { $implicit: a }"></ng-container>
+                <span class="kh-ar"><i class="bi bi-arrow-right"></i></span>
+              </div>
+            </div>
+          </article>
+        }
+      }
+    </div>
+
+    <!-- ===== Pagination (shared) ===== -->
+    <app-pagination
+      [totalItems]="rest().length"
+      [pageSize]="pageSize()"
+      [currentPage]="currentPage()"
+      (pageChange)="goTo($event)"
+      (pageSizeChange)="onPageSize($event)"
+    ></app-pagination>
+  }
+</div>

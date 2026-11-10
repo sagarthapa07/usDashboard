@@ -24,6 +24,10 @@ import { ChangePassword } from './features/change-password/change-password';
 import { SampleProposals } from './features/sample-proposal/sample-proposal';
 import { Ebooks } from './features/e-books/e-books';
 import { TrainingVideos } from './features/training-videos/training-videos';
+import { Articles } from './features/articles/articles';
+import { ArticleDetail } from './features/article-detail/article-detail';
+import { Webinars } from './features/webinars/webinars';
+import { WebinarDetail } from './features/webinar-detail/webinar-detail';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -52,6 +56,10 @@ export const routes: Routes = [
   { path: 'sample-proposals', component: SampleProposals },
   { path: 'ebooks', component: Ebooks },
   { path: 'training-videos', component: TrainingVideos },
+  { path: 'articles', component: Articles },
+  { path: 'article/:id', component: ArticleDetail },
+  { path: 'webinars', component: Webinars },
+  { path: 'webinar/:id', component: WebinarDetail  },
 
   { path: '**', redirectTo: 'dashboard' },
 ];

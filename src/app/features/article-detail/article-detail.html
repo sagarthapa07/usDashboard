@@ -1,0 +1,155 @@
+@if (loading()) {
+  <div class="ad-state">{{ text.loading }}</div>
+} @else if (!article()) {
+  <div class="ad-state">
+    <h2>{{ text.notFoundTitle }}</h2>
+    <p>{{ text.notFoundText }}</p>
+    <a class="ad-btn solid" [routerLink]="listRoute">{{ text.backBtn }}</a>
+  </div>
+} @else {
+  @let a = article()!;
+  @let c = category()!;
+
+  <div class="ad-root" [style]="vars()">
+    <!-- reading progress -->
+    <div class="ad-prog"><i [style.width.%]="progress()"></i></div>
+
+    <div class="ad-wrap">
+      <!-- ===== Hero ===== -->
+      <header class="ad-hero">
+        <i class="bi ad-ico" [class]="c.icon"></i>
+        <a class="ad-back" [routerLink]="listRoute"
+          ><i class="bi bi-chevron-left"></i>{{ text.backBtn }}</a
+        >
+        <h1 class="ad-h1" tabindex="-1">{{ a.title }}</h1>
+        <div class="ad-meta">
+          <span><i class="bi bi-calendar3"></i>{{ a.publishedOn | date: 'longDate' }}</span>
+          <span><i class="bi bi-clock"></i>{{ a.readMinutes }} {{ text.minRead }}</span>
+        </div>
+      </header>
+
+      <div class="ad-grid">
+        <!-- ===== Article body ===== -->
+        <article class="ad-card ad-art" #body>
+          <p class="ad-lead">{{ a.body.lead }}</p>
+
+          <div class="ad-key">
+            <h3>{{ text.keyTitle }}</h3>
+            <ul>
+              @for (k of a.body.keyTakeaways; track k) {
+                <li>{{ k }}</li>
+              }
+            </ul>
+          </div>
+
+          @for (s of a.body.sections; track s.heading; let i = $index) {
+            <h2 [id]="'ad-s' + i">{{ s.heading }}</h2>
+            <p>{{ s.text }}</p>
+            @if (i === 0 && a.body.quote) {
+              <blockquote class="ad-q">{{ a.body.quote }}</blockquote>
+            }
+          }
+
+          @if (grants().length) {
+            <h2 id="ad-grants">{{ text.grantsTitle }}</h2>
+            <p>{{ text.grantsIntro }}</p>
+            <div class="ad-sp">
+              @for (g of grants(); track g.id) {
+                <div class="ad-g">
+                  <b>{{ g.amount }}</b>
+                  <strong>{{ g.title }}</strong>
+                  <span>{{ g.donor }}</span>
+                  @if (g.deadline) {
+                    <span>{{ text.closes }} {{ g.deadline | date: 'MMM d' }}</span>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          <div class="ad-ckb" id="ad-ck">
+            <h3>{{ text.checklistTitle }}</h3>
+            <small>{{ readyText() }}</small>
+            @for (item of a.body.checklist; track item; let i = $index) {
+              <label class="ad-ck">
+                <input
+                  type="checkbox"
+                  [checked]="checks()[i]"
+                  (change)="toggleCheck(i, $any($event.target).checked)"
+                />
+                <span>{{ item }}</span>
+              </label>
+            }
+          </div>
+
+          <div class="ad-cta">
+            <div>
+              <b>{{ text.ctaTitle }}</b>
+              <span>{{ text.ctaText }}</span>
+            </div>
+            <a class="ad-btn" [routerLink]="searchRoute">{{ text.ctaBtn }}</a>
+          </div>
+        </article>
+
+        <!-- ===== Right side ===== -->
+        <aside class="ad-side">
+          <section class="ad-card ad-box ad-toc-box">
+            <h3>{{ text.tocTitle }}</h3>
+            <ul class="ad-toc">
+              @for (t of toc(); track t.id) {
+                <li>
+                  <a
+                    [href]="'#' + t.id"
+                    [class.on]="activeId() === t.id"
+                    (click)="goToSection(t.id, $event)"
+                    >{{ t.label }}</a
+                  >
+                </li>
+              }
+            </ul>
+          </section>
+
+          <section class="ad-card ad-box">
+            <h3>{{ text.actionsTitle }}</h3>
+            <div class="ad-acts">
+              <button
+                type="button"
+                [class.on]="isFav()"
+                [attr.aria-pressed]="isFav()"
+                (click)="toggleFav()"
+              >
+                <i class="bi" [class]="isFav() ? 'bi-heart-fill' : 'bi-heart'"></i
+                >{{ isFav() ? text.favBtnOn : text.favBtn }}
+              </button>
+              <button type="button" (click)="copyLink()">
+                <i class="bi bi-link-45deg"></i>{{ text.copyBtn }}
+              </button>
+              <button type="button" (click)="print()">
+                <i class="bi bi-printer"></i>{{ text.printBtn }}
+              </button>
+            </div>
+          </section>
+
+          <section class="ad-card ad-box">
+            <h3>{{ text.moreTitle }}</h3>
+            <div class="ad-rel">
+              @for (r of related(); track r.id) {
+                <button type="button" (click)="openArticle(r)">
+                  <i [style.background]="catOf(r).color"
+                    ><i class="bi" [class]="catOf(r).icon"></i
+                  ></i>
+                  <span>
+                    <b>{{ r.title }}</b>
+                    <small>{{ catOf(r).label }}, {{ r.readMinutes }} {{ text.minRead }}</small>
+                  </span>
+                </button>
+              }
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+
+    <div class="ad-tt" [class.on]="toast()">{{ toast() }}</div>
+  </div>
+}

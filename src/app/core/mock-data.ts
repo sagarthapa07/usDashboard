@@ -66,6 +66,26 @@ import {
   TrainingVideoAttachment,
   TrainingVideoCategory,
   TrainingVideoSortOption,
+  ArticleCategory,
+  ArticleSortOption,
+  ArticleStat,
+  ArticlePageText,
+  ArticleDetailText,
+  ArticleAuthor,
+  ArticleCategoryKey,
+  ArticleBody,
+  Article,
+  Webinar,
+  WebinarStatus,
+  WebinarTrainer,
+  WebinarCategoryKey,
+  WebinarCategoryContent,
+  WebinarDetailText,
+  WebinarPageText,
+  WebinarStat,
+  WebinarCategory,
+  WebinarStatusOption,
+  WebinarSortOption,
 } from '../../datatype';
 import { SampleProposals } from '../features/sample-proposal/sample-proposal';
 
@@ -988,6 +1008,8 @@ export const MENU_ROUTES: Record<string, string> = {
   pw: '/change-password',
   eb: '/ebooks',
   tv: '/training-videos',
+  art: '/articles',
+  web: '/webinars',
 };
 
 // Topbar me dikhne wala page ka naam (URL => title)
@@ -1013,6 +1035,10 @@ export const MOCK_PAGE_TITLES: Record<string, string> = {
   '/sample-proposals': 'Sample Proposals',
   '/ebooks': 'EBooks',
   '/training-videos': 'Training Videos',
+  '/articles': 'Articles',
+  '/article': 'Article',
+  '/webinars': 'Webinars',
+  '/webinar': 'Webinar',
 };
 
 /* =====================================================
@@ -1043,6 +1069,10 @@ export const MOCK_PAGE_CRUMBS: Record<string, string[]> = {
   '/sample-proposals': ['Resources', 'Sample Proposals'],
   '/ebooks': ['Resources', 'EBooks'],
   '/training-videos': ['Resources', 'Training Videos'],
+  '/articles': ['Resources', 'Articles'],
+  '/article': ['Resources', 'Articles', 'Article'],
+  '/webinars': ['Resources', 'Webinars'],
+  '/webinar': ['Resources', 'Webinars', 'Webinar'],
 };
 
 /* =====================================================
@@ -6071,3 +6101,1035 @@ export const MOCK_TRAINING_VIDEOS: TrainingVideo[] = [
   tv(22, 'Planning an Annual Fundraising Calendar', TVC.fund, TVP.cheryl, 50),
   tv(23, 'Remote Team Management for NGOs', TVC.ngo, TVP.cheryl, 43),
 ];
+/* =====================================================
+   mock-data.ts ke ekdum END me ye paste karo
+   Imports me add karo:
+   Article, ArticleAuthor, ArticleBody, ArticleCategory, ArticleCategoryKey,
+   ArticleDetailText, ArticlePageText, ArticleSortOption, ArticleStat
+   (fromToday upar already bana hua hai)
+   ===================================================== */
+
+/* =====================================================
+   34. ARTICLES page ka data
+   ===================================================== */
+export const ARTICLE_DEFAULT_PAGE_SIZE = 10;
+export const ARTICLE_FEATURED_COUNT = 3; // 1 bada + 2 chhote card (sirf "All" + "Latest first" me)
+
+// Card / details page ka route (details = /article/:id)
+export const ARTICLE_ROUTE_DETAIL = '/article';
+export const ARTICLE_ROUTE_LIST = '/articles';
+export const ARTICLE_ROUTE_SEARCH = '/advanced-search';
+export const ROUTE_PARENTS: Record<string, string> = {
+  [ARTICLE_ROUTE_DETAIL]: ARTICLE_ROUTE_LIST,
+};
+
+export const ARTICLE_SORT_OPTIONS: ArticleSortOption[] = [
+  { key: 'newest', label: 'Latest first' },
+  { key: 'oldest', label: 'Oldest first' },
+  { key: 'az', label: 'Title A–Z' },
+  { key: 'quick', label: 'Quickest read' },
+];
+
+// Naya topic chahiye? Bas yahan ek object add karo (aur datatype me ArticleCategoryKey me naam)
+export const ARTICLE_CATEGORIES: ArticleCategory[] = [
+  {
+    key: 'all',
+    label: 'All articles',
+    icon: 'bi-globe2',
+    color: '#2a5b9d',
+    tint: '#e8f0fa',
+    from: '#3b82c4',
+    to: '#1f4f8b',
+    blurb: '',
+  },
+  {
+    key: 'alerts',
+    label: 'Grant alerts',
+    icon: 'bi-bell',
+    color: '#2a5b9d',
+    tint: '#e8f0fa',
+    from: '#3b82c4',
+    to: '#1f4f8b',
+    blurb:
+      'Fresh calls for applications are now open, with eligibility, award sizes and deadlines summarised in one place.',
+  },
+  {
+    key: 'proposal',
+    label: 'Proposal writing',
+    icon: 'bi-file-earmark-text',
+    color: '#15803d',
+    tint: '#e6f4ea',
+    from: '#22a37f',
+    to: '#0f6f55',
+    blurb:
+      'A practical walkthrough with templates and examples to help you structure a stronger, funder-ready proposal.',
+  },
+  {
+    key: 'regional',
+    label: 'Regional focus',
+    icon: 'bi-geo-alt',
+    color: '#7c3aed',
+    tint: '#efe9fb',
+    from: '#8b5cc9',
+    to: '#5b2f9a',
+    blurb:
+      'A curated look at donors funding projects in this region, including what they prioritise and how to apply.',
+  },
+  {
+    key: 'thematic',
+    label: 'Thematic funds',
+    icon: 'bi-flower1',
+    color: '#c2410c',
+    tint: '#fdeee3',
+    from: '#e08a3c',
+    to: '#b4570f',
+    blurb:
+      'Explore active programmes for this theme, from small seed grants to multi-year institutional funding.',
+  },
+  {
+    key: 'tips',
+    label: 'Tips & guides',
+    icon: 'bi-lightbulb',
+    color: '#a16207',
+    tint: '#fdf3d6',
+    from: '#e0a825',
+    to: '#b27a0c',
+    blurb:
+      'Simple, tested advice from our team to help you avoid common mistakes and work more confidently.',
+  },
+  {
+    key: 'stories',
+    label: 'Success stories',
+    icon: 'bi-star',
+    color: '#be185d',
+    tint: '#fce7f1',
+    from: '#d9669a',
+    to: '#9c2f65',
+    blurb:
+      'Read how organisations like yours secured funding, and what they would do differently next time.',
+  },
+];
+
+// Hero ke neeche ke 3 stats. {count} = articles ki ginti, {topics} = topics ki ginti
+export const ARTICLE_STATS: ArticleStat[] = [
+  {
+    icon: 'bi-file-earmark-text',
+    title: '{count} Articles',
+    sub: 'Guides, news and stories',
+    color: '#2a5b9d',
+    tint: '#e8f0fa',
+  },
+  {
+    icon: 'bi-flower1',
+    title: '{topics} Topics',
+    sub: 'From grants to success stories',
+    color: '#15803d',
+    tint: '#e6f4ea',
+  },
+  {
+    icon: 'bi-bell',
+    title: 'Updated weekly',
+    sub: 'New articles every week',
+    color: '#c2410c',
+    tint: '#fdeee3',
+  },
+];
+
+export const ARTICLE_PAGE_TEXT: ArticlePageText = {
+  eyebrow: 'RESOURCES',
+  resetBtn: 'Reset',
+  showingLabel: 'Showing',
+  ofLabel: 'of',
+  countSingular: 'article',
+  countPlural: 'articles',
+  title: 'Articles',
+  subtitle:
+    'Insights, guides and updates to help you find funding, build capacity and create greater impact.',
+  searchPlaceholder: 'Search articles, topics, keywords...',
+  searchAria: 'Search articles',
+  listTitle: 'Latest Articles',
+  sortLabel: 'Sort by',
+  showLabel: 'Show',
+  perPageSuffix: 'articles per page',
+  pageOf: 'Page {p} of {t}',
+  featuredTag: 'Featured',
+  minRead: 'min read',
+  emptyText: 'No articles match your search. Try another keyword or topic.',
+  favAria: 'Add to favorites',
+  loading: 'Loading articles...',
+  prevAria: 'Previous page',
+  nextAria: 'Next page',
+};
+
+export const ARTICLE_DETAIL_TEXT: ArticleDetailText = {
+  backBtn: 'All articles',
+  keyTitle: 'Key takeaways',
+  tocTitle: 'In this article',
+  actionsTitle: 'Save and share',
+  favBtn: 'Add to favorites',
+  favBtnOn: 'Saved to favorites',
+  copyBtn: 'Copy link',
+  printBtn: 'Print or save as PDF',
+  moreTitle: 'More to read',
+  grantsTitle: 'Grants worth a look',
+  grantsIntro:
+    'A few open calls related to this topic. Check each guideline before you plan your application.',
+  closes: 'Closes',
+  checklistTitle: 'Before you apply',
+  readyText: '{n} of {total} ready',
+  allReady: 'All done, you are ready to apply',
+  ctaTitle: 'Find grants that match your work',
+  ctaText: 'Filter thousands of opportunities by issue area, location and deadline.',
+  ctaBtn: 'Open Advanced Search',
+  writtenBy: 'Written by',
+  newer: 'Newer article',
+  older: 'Older article',
+  atNewest: 'You are at the newest',
+  atOldest: 'You are at the oldest',
+  minRead: 'min read',
+  linkCopied: 'Link copied',
+  copyFailed: 'Could not copy the link',
+  loading: 'Loading article...',
+  notFoundTitle: 'Article not found',
+  notFoundText: 'This article may have been moved or removed.',
+};
+
+export const ARTICLE_AUTHORS: ArticleAuthor[] = [
+  {
+    name: 'Priya Nair',
+    role: 'Grants Research Editor',
+    bio: 'Priya tracks new funding calls across 40 countries and writes about practical ways small teams can compete for them.',
+  },
+  {
+    name: 'Daniel Okafor',
+    role: 'Senior Funding Analyst',
+    bio: 'Daniel has reviewed more than 2,000 applications and now helps organisations understand what funders actually score.',
+  },
+  {
+    name: 'Maya Lindqvist',
+    role: 'Proposal Coach',
+    bio: 'Maya has coached over 150 nonprofits through their first major proposal, from concept note to final budget.',
+  },
+];
+
+// Har category ka default article body. Kisi article ka apna body chahiye to mkArticle ke baad override kar do
+// (Real app me ye poora body API se aayega)
+export const ARTICLE_BODIES: Record<ArticleCategoryKey, ArticleBody> = {
+  alerts: {
+    lead: 'Fresh calls for applications open every week. Here is how to read them quickly, decide what deserves your time and keep your pipeline moving.',
+    keyTakeaways: [
+      'Check eligibility before anything else',
+      'Work backwards from the deadline',
+      'Keep a shortlist of three to five calls',
+    ],
+    sections: [
+      {
+        heading: 'What is open right now',
+        text: 'Most calls share the same core details: who can apply, the award range and the closing date. Scan those three first and set everything else aside until a call passes the test.',
+      },
+      {
+        heading: 'How to judge fit in five minutes',
+        text: 'Match the funder’s stated priorities to one programme you already run. If you have to stretch your work to fit, the call is probably not for you.',
+      },
+      {
+        heading: 'Build a calm application calendar',
+        text: 'Add every deadline to a shared calendar two weeks early. That buffer is where letters of support, budgets and final reviews get done.',
+      },
+    ],
+    quote: 'A good call is one you can answer with work you already do.',
+    checklist: [
+      'Eligibility confirmed in writing',
+      'Award size fits your budget',
+      'Deadline added with a two-week buffer',
+      'Two people have read the guidelines',
+    ],
+  },
+  proposal: {
+    lead: 'A strong proposal is easy to score. This guide shows how to structure each section so reviewers find what they need without hunting for it.',
+    keyTakeaways: [
+      'Answer the funder’s question, not yours',
+      'Make the budget tell the same story',
+      'Use plain language throughout',
+    ],
+    sections: [
+      {
+        heading: 'Start with the need',
+        text: 'Open with one clear problem, who it affects and the evidence that it is real. Reviewers read dozens of proposals, so the need should be understood in the first paragraph.',
+      },
+      {
+        heading: 'Show a simple path to results',
+        text: 'Link every activity to an outcome and every outcome to a way of measuring it. A short logic model often does this better than three pages of text.',
+      },
+      {
+        heading: 'Close the loop in the budget',
+        text: 'Each major cost should map to an activity you described. When the narrative and budget match, reviewers trust both.',
+      },
+    ],
+    quote:
+      'If a reviewer can summarise your proposal in one sentence, you have already won half the argument.',
+    checklist: [
+      'Need statement backed by data',
+      'Every activity linked to an outcome',
+      'Budget matches the narrative',
+      'Final read for plain language',
+    ],
+  },
+  regional: {
+    lead: 'Funding rarely follows borders by accident. Knowing what donors in a region prioritise helps you apply where your work is genuinely a fit.',
+    keyTakeaways: [
+      'Regional donors have distinct priorities',
+      'Local partners strengthen an application',
+      'Check residency and registration rules early',
+    ],
+    sections: [
+      {
+        heading: 'What donors in this region fund',
+        text: 'Programmes tend to cluster around a few themes each year. Read recent awards to see which themes are active before you draft anything.',
+      },
+      {
+        heading: 'Why local partnerships matter',
+        text: 'Many regional funders favour organisations with a trusted local presence. A named partner and a short letter of support can lift a good proposal.',
+      },
+      {
+        heading: 'Rules that catch applicants out',
+        text: 'Registration status, in-country operating history and reporting languages vary widely. Confirm them first so you do not lose weeks on an ineligible call.',
+      },
+    ],
+    quote:
+      'The best regional applications sound like they were written by someone who lives there.',
+    checklist: [
+      'Registration status confirmed',
+      'Local partner identified',
+      'Recent awards reviewed',
+      'Reporting language checked',
+    ],
+  },
+  thematic: {
+    lead: 'Thematic funds back one cause for several years. If your work sits inside that cause, they can be the most stable income you apply for.',
+    keyTakeaways: [
+      'Thematic funds are multi-year by design',
+      'Fit to the theme beats fit to the funder',
+      'Smaller seed grants can open the door',
+    ],
+    sections: [
+      {
+        heading: 'How thematic funds differ',
+        text: 'Instead of a general mission, these funds commit to a single issue and publish a strategy for it. Your proposal should quote that strategy back in your own words.',
+      },
+      {
+        heading: 'Start small to build a track record',
+        text: 'Many funds run seed grants alongside larger awards. A well-reported small grant is the strongest case for a bigger one next round.',
+      },
+      {
+        heading: 'Plan for reporting from day one',
+        text: 'Multi-year funding comes with learning questions and interim reports. Decide how you will collect the evidence before the first month ends.',
+      },
+    ],
+    quote: 'Fit to the theme matters more than the size of your organisation.',
+    checklist: [
+      'Fund strategy read in full',
+      'Project mapped to the theme',
+      'Seed grant option checked',
+      'Reporting plan drafted',
+    ],
+  },
+  tips: {
+    lead: 'Most rejected applications fail for simple reasons. These tested habits from our team help you avoid them and apply with more confidence.',
+    keyTakeaways: [
+      'Read the guidelines twice, then once more',
+      'Ask the funder a question early',
+      'Leave time for a fresh pair of eyes',
+    ],
+    sections: [
+      {
+        heading: 'Read like a reviewer',
+        text: 'Print the scoring criteria and mark where your draft answers each one. Gaps show up quickly when you do this before submitting, not after.',
+      },
+      {
+        heading: 'Talk to the programme officer',
+        text: 'A short, specific email can save you from applying to the wrong call. Most officers are glad to confirm fit in a sentence or two.',
+      },
+      {
+        heading: 'Build in a review day',
+        text: 'Finish the draft three days early and ask someone outside your team to read it. If they cannot explain your project back to you, rewrite that part.',
+      },
+    ],
+    quote: 'Clarity is not decoration. It is the reason a reviewer keeps reading.',
+    checklist: [
+      'Scoring criteria mapped to draft',
+      'Question sent to programme officer',
+      'Outside reader booked',
+      'Attachments checked against the list',
+    ],
+  },
+  stories: {
+    lead: 'Behind every funded project is a team that learned something along the way. Here is what they did, and what they would change next time.',
+    keyTakeaways: [
+      'Funding came from preparation, not luck',
+      'Relationships mattered more than the first draft',
+      'Every rejection taught the team something',
+    ],
+    sections: [
+      {
+        heading: 'Where the journey started',
+        text: 'The team began with a small, well-documented pilot rather than a big idea. That evidence became the centre of every later application.',
+      },
+      {
+        heading: 'The turning point',
+        text: 'A conversation with a programme officer reshaped the proposal. Listening for what the funder valued helped them reframe the same work.',
+      },
+      {
+        heading: 'What they would do differently',
+        text: 'They would start building relationships a year earlier and keep a simple record of results from the very first month.',
+      },
+    ],
+    quote: 'We did not need a better idea. We needed better proof of the one we had.',
+    checklist: [
+      'Pilot results written up',
+      'One funder conversation booked',
+      'Results tracked monthly',
+      'Lessons shared with the team',
+    ],
+  },
+};
+
+// Chhota helper: author aur body category se apne aap lag jaate hain
+const mkArticle = (
+  id: number,
+  title: string,
+  category: ArticleCategoryKey,
+  daysAgo: number,
+  extra: Partial<Article> = {},
+): Article => ({
+  id,
+  title,
+  category,
+  publishedOn: fromToday(-daysAgo),
+  readMinutes: 3 + (id % 5),
+  author: ARTICLE_AUTHORS[id % ARTICLE_AUTHORS.length],
+  body: ARTICLE_BODIES[category],
+  ...extra,
+});
+
+// Real app me ye list API se aayegi (api.ts me getArticles())
+// Cover image chahiye to coverImg, apna summary chahiye to summary, apna body chahiye to body daalo
+export const MOCK_ARTICLES: Article[] = [
+  mkArticle(1, 'Master Proposal Template for Youth Projects', 'proposal', 3),
+  mkArticle(2, "Unlock July's Golden Window: 200+ Grants Up for Grabs", 'alerts', 8),
+  mkArticle(3, 'Belgium-Focused Grants: New Calls for Applications', 'regional', 12),
+  mkArticle(4, 'Netherlands-Focused Grants: New Calls for Applications', 'regional', 12),
+  mkArticle(5, 'Exclusive Funding Opportunities for Central Asia', 'regional', 13),
+  mkArticle(6, 'Global Grants for Climate Change Mitigation & Adaptation', 'thematic', 14),
+  mkArticle(7, 'Support for Humanitarian Projects: Apply Now', 'thematic', 15),
+  mkArticle(8, "Up to $50,000 in Grants for Women's Empowerment", 'thematic', 16),
+  mkArticle(9, 'Opportunities for Artists Addressing Social Challenges', 'thematic', 19),
+  mkArticle(10, 'Startup & Business Opportunities for South Africa', 'regional', 19),
+  mkArticle(11, 'How to Write a Winning Budget Narrative', 'proposal', 23),
+  mkArticle(12, 'Ten Mistakes That Sink Grant Applications', 'tips', 26),
+  mkArticle(13, 'Education Grants Closing This Month', 'alerts', 29),
+  mkArticle(14, 'Health Funding for Community Clinics', 'thematic', 33),
+  mkArticle(15, 'Building a Logic Model Funders Trust', 'tips', 36),
+  mkArticle(16, 'New Calls for Applications in East Africa', 'regional', 40),
+  mkArticle(17, 'Digital Inclusion Grants for Rural Communities', 'thematic', 44),
+  mkArticle(18, 'Weekly Roundup: 85 New Grants Added', 'alerts', 47),
+  mkArticle(19, 'Writing a Compelling Statement of Need', 'proposal', 51),
+  mkArticle(20, 'Funding Opportunities for Latin America', 'regional', 55),
+  mkArticle(21, 'How a Small NGO Won Its First $100,000 Grant', 'stories', 60),
+  mkArticle(22, "From Pilot to Scale: A Youth Program's Funding Journey", 'stories', 66),
+];
+/* =====================================================
+   mock-data.ts ke ekdum END me ye paste karo
+
+   Imports me ye types add karo (datatype se):
+   Webinar, WebinarCategory, WebinarCategoryContent, WebinarCategoryKey,
+   WebinarDetailText, WebinarPageText, WebinarSortOption, WebinarStat,
+   WebinarStatus, WebinarStatusOption, WebinarTrainer
+   ===================================================== */
+
+/* =====================================================
+   35. WEBINARS page ka data
+   ===================================================== */
+export const WEBINAR_DEFAULT_PAGE_SIZE = 8;
+export const WEBINAR_PAGE_SIZES = [4, 8, 12];
+export const WEBINAR_FEATURED_COUNT = 3; // 1 bada + 2 chhote card (sirf "All" + "Latest first" me)
+
+// Webinar ka session UTC me kis ghante par shuru hota hai (details page ka countdown isi se chalta hai)
+export const WEBINAR_START_HOUR_UTC = 11;
+
+// Routes (details = /webinar/:id)
+export const WEBINAR_ROUTE_LIST = '/webinars';
+export const WEBINAR_ROUTE_DETAIL = '/webinar';
+export const WEBINAR_ROUTE_VIDEOS = '/training-videos'; // recording yahin milti hai
+
+export const WEBINAR_SORT_OPTIONS: WebinarSortOption[] = [
+  { key: 'newest', label: 'Latest first' },
+  { key: 'oldest', label: 'Oldest first' },
+  { key: 'az', label: 'Title A–Z' },
+  { key: 'shortest', label: 'Shortest first' },
+];
+
+export const WEBINAR_STATUS_OPTIONS: WebinarStatusOption[] = [
+  { key: 'all', label: 'All' },
+  { key: 'upcoming', label: 'Upcoming' },
+  { key: 'recorded', label: 'Recorded' },
+];
+
+// Naya topic chahiye? Bas yahan ek object add karo (aur datatype me WebinarCategoryKey me naam)
+export const WEBINAR_CATEGORIES: WebinarCategory[] = [
+  {
+    key: 'all',
+    label: 'All topics',
+    icon: 'bi-camera-video',
+    color: '#2a5b9d',
+    tint: '#e8f0fa',
+    from: '#3b82c4',
+    to: '#1f4f8b',
+    blurb: '',
+  },
+  {
+    key: 'leadership',
+    label: 'Leadership',
+    icon: 'bi-people',
+    color: '#2a5b9d',
+    tint: '#e8f0fa',
+    from: '#3b82c4',
+    to: '#1f4f8b',
+    blurb:
+      'Practical frameworks to help NGO leaders make clearer decisions, structure their teams and lead with less stress.',
+  },
+  {
+    key: 'donor',
+    label: 'Donor engagement',
+    icon: 'bi-heart',
+    color: '#be185d',
+    tint: '#fce7f1',
+    from: '#d9669a',
+    to: '#9c2f65',
+    blurb:
+      'Build stronger, trust-based relationships with donors that lead to long-term support and sustainable growth.',
+  },
+  {
+    key: 'proposal',
+    label: 'Proposal writing',
+    icon: 'bi-file-earmark-text',
+    color: '#15803d',
+    tint: '#e6f4ea',
+    from: '#22a37f',
+    to: '#0f6f55',
+    blurb:
+      'Step-by-step guidance on writing proposals that are clear, complete and ready for funder review.',
+  },
+  {
+    key: 'design',
+    label: 'Project design',
+    icon: 'bi-lightbulb',
+    color: '#7c3aed',
+    tint: '#efe9fb',
+    from: '#8b5cc9',
+    to: '#5b2f9a',
+    blurb:
+      'Learn how to design projects with sustainability, clear outcomes and funding in mind from day one.',
+  },
+  {
+    key: 'mne',
+    label: 'Monitoring & evaluation',
+    icon: 'bi-bar-chart',
+    color: '#c2410c',
+    tint: '#fdeee3',
+    from: '#e08a3c',
+    to: '#b4570f',
+    blurb:
+      'Use monitoring and evaluation to prove results, learn from the work and strengthen your next application.',
+  },
+  {
+    key: 'storytelling',
+    label: 'Storytelling',
+    icon: 'bi-mic',
+    color: '#a16207',
+    tint: '#fdf3d6',
+    from: '#e0a825',
+    to: '#b27a0c',
+    blurb:
+      "Turn your NGO's stories into persuasive tools for fundraising, advocacy and community engagement.",
+  },
+];
+
+// Hero ke neeche ke 3 stats. {count} = total webinars, {upcoming} = upcoming webinars
+export const WEBINAR_STATS: WebinarStat[] = [
+  {
+    icon: 'bi-camera-video',
+    title: '{count} Webinars',
+    sub: 'Live and recorded',
+    color: '#2a5b9d',
+    tint: '#e8f0fa',
+  },
+  {
+    icon: 'bi-people',
+    title: '{upcoming} Upcoming',
+    sub: 'Register for free',
+    color: '#15803d',
+    tint: '#e6f4ea',
+  },
+  {
+    icon: 'bi-file-earmark-play',
+    title: 'Recordings',
+    sub: 'Watch any time',
+    color: '#c2410c',
+    tint: '#fdeee3',
+  },
+];
+
+export const WEBINAR_PAGE_TEXT: WebinarPageText = {
+  eyebrow: 'RESOURCES',
+  title: 'Webinars',
+  subtitle:
+    'Live and recorded sessions on fundraising, proposal writing and NGO management, led by experienced trainers.',
+  searchPlaceholder: 'Search webinars, topics, keywords...',
+  searchAria: 'Search webinars',
+  listTitle: 'All Webinars',
+  statusAria: 'Status',
+  sortLabel: 'Sort by',
+  showLabel: 'Show',
+  perPageSuffix: 'webinars per page',
+  showingLabel: 'Showing',
+  ofLabel: 'of',
+  countSingular: 'webinar',
+  countPlural: 'webinars',
+  pageOf: 'Page {p} of {t}',
+  tagNext: 'Next webinar',
+  tagFeatured: 'Featured',
+  upcomingBadge: 'Upcoming',
+  recordedBadge: 'Recorded',
+  liveBadge: 'Live now',
+  minUnit: 'min',
+  emptyText: 'No webinars match your filters. Try another topic or clear the search.',
+  loading: 'Loading webinars...',
+  prevAria: 'Previous page',
+  nextAria: 'Next page',
+};
+
+export const WEBINAR_DETAIL_TEXT: WebinarDetailText = {
+  backBtn: 'All webinars',
+  badgeUpcoming: 'Upcoming webinar',
+  badgeLive: 'Live now',
+  badgeRecorded: 'Recording available',
+  postedLabel: 'Posted',
+  online: 'Online',
+  factDate: 'Date',
+  factRecorded: 'Recorded',
+  factTime: 'Time',
+  factLength: 'Length',
+  factFormat: 'Format',
+  formatLive: 'Live online webinar',
+  formatRecorded: 'On-demand recording',
+  yourTime: 'Your time:',
+  recordedOn: 'Recorded on',
+  minuteSession: 'minute session',
+  aimTitle: 'Aim',
+  objectivesTitle: 'Webinar objectives',
+  subjectsTitle: 'Subjects covered',
+  trainerTitle: 'Webinar trainer',
+  checklistTitle: 'Before you join',
+  checklist: [
+    'Add the session to your calendar',
+    'Check the time in your own time zone',
+    'Note one question for the trainer',
+  ],
+  readyText: '{n} of {total} ready',
+  allReady: 'All done, you are ready to join',
+  ctaUpcomingTitle: 'Reserve your place',
+  ctaRecordedTitle: 'Watch this session any time',
+  ctaRecordedSub: 'The full recording is in Training Videos.',
+  btnRegister: 'Register for free',
+  btnRegistered: 'You are registered ✓',
+  btnWatch: 'Watch recording',
+  startsIn: 'Starts in',
+  happeningNow: 'Happening now',
+  ended: 'This webinar has ended',
+  days: 'days',
+  hrs: 'hrs',
+  min: 'min',
+  sec: 'sec',
+  addCalendar: 'Add to calendar',
+  favBtn: 'Add to favorites',
+  favBtnOn: 'Saved to favorites',
+  copyBtn: 'Copy link',
+  tocTitle: 'On this page',
+  moreTitle: 'More webinars',
+  newer: 'Newer webinar',
+  older: 'Older webinar',
+  atNewest: 'You are at the newest',
+  atOldest: 'You are at the oldest',
+  linkCopied: 'Link copied',
+  copyFailed: 'Could not copy the link',
+  registered: 'You are registered for this webinar',
+  unregistered: 'Registration cancelled',
+  loading: 'Loading webinar...',
+  notFoundTitle: 'Webinar not found',
+  notFoundText: 'This webinar may have been moved or removed.',
+};
+
+// Har category ka default aim / objectives / subjects.
+// Kisi webinar ka apna chahiye to us webinar me aim / objectives / subjects daal do.
+export const WEBINAR_CATEGORY_CONTENT: Record<WebinarCategoryKey, WebinarCategoryContent> = {
+  leadership: {
+    aim: 'To equip NGO leaders with practical tools to make clearer decisions, build resilient teams and lead sustainably.',
+    objectives: [
+      'To help leaders prioritise when everything feels urgent.',
+      'To strengthen team structures and delegation.',
+      'To build habits that prevent burnout and protect long-term impact.',
+    ],
+    subjects: [
+      'Decision-making under pressure',
+      'Delegation & team structure',
+      'Board and trustee relationships',
+      'Managing time and energy',
+      'Leading remote and hybrid teams',
+      'Building a culture of learning',
+    ],
+  },
+  donor: {
+    aim: 'To help NGOs build trust-based relationships with donors that lead to long-term, sustainable support.',
+    objectives: [
+      'To understand what motivates different types of donors.',
+      'To plan communication that keeps donors informed and involved.',
+      'To turn first-time funders into repeat supporters.',
+    ],
+    subjects: [
+      'Mapping your donors',
+      'Making the case for support',
+      'Communicating results',
+      'Stewardship and thank-you practice',
+      'Handling funder feedback',
+      'Planning renewals',
+    ],
+  },
+  proposal: {
+    aim: 'To guide participants through writing clear, complete proposals that funders can review and score with confidence.',
+    objectives: [
+      'To structure each section around the funder’s criteria.',
+      'To avoid the most common reasons proposals are rejected.',
+      'To align narrative and budget so they tell one story.',
+    ],
+    subjects: [
+      'Reading the guidelines',
+      'Needs statement and evidence',
+      'Objectives and activities',
+      'Budget and justification',
+      'Review checklist',
+      'Responding to feedback',
+    ],
+  },
+  design: {
+    aim: 'To show NGOs how to design projects with clear outcomes, sustainability and funding in mind from day one.',
+    objectives: [
+      'To define outcomes and indicators early.',
+      'To plan resources, risks and partnerships realistically.',
+      'To build a project that funders can see through to the end.',
+    ],
+    subjects: [
+      'Problem and stakeholder analysis',
+      'Logical frameworks',
+      'Work plans and timelines',
+      'Risk and assumptions',
+      'Sustainability planning',
+      'Exit and transition',
+    ],
+  },
+  mne: {
+    aim: 'To help NGOs use monitoring and evaluation to prove results, learn from their work and strengthen future applications.',
+    objectives: [
+      'To choose indicators that funders trust.',
+      'To collect and use data without overloading the team.',
+      'To report results in a way that builds credibility.',
+    ],
+    subjects: [
+      'Theory of change',
+      'Indicators and baselines',
+      'Data collection methods',
+      'Learning reviews',
+      'Reporting to donors',
+      'Using results in new proposals',
+    ],
+  },
+  storytelling: {
+    aim: 'To teach NGOs how to turn their work into stories that engage supporters, funders and communities.',
+    objectives: [
+      'To find stories that show real change.',
+      'To write short, honest narratives that people remember.',
+      'To use stories ethically and with consent.',
+    ],
+    subjects: [
+      'Choosing the right story',
+      'Structure of a short case study',
+      'Using data with stories',
+      'Ethics and consent',
+      'Writing for donors',
+      'Sharing across channels',
+    ],
+  },
+};
+
+export const WEBINAR_DEFAULT_BODY =
+  'Participants will leave with practical steps they can apply in their own organisation straight away, with time set aside for your questions.';
+
+// Real app me trainers API se aayenge. photo me real image ka url daalo
+export const WEBINAR_TRAINERS: Record<string, WebinarTrainer> = {
+  chris: {
+    name: 'Dr. Christopher A. Johnson',
+    role: 'Founding Director, Global Entrepreneurial Development Services Limited · Chair, Community Education Academy of Leadership',
+    bio: [
+      'An award-winning journalist, editor, publisher and business management consultant since the 1980s. He is also a former Commonwealth/Nuffield Cambridge Press Fellow and Management Science Fellow, a certified Commonwealth Youth Worker, holder of an MBA in Marketing Management and a Doctorate in Business Management.',
+      'He is renowned for his visiting tutorials in bid writing, business planning, leadership, marketing and organizational development cum capacity building, and supports economic and social policy initiatives in Africa, the Caribbean, the Middle East and South Asia.',
+    ],
+    tags: ['Bid writing', 'Leadership', 'Capacity building', 'Business planning'],
+  },
+  cheryl: {
+    name: 'Cheryl Hooper',
+    role: 'Senior Director, Fundraising & Capacity Building',
+    bio: [
+      "Cheryl Hooper is a multi-skilled Senior Director with 20 years' experience in fundraising, strategic planning and capacity building for UK and international NGOs, especially in Sub-Saharan Africa.",
+      'A skilled grant writer with successful multi-year proposals for UKAID, USAID, Comic Relief and other strategic funders, she supports NGOs with fundraising, strategic development and mentoring across the world.',
+    ],
+    tags: ['Fundraising', 'Strategic planning', 'Capacity building'],
+  },
+  claire: {
+    name: "Claire O'Donnell",
+    role: 'Fundraising & Communications Specialist',
+    bio: [
+      "Claire O'Donnell helps small and growing NGOs tell their story, build supporter relationships and diversify their income.",
+    ],
+    tags: ['Proposal writing', 'Communications', 'Storytelling'],
+  },
+  daniel: {
+    name: 'MSc. Daniel Gamboa',
+    role: 'Grants & Programme Management Specialist',
+    bio: [
+      'Daniel Gamboa trains NGO teams in proposal development, budgeting and compliance for institutional donors.',
+    ],
+    tags: ['Grant management', 'Budgeting', 'Digital fundraising'],
+  },
+  priya: {
+    name: 'Priya Nair',
+    role: 'Grants Research Editor',
+    bio: [
+      'Priya tracks new funding calls across 40 countries and writes about practical ways small teams can compete for them.',
+    ],
+    tags: ['Funding research', 'Grant strategy'],
+  },
+};
+
+const WT = WEBINAR_TRAINERS;
+
+// Chhota helper: trainer ko object me bhej do, baaki cheezein category se apne aap aa jaati hain
+const mkWebinar = (
+  id: number,
+  title: string,
+  category: WebinarCategoryKey,
+  date: string,
+  minutes: number,
+  trainer: WebinarTrainer,
+  extra: Partial<Webinar> = {},
+): Webinar => ({
+  id,
+  title,
+  category,
+  date,
+  postedOn: date,
+  minutes,
+  trainer,
+  ...extra,
+});
+
+// Real app me ye list API se aayegi (api.ts me getWebinars())
+// Recording chahiye to videoUrl, apna summary / aim / objectives chahiye to extra me daal do
+export const MOCK_WEBINARS: Webinar[] = [
+  mkWebinar(
+    0,
+    'Structuring NGO Operations for Strategic Growth',
+    'leadership',
+    '2026-10-29',
+    60,
+    WT['chris'],
+    {
+      postedOn: '2026-10-14',
+      lead: 'This webinar will equip NGO leaders and practitioners worldwide with practical frameworks to strengthen organisational structures, streamline operations, and improve efficiency.',
+      body: 'Participants will gain actionable strategies to support strategic growth, enhance organisational effectiveness, and scale their impact sustainably. The session will also explore ways to optimise resources, strengthen internal coordination, and build resilient systems that support long-term organisational success.',
+      aim: 'To equip global NGO leaders and practitioners with practical frameworks to optimise internal structures, and streamline operations, to scale impact sustainably.',
+      objectives: [
+        'To help NGOs build a flexible structure that easily adapts as their charities grow.',
+        'To enable charities to manage funding and donor rules confidently.',
+        'To guide Trustees on how to reduce paperwork to deliver projects more efficiently.',
+        'To create a forum for sharing ways to track daily progress and be ready for big donors.',
+      ],
+      subjects: [
+        'Organisational Design for Growth',
+        'Strategic Flexibility & Adaptability',
+        'Multi-Regional Compliance & Governance',
+        'Risk Management in International Funding',
+        'Streamlining Workflows & Reducing Bureaucracy',
+        'Field Logistics & Agile Program Delivery',
+        'Essential Data & Operational Metrics',
+        'Demonstrating Institutional Readiness to Donors',
+      ],
+    },
+  ),
+  mkWebinar(
+    1,
+    'Everything Feels Urgent: How Small NGO Leaders Can Make Better Decisions',
+    'leadership',
+    '2026-10-05',
+    45,
+    WT['cheryl'],
+  ),
+  mkWebinar(
+    2,
+    'Donor Engagement and Relationship Building',
+    'donor',
+    '2026-09-03',
+    60,
+    WT['chris'],
+  ),
+  mkWebinar(
+    3,
+    'Sustainable Small NGO Leadership: How to Avoid Burnout and Grow Your Organisation',
+    'leadership',
+    '2026-08-24',
+    60,
+    WT['cheryl'],
+  ),
+  mkWebinar(
+    4,
+    'Beginning with the End in Mind: Designing Sustainable NGO Projects from Day One',
+    'design',
+    '2026-08-10',
+    75,
+    WT['cheryl'],
+  ),
+  mkWebinar(
+    5,
+    'Winning Donor Confidence: Building a Powerful Case for Support',
+    'donor',
+    '2026-07-28',
+    60,
+    WT['cheryl'],
+  ),
+  mkWebinar(
+    6,
+    '10 Proposal Mistakes That Cause Grant Rejections',
+    'proposal',
+    '2026-07-24',
+    45,
+    WT['claire'],
+  ),
+  mkWebinar(
+    7,
+    'Donor Engagement and Relationship Building (Repeat Session)',
+    'donor',
+    '2026-07-16',
+    60,
+    WT['chris'],
+  ),
+  mkWebinar(
+    8,
+    'Storytelling for Greater Engagement and Donations',
+    'storytelling',
+    '2026-07-15',
+    60,
+    WT['daniel'],
+  ),
+  mkWebinar(
+    9,
+    'Using Monitoring & Evaluation to Win More Grants',
+    'mne',
+    '2026-07-07',
+    60,
+    WT['chris'],
+  ),
+  mkWebinar(
+    10,
+    'Writing a Logical Framework Funders Understand',
+    'design',
+    '2026-10-29',
+    60,
+    WT['claire'],
+    {
+      postedOn: '2026-10-20',
+    },
+  ),
+  mkWebinar(
+    11,
+    'Budgeting for Grant Proposals: Costs Donors Accept',
+    'proposal',
+    '2026-11-12',
+    75,
+    WT['daniel'],
+    {
+      postedOn: '2026-11-01',
+    },
+  ),
+  mkWebinar(
+    12,
+    'Building a Fundraising Strategy for the Year Ahead',
+    'donor',
+    '2026-11-26',
+    60,
+    WT['cheryl'],
+    {
+      postedOn: '2026-11-05',
+    },
+  ),
+  mkWebinar(
+    13,
+    'Measuring Impact: Indicators That Funders Trust',
+    'mne',
+    '2026-06-30',
+    45,
+    WT['claire'],
+  ),
+  mkWebinar(
+    14,
+    'Telling Your Impact Story in 500 Words',
+    'storytelling',
+    '2026-06-18',
+    30,
+    WT['daniel'],
+  ),
+  mkWebinar(15, 'Grant Reporting Without the Stress', 'proposal', '2026-06-09', 45, WT['priya']),
+  mkWebinar(
+    16,
+    'Leading Remote and Hybrid NGO Teams',
+    'leadership',
+    '2026-05-28',
+    60,
+    WT['cheryl'],
+  ),
+  mkWebinar(
+    17,
+    'Learning from Failed Projects: A Practical Review',
+    'mne',
+    '2026-05-14',
+    60,
+    WT['chris'],
+  ),
+];
+
+/* ----- Webinar helpers (list + details dono page use karte hain) ----- */
+
+// Webinar kab shuru hota hai (UTC milliseconds)
+export const getWebinarStart = (w: Webinar): number => {
+  const [y, m, d] = w.date.split('-').map(Number);
+  return Date.UTC(y, m - 1, d, WEBINAR_START_HOUR_UTC, 0, 0);
+};
+
+// upcoming = shuru nahi hua, live = chal raha hai, recorded = khatam ho chuka
+export const getWebinarStatus = (w: Webinar, now: number = Date.now()): WebinarStatus => {
+  const start = getWebinarStart(w);
+  if (now < start) return 'upcoming';
+  if (now < start + w.minutes * 60000) return 'live';
+  return 'recorded';
+};
+
+// Baad me Api se aayega: this.api.getWebinar(id)
+export const getWebinar = (id: number): Webinar | null =>
+  MOCK_WEBINARS.find((w) => w.id === id) ?? null;
