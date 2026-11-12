@@ -1,0 +1,221 @@
+@if (loading()) {
+  <div class="cd-empty">{{ text.loading }}</div>
+} @else if (course(); as c) {
+  @let ct = cat()!;
+
+  <!-- Reading progress bar -->
+  <div class="cd-prog" aria-hidden="true">
+    <i [style.width.%]="readProgress()" [style]="themeVars()"></i>
+  </div>
+
+  <div class="cd-wrap" [style]="themeVars()">
+    <!-- =============== Hero =============== -->
+    <header class="cd-hero">
+      <i class="bi cd-ico" [class]="ct.icon"></i>
+
+      <a class="cd-back" [routerLink]="listRoute">
+        <i class="bi bi-chevron-left"></i>{{ text.backBtn }}
+      </a>
+
+      <div class="cd-tags">
+        <span class="cd-pill">{{ ct.label }}</span>
+        @if (isQuick(c)) {
+          <span class="cd-st">{{ text.quickBadge }}</span>
+        }
+      </div>
+
+      <h1 class="cd-h1" tabindex="-1">{{ c.title }}</h1>
+
+      <div class="cd-meta">
+        <span class="cd-by">
+          <i class="cd-av">{{ trainerInitials() }}</i>{{ text.metaTrainer }} {{ c.trainer.name }}
+        </span>
+        <span><i class="bi bi-clock"></i>{{ c.minutes }} {{ text.minUnit }}</span>
+        <span><i class="bi bi-list-ul"></i>{{ lessons().length }} {{ unit() }}</span>
+        <span><i class="bi bi-play-circle"></i>{{ text.metaSelfPaced }}</span>
+      </div>
+    </header>
+
+    <div class="cd-grid">
+      <!-- =============== Main article =============== -->
+      <article class="cd-card cd-art" id="cd-body">
+        <h2 id="cd-s0" class="first">{{ text.introTitle }}</h2>
+        <p class="cd-lead">{{ c.summary || ct.blurb }}</p>
+
+        <div class="cd-facts">
+          <div class="cd-fact">
+            <small><i class="bi bi-play-circle"></i>{{ text.factVideo }}</small>
+            <b>{{ c.minutes }} {{ text.minUnit }}</b>
+          </div>
+          <div class="cd-fact">
+            <small><i class="bi bi-clock"></i>{{ text.factStudy }}</small>
+            <b>{{ c.minutes }} {{ text.minUnit }}</b>
+          </div>
+          <div class="cd-fact">
+            <small><i class="bi bi-list-ul"></i>{{ text.factLessons }}</small>
+            <b>{{ lessons().length }}</b>
+          </div>
+        </div>
+
+        <h2 id="cd-s1">{{ text.learnTitle }}</h2>
+        <div class="cd-key">
+          <h3>{{ text.learnLead }}</h3>
+          <ul>
+            @for (o of outcomes(); track $index) {
+              <li>{{ o }}</li>
+            }
+          </ul>
+        </div>
+
+        <h2 id="cd-s2">{{ text.lessonsTitle }}</h2>
+        <p class="cd-hint">{{ text.lessonsHint }}</p>
+        <div class="cd-ls">
+          @for (l of lessons(); track $index) {
+            <button
+              type="button"
+              class="cd-l"
+              [class.done]="isDone($index)"
+              [attr.aria-pressed]="isDone($index)"
+              (click)="toggleLesson($index)"
+            >
+              <span class="cd-n">
+                @if (isDone($index)) {
+                  <i class="bi bi-check-lg"></i>
+                } @else {
+                  {{ $index + 1 }}
+                }
+              </span>
+              <span>
+                <b>{{ l.title }}</b>
+                <small><i class="bi bi-file-earmark-pdf"></i>{{ l.format }}</small>
+              </span>
+              <span class="cd-m">{{ l.minutes }} {{ text.minUnit }}</span>
+            </button>
+          }
+        </div>
+
+        <!-- Bottom CTA -->
+        <div class="cd-cta">
+          <div>
+            <b>{{ text.ctaTitle }}</b>
+            <span>{{ ctaSub() }}</span>
+          </div>
+          <button type="button" class="cd-btn" (click)="start()">{{ startLabel() }}</button>
+        </div>
+
+        <h2 id="cd-s3">{{ text.trainerTitle }}</h2>
+        <div class="cd-tr">
+          @if (c.trainer.photo) {
+            <img class="cd-photo" [src]="c.trainer.photo" [alt]="c.trainer.name" />
+          } @else {
+            <i class="cd-av">{{ trainerInitials() }}</i>
+          }
+          <div>
+            <h3>{{ c.trainer.name }}</h3>
+            <p class="rl">{{ c.trainer.role || text.trainerRole }}</p>
+            @for (p of c.trainer.bio; track $index) {
+              <p>{{ p }}</p>
+            } @empty {
+              <p>{{ text.trainerSoon }}</p>
+            }
+            @if (c.trainer.tags.length) {
+              <div class="cd-tg">
+                @for (t of c.trainer.tags; track t) {
+                  <span>{{ t }}</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Previous / next -->
+        <nav class="cd-pn" [attr.aria-label]="text.navAria">
+          <button type="button" [disabled]="!prevCourse()" (click)="goTo(prevCourse())">
+            <small>{{ text.prev }}</small>
+            <b>{{ prevCourse()?.title ?? text.atFirst }}</b>
+          </button>
+          <button type="button" class="r" [disabled]="!nextCourse()" (click)="goTo(nextCourse())">
+            <small>{{ text.next }}</small>
+            <b>{{ nextCourse()?.title ?? text.atLast }}</b>
+          </button>
+        </nav>
+      </article>
+
+      <!-- =============== Sidebar =============== -->
+      <aside class="cd-side">
+        <section class="cd-card cd-box">
+          <h3>
+            {{ text.progressTitle }}
+            <span class="cd-pc">{{ pct() }}%</span>
+          </h3>
+          <div class="cd-pb" aria-hidden="true"><i [style.width.%]="pct()"></i></div>
+          <p class="cd-pl">{{ progressText() }}</p>
+
+          <button type="button" class="cd-reg" [class.d]="isComplete()" (click)="start()">
+            {{ startLabel() }}
+          </button>
+
+          <div class="cd-acts">
+            <button
+              type="button"
+              class="cd-fv"
+              [class.on]="saved()"
+              [attr.aria-pressed]="saved()"
+              (click)="toggleSave()"
+            >
+              <i class="bi" [class]="saved() ? 'bi-bookmark-fill' : 'bi-bookmark'"></i>
+              {{ saved() ? text.favBtnOn : text.favBtn }}
+            </button>
+            <button type="button" (click)="copyLink()">
+              <i class="bi bi-link-45deg"></i>{{ text.copyBtn }}
+            </button>
+          </div>
+        </section>
+
+        <section class="cd-card cd-box cd-toc-box">
+          <h3>{{ text.tocTitle }}</h3>
+          <ul class="cd-toc">
+            @for (item of tocItems(); track item.id) {
+              <li>
+                <a
+                  [href]="'#' + item.id"
+                  [class.on]="activeSection() === item.id"
+                  (click)="scrollToSection(item.id, $event)"
+                  >{{ item.label }}</a
+                >
+              </li>
+            }
+          </ul>
+        </section>
+
+        <section class="cd-card cd-box">
+          <h3>{{ text.moreTitle }}</h3>
+          <div class="cd-rel">
+            @for (x of related(); track x.id) {
+              <button type="button" (click)="goTo(x)">
+                <span class="ico" [style.--rc]="catOf(x).color"
+                  ><i class="bi" [class]="catOf(x).icon"></i
+                ></span>
+                <span>
+                  <b>{{ x.title }}</b>
+                  <small>{{ catOf(x).label }}, {{ x.minutes }} {{ text.minUnit }}</small>
+                </span>
+              </button>
+            }
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="cd-tt" [class.on]="toast()" role="status" aria-live="polite">{{ toast() }}</div>
+} @else {
+  <div class="cd-empty">
+    <h2>{{ text.notFoundTitle }}</h2>
+    <p>{{ text.notFoundText }}</p>
+    <a class="cd-back dark" [routerLink]="listRoute"
+      ><i class="bi bi-chevron-left"></i>{{ text.backBtn }}</a
+    >
+  </div>
+}

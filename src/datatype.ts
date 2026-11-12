@@ -730,6 +730,8 @@ export interface SampleProposal {
   colorTo: string; // gradient end
   coverImg?: string; // real cover image ka url (hai to wahi dikhegi)
   pdfUrl?: string;
+  summary?: string; // <-- ADD
+  topics?: string[]; // <-- ADD
 }
 
 export interface SampleProposalTagColor {
@@ -784,6 +786,8 @@ export interface Ebook {
   colorTo: string;
   coverImg?: string;
   pdfUrl?: string;
+  summary?: string; // <-- ADD
+  topics?: string[]; // <-- ADD
 }
 
 export interface EbookPageText {
@@ -1195,4 +1199,208 @@ export interface WebinarDetailText {
   loading: string;
   notFoundTitle: string;
   notFoundText: string;
+}
+
+/* =====================================================
+   datatype.ts ke ekdum END me ye paste karo
+   ===================================================== */
+
+/* ===== COURSES ===== */
+export type CourseCategoryKey = 'ai' | 'strategy' | 'partnerships' | 'csr' | 'proposal';
+
+// 'all' sirf filter chips ke liye hai (course ki apni category 'all' nahi hoti)
+export type CourseFilterKey = 'all' | CourseCategoryKey;
+
+export type CourseSortKey = 'recommended' | 'shortest' | 'longest' | 'az';
+
+export interface CourseSortOption {
+  key: CourseSortKey;
+  label: string;
+}
+
+export interface CourseCategory {
+  key: CourseFilterKey;
+  label: string; // chip / pill ka naam
+  icon: string; // bootstrap icon
+  color: string; // main colour (text, button, border)
+  tint: string; // halka background colour
+  from: string; // gradient start (cover / hero)
+  to: string; // gradient end
+  blurb: string; // course ka apna summary na ho to ye dikhega
+}
+
+export interface CourseTrainer {
+  name: string;
+  role: string;
+  bio: string[]; // har item ek paragraph ([] = "profile jaldi aayegi" dikhega)
+  tags: string[];
+  photo?: string; // real photo ka url (nahi hai to initials)
+  color?: string; // card par avatar ka colour (nahi diya to category ka colour)
+}
+
+export interface CourseLesson {
+  title: string;
+  format: string; // 'PDF slides', 'Video' ...
+  minutes: number;
+  url?: string;
+}
+
+export interface Course {
+  id: number;
+  title: string;
+  category: CourseCategoryKey;
+  trainer: CourseTrainer;
+  minutes: number; // poore course ki length
+  summary?: string; // nahi diya to category ka blurb dikhega
+  outcomes?: string[]; // "What you will learn" (nahi diya to default)
+  lessons?: CourseLesson[]; // nahi diya to 1 SlideShow lesson ban jaata hai
+  courseUrl?: string; // real course ka link
+}
+
+// User ki progress (localStorage / baad me API)
+export interface CourseProgress {
+  started: boolean;
+  done: number[]; // complete hue lessons ke index
+}
+
+export interface CourseStat {
+  icon: string; // bootstrap icon
+  title: string; // {count} = courses, {trainers} = trainers, {hours} = total hours
+  sub: string;
+  color: string;
+  tint: string;
+}
+
+export interface CoursePageText {
+  title: string;
+  subtitle: string;
+  searchPlaceholder: string;
+  searchAria: string;
+  featuredLabel: string;
+  sortLabel: string;
+  showingLabel: string;
+  ofLabel: string;
+  countSingular: string;
+  countPlural: string;
+  minUnit: string;
+  minutesLabel: string;
+  quickBadge: string;
+  startBtn: string;
+  saveAria: string;
+  emptyText: string;
+  noCourses: string;
+  loading: string;
+}
+
+export interface CourseDetailText {
+  backBtn: string;
+  quickBadge: string;
+  metaTrainer: string;
+  metaSelfPaced: string;
+  lessonSingular: string;
+  lessonPlural: string;
+  minUnit: string;
+  introTitle: string;
+  factVideo: string;
+  factStudy: string;
+  factLessons: string;
+  learnTitle: string;
+  learnLead: string;
+  lessonsTitle: string;
+  lessonsHint: string;
+  ctaTitle: string;
+  ctaSub: string; // {min} replace hota hai
+  trainerTitle: string;
+  trainerRole: string;
+  trainerSoon: string;
+  progressTitle: string;
+  progressText: string; // {n}, {total}, {unit} replace hote hain
+  btnStart: string;
+  btnContinue: string;
+  btnReview: string;
+  favBtn: string;
+  favBtnOn: string;
+  copyBtn: string;
+  tocTitle: string;
+  moreTitle: string;
+  navAria: string;
+  prev: string;
+  next: string;
+  atFirst: string;
+  atLast: string;
+  toastStarted: string;
+  toastDone: string;
+  toastSaved: string;
+  toastUnsaved: string;
+  linkCopied: string;
+  copyFailed: string;
+  loading: string;
+  notFoundTitle: string;
+  notFoundText: string;
+}
+/* ===== PDF VIEWER + RESOURCE DETAILS ===== */
+export interface PdfViewerText {
+  pageLabel: string;
+  prev: string;
+  next: string;
+  zoomIn: string;
+  zoomOut: string;
+  fitWidth: string;
+  download: string;
+  fullscreen: string;
+  exitFullscreen: string;
+  loading: string;
+  errorTitle: string;
+  errorText: string;
+  retry: string;
+    first: string;
+  last: string;
+  zoomLabel: string;
+  fitPage: string;
+  rotateCw: string;
+  rotateCcw: string;
+  sidebar: string;
+  tools: string;
+  print: string;
+  preparingPrint: string;
+  handTool: string;
+}
+
+// Sample proposal aur ebook dono details page isi se chalte hain
+export interface ResourceDetailText {
+  backBtn: string;
+  eyebrow: string;
+  readBtn: string;
+  downloadBtn: string;
+  addToList: string;
+  inList: string;
+  favBtn: string;
+  favBtnOn: string;
+  copyBtn: string;
+  linkCopied: string;
+  copyFailed: string;
+  aboutTitle: string;
+  defaultAbout: string;
+  topicsTitle: string;
+  previewTitle: string;
+  previewSub: string;
+  factFile: string;
+  factPages: string;
+  factUpdated: string;
+  factArea: string;
+  notFoundTitle: string;
+  notFoundText: string;
+  notFoundBtn: string;
+}
+
+export interface DownloadRequestText {
+  requestBtn: string;
+  inList: string;
+  viewList: string;
+  limitReached: string;
+  added: string;
+  usedLabel: string;
+  leftLabel: string;
+  note: string;
+  noteFull: string;
 }

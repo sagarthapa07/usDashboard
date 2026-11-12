@@ -1,0 +1,101 @@
+<section class="rd">
+  @if (ebook(); as b) {
+    <a class="rd-back" href="#" (click)="$event.preventDefault(); goBack()">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>{{ text.backBtn }}
+    </a>
+
+    <!-- ===== Hero ===== -->
+    <header class="rd-hero">
+      @if (b.coverImg) {
+        <div class="rd-cv im"><img [src]="b.coverImg" [alt]="'Cover of ' + b.title" /></div>
+      } @else {
+        <div class="rd-cv" [style.--c]="b.colorFrom" [style.--c2]="b.colorTo" aria-hidden="true">
+          <span class="sp"></span>
+          <div class="in">
+            <span class="tag">{{ listText.coverTag }}</span>
+            <b>{{ b.title }}</b>
+            <i class="bi ic" [class]="iconFor(b.area)"></i>
+            <em>{{ listText.coverBrand }}</em>
+          </div>
+        </div>
+      }
+
+      <div class="rd-info">
+        <span class="rd-eyebrow">{{ text.eyebrow }}</span>
+        <h1>{{ b.title }}</h1>
+
+        <div class="rd-tags">
+          <span [style.background]="tagColor(b.area).bg" [style.color]="tagColor(b.area).text">{{ b.area }}</span>
+          <span class="b">{{ b.subArea }}</span>
+        </div>
+
+        <ul class="rd-facts">
+          <li>
+            <i class="bi bi-file-earmark-text"></i>
+            <span><small>{{ text.factFile }}</small><strong>{{ listText.pdfLabel }} · {{ b.fileSize }}</strong></span>
+          </li>
+          <li>
+            <i class="bi bi-list-ul"></i>
+            <span><small>{{ text.factPages }}</small><strong>{{ b.pages }}</strong></span>
+          </li>
+          <li>
+            <i class="bi bi-calendar3"></i>
+            <span><small>{{ text.factUpdated }}</small><strong>{{ b.updatedOn | date: 'MMM dd, yyyy' }}</strong></span>
+          </li>
+          <li>
+            <i class="bi bi-bullseye"></i>
+            <span><small>{{ text.factArea }}</small><strong>{{ b.area }}</strong></span>
+          </li>
+        </ul>
+
+        <p class="rd-sum">{{ b.summary || text.defaultAbout }}</p>
+
+        <div class="rd-act">
+          <button type="button" class="rd-btn" (click)="readOnline()">
+            <i class="bi bi-book"></i>{{ text.readBtn }}
+          </button>
+          <button type="button" class="rd-btn ghost" (click)="download()">
+            <i class="bi bi-download"></i>{{ text.downloadBtn }}
+          </button>
+          <button type="button" class="rd-btn ghost" [class.on]="isFav()" (click)="toggleFav()">
+            <i class="bi" [class.bi-heart]="!isFav()" [class.bi-heart-fill]="isFav()"></i>
+            {{ isFav() ? text.favBtnOn : text.favBtn }}
+          </button>
+          <button type="button" class="rd-btn ghost" (click)="copyLink()">
+            <i class="bi bi-link-45deg"></i>{{ text.copyBtn }}
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== What you will learn ===== -->
+    @if (b.topics?.length) {
+      <section class="rd-card">
+        <h2>{{ text.topicsTitle }}</h2>
+        <ul class="rd-topics">
+          @for (t of b.topics; track t) {
+            <li><i class="bi bi-check-circle-fill"></i>{{ t }}</li>
+          }
+        </ul>
+      </section>
+    }
+
+    <!-- ===== PDF viewer ===== -->
+    <section #viewerEl class="rd-card rd-view">
+      <h2>{{ text.previewTitle }}</h2>
+      <p class="sub">{{ text.previewSub }}</p>
+      <app-pdf-viewer [src]="pdfUrl()" [fileName]="fileName()" height="85vh"></app-pdf-viewer>
+    </section>
+  } @else {
+    <div class="rd-card rd-nf">
+      <i class="bi bi-book"></i>
+      <h2>{{ text.notFoundTitle }}</h2>
+      <p>{{ text.notFoundText }}</p>
+      <button type="button" class="btn" (click)="goBack()">{{ text.notFoundBtn }}</button>
+    </div>
+  }
+
+  @if (toast()) {
+    <div class="rd-toast" role="status">{{ toast() }}</div>
+  }
+</section>

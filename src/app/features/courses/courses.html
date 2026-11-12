@@ -1,0 +1,169 @@
+<!-- Cover (gradient + icon + duration + quick badge + bookmark) -->
+<ng-template #cover let-c let-card="card">
+  <div class="cs-cv" [class]="'v' + (c.id % 3)">
+    <i class="bi ic" [class]="getCat(c.category).icon"></i>
+    <span class="cs-dur"><i class="bi bi-clock"></i>{{ c.minutes }} {{ text.minUnit }}</span>
+    @if (isQuick(c)) {
+      <span class="cs-qk"><i class="bi bi-lightning-charge-fill"></i>{{ text.quickBadge }}</span>
+    }
+    @if (card) {
+      <button
+        type="button"
+        class="cs-bk"
+        [class.on]="isSaved(c)"
+        [attr.aria-pressed]="isSaved(c)"
+        [attr.aria-label]="text.saveAria"
+        (click)="toggleSave(c, $event)"
+        (keydown.enter)="$event.stopPropagation()"
+      >
+        <i class="bi" [class]="isSaved(c) ? 'bi-bookmark-fill' : 'bi-bookmark'"></i>
+      </button>
+    }
+  </div>
+</ng-template>
+
+<!-- Trainer avatar + name -->
+<ng-template #trainer let-c>
+  <span class="cs-av" [style.--c]="trainerColor(c)">{{ initials(c.trainer.name) }}</span>
+  <span><b>{{ c.trainer.name }}</b></span>
+</ng-template>
+
+<div class="lib-in">
+  <!-- ===== Hero: title + stats + chips + search ===== -->
+  <section class="kh-hero">
+    <div class="kh-top">
+      <div class="kh-txt">
+        <h1>{{ text.title }}</h1>
+        <p>{{ text.subtitle }}</p>
+        <div class="kh-st">
+          @for (s of statCards(); track s.sub) {
+            <div [style]="{ '--c': s.color, '--b': s.tint }">
+              <span class="ico"><i class="bi" [class]="s.icon"></i></span>
+              <span>
+                <b>{{ s.title }}</b>
+                <small>{{ s.sub }}</small>
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="art" aria-hidden="true">
+        <span class="blob"></span>
+        <span class="chip c1"><i class="bi bi-person-check"></i></span>
+        <span class="chip c2"><i class="bi bi-journal-text"></i></span>
+        <span class="chip c3"><i class="bi bi-patch-check"></i></span>
+        <i class="bi bi-mortarboard main"></i>
+      </div>
+    </div>
+
+    <div class="kh-bar">
+      <div class="kh-ch" role="group" [attr.aria-label]="text.title">
+        @for (c of categories; track c.key) {
+          <button
+            type="button"
+            [class.on]="category() === c.key"
+            [attr.aria-pressed]="category() === c.key"
+            [style]="{ '--c': c.color, '--t': c.tint }"
+            (click)="setCategory(c.key)"
+          >
+            <i class="bi" [class]="c.icon"></i>{{ c.label }}
+          </button>
+        }
+      </div>
+
+      <div class="kh-s">
+        <i class="bi bi-search"></i>
+        <input
+          type="search"
+          autocomplete="off"
+          [placeholder]="text.searchPlaceholder"
+          [attr.aria-label]="text.searchAria"
+          [value]="query()"
+          (input)="onSearch($any($event.target).value)"
+        />
+      </div>
+    </div>
+  </section>
+
+  @if (loading()) {
+    <div class="cs-e">{{ text.loading }}</div>
+  } @else {
+    <!-- ===== Featured: quickest to finish ===== -->
+    @if (featuredCourse(); as f) {
+      <div class="cs-ftw">
+        <button type="button" class="cs-fc" [style]="vars(getCat(f.category))" (click)="open(f)">
+          <ng-container *ngTemplateOutlet="cover; context: { $implicit: f, card: false }"></ng-container>
+          <span class="cs-fl">{{ text.featuredLabel }}</span>
+          <h3>{{ f.title }}</h3>
+          <div class="cs-tr">
+            <ng-container *ngTemplateOutlet="trainer; context: { $implicit: f }"></ng-container>
+          </div>
+          <span class="cs-go">{{ text.startBtn }} <i class="bi bi-arrow-right"></i></span>
+        </button>
+      </div>
+    }
+
+    <!-- ===== Count | sort ===== -->
+    <div class="cs-bar">
+      <span class="cs-rc" aria-live="polite">
+        @if (noResults()) {
+          {{ text.noCourses }}
+        } @else {
+          {{ text.showingLabel }} {{ rangeFrom() }}–{{ rangeTo() }} {{ text.ofLabel }}
+          {{ filtered().length }}
+          {{ filtered().length === 1 ? text.countSingular : text.countPlural }}
+        }
+      </span>
+
+      <label>
+        {{ text.sortLabel }}
+        <select (change)="onSort($any($event.target).value)">
+          @for (o of sortOptions; track o.key) {
+            <option [value]="o.key" [selected]="sort() === o.key">{{ o.label }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    <!-- ===== Grid ===== -->
+    <div class="cs-g">
+      @if (noResults()) {
+        <div class="cs-e">{{ text.emptyText }}</div>
+      } @else {
+        @for (c of pageItems(); track c.id) {
+          <article
+            class="cs-c"
+            tabindex="0"
+            role="link"
+            [style]="vars(getCat(c.category))"
+            (click)="open(c)"
+            (keydown.enter)="open(c)"
+          >
+            <ng-container *ngTemplateOutlet="cover; context: { $implicit: c, card: true }"></ng-container>
+            <span class="cs-pill">{{ getCat(c.category).label }}</span>
+            <h3>{{ c.title }}</h3>
+            <p>{{ summaryOf(c) }}</p>
+            <div class="cs-tr">
+              <ng-container *ngTemplateOutlet="trainer; context: { $implicit: c }"></ng-container>
+            </div>
+            <div class="cs-ft">
+              <span class="cs-mn">{{ c.minutes }} {{ text.minutesLabel }}</span>
+              <span class="cs-go">{{ text.startBtn }} <i class="bi bi-arrow-right"></i></span>
+            </div>
+          </article>
+        }
+      }
+    </div>
+
+    <!-- ===== Pagination (shared) ===== -->
+    <app-pagination
+      [totalItems]="filtered().length"
+      [pageSize]="pageSize()"
+      [currentPage]="currentPage()"
+      [sizes]="pageSizes"
+      (pageChange)="goTo($event)"
+      (pageSizeChange)="onPageSize($event)"
+    ></app-pagination>
+  }
+</div>

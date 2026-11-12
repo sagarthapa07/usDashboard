@@ -28,6 +28,10 @@ import { Articles } from './features/articles/articles';
 import { ArticleDetail } from './features/article-detail/article-detail';
 import { Webinars } from './features/webinars/webinars';
 import { WebinarDetail } from './features/webinar-detail/webinar-detail';
+import { Courses } from './features/courses/courses';
+import { CourseDetail } from './features/course-detail/course-detail';
+import { SampleProposalDetails } from './features/sample-proposal-details/sample-proposal-details';
+import { EbookDetail } from './features/ebook-details/ebook-details';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -54,12 +58,16 @@ export const routes: Routes = [
   { path: 'update-payment', component: UpdatePayment },
   { path: 'change-password', component: ChangePassword },
   { path: 'sample-proposals', component: SampleProposals },
+  { path: 'sample-proposal/:id', component: SampleProposalDetails },
   { path: 'ebooks', component: Ebooks },
+  { path: 'ebook/:id', component: EbookDetail },
   { path: 'training-videos', component: TrainingVideos },
   { path: 'articles', component: Articles },
   { path: 'article/:id', component: ArticleDetail },
   { path: 'webinars', component: Webinars },
-  { path: 'webinar/:id', component: WebinarDetail  },
+  { path: 'webinar/:id', component: WebinarDetail },
+  { path: 'courses', component: Courses },
+  { path: 'course/:id', component: CourseDetail },
 
   { path: '**', redirectTo: 'dashboard' },
 ];

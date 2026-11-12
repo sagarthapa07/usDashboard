@@ -1,0 +1,197 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.pdfv {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 420px;
+  background: var(--cardBgClr);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+
+  &.fs {
+    border-radius: 0;
+    border: 0;
+  }
+}
+
+/* ----- Toolbar ----- */
+.pdfv-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 8px 12px;
+  background: var(--cardBgClr);
+  border-bottom: var(--border);
+}
+
+.pdfv-g {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pdfv-b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid transparent;
+  border-radius: var(--radiusSm);
+  background: transparent;
+  color: var(--menuTextClr);
+  font-size: var(--detailFont);
+  transition: background 0.15s, color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: var(--primaryLightClr);
+    color: var(--primaryClr);
+  }
+
+  &.on {
+    background: var(--primaryLightClr);
+    color: var(--primaryClr);
+    border-color: var(--primaryClr);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primaryClr);
+    outline-offset: 1px;
+  }
+}
+
+.pdfv-pi {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 4px;
+  font-size: var(--bodyFont);
+  color: var(--mutedClr);
+
+  input {
+    width: 52px;
+    height: 32px;
+    padding: 0 6px;
+    text-align: center;
+    border: var(--border);
+    border-radius: var(--radiusSm);
+    background: var(--cardBgClr);
+    color: var(--textClr);
+    font: inherit;
+    -moz-appearance: textfield;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &:focus {
+      outline: 2px solid var(--primaryClr);
+      outline-offset: 0;
+    }
+  }
+}
+
+.pdfv-z {
+  min-width: 48px;
+  text-align: center;
+  font-size: var(--bodyFont);
+  font-weight: 600;
+  color: var(--textClr);
+}
+
+/* ----- Pages area ----- */
+.pdfv-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.pdfv-scroll {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  background: var(--bgClr);
+  padding: 16px;
+}
+
+.pdfv-pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  min-width: min-content;
+}
+
+:host ::ng-deep .pdfv-pg {
+  position: relative;
+  flex: none;
+  background: var(--whiteClr);
+  border: var(--border);
+  box-shadow: 0 2px 10px rgba(15, 31, 56, 0.1);
+
+  canvas {
+    display: block;
+  }
+}
+
+/* ----- Loading / Error ----- */
+.pdfv-ov {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+  background: color-mix(in srgb, var(--cardBgClr) 92%, transparent);
+  color: var(--textClr);
+
+  p {
+    margin: 0;
+    color: var(--mutedClr);
+    font-size: var(--bodyFont);
+  }
+}
+
+.pdfv-sp {
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--primaryLightClr);
+  border-top-color: var(--primaryClr);
+  border-radius: 50%;
+  animation: pdfv-spin 0.8s linear infinite;
+}
+
+.pdfv-ei {
+  font-size: 32px;
+  color: var(--dangerClr);
+}
+
+@keyframes pdfv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 560px) {
+  .pdfv-bar {
+    justify-content: center;
+  }
+}

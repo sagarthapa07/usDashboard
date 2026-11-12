@@ -86,6 +86,19 @@ import {
   WebinarCategory,
   WebinarStatusOption,
   WebinarSortOption,
+  CourseSortOption,
+  CourseCategory,
+  CourseStat,
+  CoursePageText,
+  CourseDetailText,
+  CourseCategoryKey,
+  CourseTrainer,
+  Course,
+  CourseLesson,
+  CourseProgress,
+  PdfViewerText,
+  ResourceDetailText,
+  DownloadRequestText,
 } from '../../datatype';
 import { SampleProposals } from '../features/sample-proposal/sample-proposal';
 
@@ -1010,6 +1023,7 @@ export const MENU_ROUTES: Record<string, string> = {
   tv: '/training-videos',
   art: '/articles',
   web: '/webinars',
+  crs: '/courses',
 };
 
 // Topbar me dikhne wala page ka naam (URL => title)
@@ -1033,12 +1047,16 @@ export const MOCK_PAGE_TITLES: Record<string, string> = {
   '/update-payment': 'Update Payment Details',
   '/change-password': 'Change Password',
   '/sample-proposals': 'Sample Proposals',
+  '/sample-proposal': 'Sample Proposal',
   '/ebooks': 'EBooks',
+  '/ebook': 'EBook',
   '/training-videos': 'Training Videos',
   '/articles': 'Articles',
   '/article': 'Article',
   '/webinars': 'Webinars',
   '/webinar': 'Webinar',
+  '/courses': 'Courses',
+  '/course': 'Course',
 };
 
 /* =====================================================
@@ -1067,12 +1085,16 @@ export const MOCK_PAGE_CRUMBS: Record<string, string[]> = {
   '/update-payment': ['Account', 'Update Payment Details'],
   '/change-password': ['Account', 'Change Password'],
   '/sample-proposals': ['Resources', 'Sample Proposals'],
+  '/sample-proposal': ['Resources', 'Sample Proposals', 'Sample Proposal'],
   '/ebooks': ['Resources', 'EBooks'],
+  '/ebook': ['Resources', 'EBooks', 'EBook'],
   '/training-videos': ['Resources', 'Training Videos'],
   '/articles': ['Resources', 'Articles'],
   '/article': ['Resources', 'Articles', 'Article'],
   '/webinars': ['Resources', 'Webinars'],
   '/webinar': ['Resources', 'Webinars', 'Webinar'],
+  '/courses': ['Resources', 'Courses'],
+  '/course': ['Resources', 'Courses', 'Course'],
 };
 
 /* =====================================================
@@ -6537,18 +6559,7 @@ export const MOCK_ARTICLES: Article[] = [
   mkArticle(21, 'How a Small NGO Won Its First $100,000 Grant', 'stories', 60),
   mkArticle(22, "From Pilot to Scale: A Youth Program's Funding Journey", 'stories', 66),
 ];
-/* =====================================================
-   mock-data.ts ke ekdum END me ye paste karo
 
-   Imports me ye types add karo (datatype se):
-   Webinar, WebinarCategory, WebinarCategoryContent, WebinarCategoryKey,
-   WebinarDetailText, WebinarPageText, WebinarSortOption, WebinarStat,
-   WebinarStatus, WebinarStatusOption, WebinarTrainer
-   ===================================================== */
-
-/* =====================================================
-   35. WEBINARS page ka data
-   ===================================================== */
 export const WEBINAR_DEFAULT_PAGE_SIZE = 8;
 export const WEBINAR_PAGE_SIZES = [4, 8, 12];
 export const WEBINAR_FEATURED_COUNT = 3; // 1 bada + 2 chhote card (sirf "All" + "Latest first" me)
@@ -7133,3 +7144,546 @@ export const getWebinarStatus = (w: Webinar, now: number = Date.now()): WebinarS
 // Baad me Api se aayega: this.api.getWebinar(id)
 export const getWebinar = (id: number): Webinar | null =>
   MOCK_WEBINARS.find((w) => w.id === id) ?? null;
+
+
+export const COURSE_PAGE_SIZES = [4, 8, 12];
+export const COURSE_DEFAULT_PAGE_SIZE = 8;
+
+// Itne minute ya usse kam = "Quick course" badge
+export const COURSE_QUICK_MINUTES = 20;
+
+// Routes (details = /course/:id)
+export const COURSE_ROUTE_LIST = '/courses';
+export const COURSE_ROUTE_DETAIL = '/course';
+
+// localStorage keys (baad me API aaye to getSavedCourseIds / getCourseProgress badal dena)
+export const COURSE_SAVED_KEY = 'gfu_csaved';
+export const COURSE_PROGRESS_KEY = 'gfu_cprog';
+
+export const COURSE_SORT_OPTIONS: CourseSortOption[] = [
+  { key: 'recommended', label: 'Recommended' },
+  { key: 'shortest', label: 'Shortest first' },
+  { key: 'longest', label: 'Longest first' },
+  { key: 'az', label: 'Title A–Z' },
+];
+
+// Naya topic chahiye? Bas yahan ek object add karo (aur datatype me CourseCategoryKey me naam)
+export const COURSE_CATEGORIES: CourseCategory[] = [
+  {
+    key: 'all',
+    label: 'All courses',
+    icon: 'bi-grid',
+    color: '#2a5b9d',
+    tint: '#e8f0fa',
+    from: '#3b82c4',
+    to: '#1f4f8b',
+    blurb: '',
+  },
+  {
+    key: 'ai',
+    label: 'AI & technology',
+    icon: 'bi-cpu',
+    color: '#7c3aed',
+    tint: '#efe9fb',
+    from: '#8b5cc9',
+    to: '#5b2f9a',
+    blurb:
+      'Practical ways to use AI tools in your fundraising work, with clear guidance on quality, privacy and responsible use.',
+  },
+  {
+    key: 'strategy',
+    label: 'Grant strategy',
+    icon: 'bi-bullseye',
+    color: '#2a5b9d',
+    tint: '#e8f0fa',
+    from: '#3b82c4',
+    to: '#1f4f8b',
+    blurb:
+      'Build a clear plan for finding donors, researching grants and keeping your funding sources balanced.',
+  },
+  {
+    key: 'partnerships',
+    label: 'Partnerships',
+    icon: 'bi-people',
+    color: '#c2410c',
+    tint: '#fdeee3',
+    from: '#e08a3c',
+    to: '#b4570f',
+    blurb:
+      'Learn how to open conversations with funders and corporate partners, and keep those relationships strong over time.',
+  },
+  {
+    key: 'csr',
+    label: 'CSR & ESG',
+    icon: 'bi-flower1',
+    color: '#15803d',
+    tint: '#e6f4ea',
+    from: '#22a37f',
+    to: '#0f6f55',
+    blurb:
+      'Understand what CSR and ESG funders look for and how to shape your project and reporting to match.',
+  },
+  {
+    key: 'proposal',
+    label: 'Proposal writing',
+    icon: 'bi-file-earmark-text',
+    color: '#be185d',
+    tint: '#fce7f1',
+    from: '#d9669a',
+    to: '#9c2f65',
+    blurb:
+      'Step-by-step guidance for writing clear, complete proposals that are easy for funders to review and approve.',
+  },
+];
+
+// Hero ke neeche ke 3 stats. {count} = courses, {trainers} = trainers, {hours} = total hours
+export const COURSE_STATS: CourseStat[] = [
+  {
+    icon: 'bi-grid',
+    title: '{count} Courses',
+    sub: 'Learn at your pace',
+    color: '#2a5b9d',
+    tint: '#e8f0fa',
+  },
+  {
+    icon: 'bi-people',
+    title: '{trainers} Trainers',
+    sub: 'Expert-led',
+    color: '#15803d',
+    tint: '#e6f4ea',
+  },
+  {
+    icon: 'bi-clock',
+    title: '{hours} Hours',
+    sub: 'Of learning',
+    color: '#c2410c',
+    tint: '#fdeee3',
+  },
+];
+
+export const COURSE_PAGE_TEXT: CoursePageText = {
+  title: 'Courses',
+  subtitle:
+    'In-depth training to boost your skills in writing proposals, finding donors, researching grants, raising funds and managing your organisation.',
+  searchPlaceholder: 'Search courses, trainers...',
+  searchAria: 'Search courses',
+  featuredLabel: 'Quickest to finish',
+  sortLabel: 'Sort by',
+  showingLabel: 'Showing',
+  ofLabel: 'of',
+  countSingular: 'course',
+  countPlural: 'courses',
+  minUnit: 'min',
+  minutesLabel: 'minutes',
+  quickBadge: 'Quick course',
+  startBtn: 'Start course',
+  saveAria: 'Save course',
+  emptyText: 'No courses match your filters. Try another topic, trainer or length.',
+  noCourses: 'No courses found',
+  loading: 'Loading courses...',
+};
+
+export const COURSE_DETAIL_TEXT: CourseDetailText = {
+  backBtn: 'All courses',
+  quickBadge: 'Quick course',
+  metaTrainer: 'Trainer:',
+  metaSelfPaced: 'Self-paced',
+  lessonSingular: 'lesson',
+  lessonPlural: 'lessons',
+  minUnit: 'min',
+  introTitle: 'Introduction',
+  factVideo: 'Video time',
+  factStudy: 'Study time',
+  factLessons: 'Lessons',
+  learnTitle: 'What you will learn',
+  learnLead: 'The course outlines the following aspects',
+  lessonsTitle: 'Course lessons',
+  lessonsHint: 'Tap a lesson to mark it complete. Your progress is saved on this device.',
+  ctaTitle: 'Ready to begin?',
+  ctaSub: '{min} minutes, self-paced. Pause and come back any time.',
+  trainerTitle: 'Your trainer',
+  trainerRole: 'The Trainer',
+  trainerSoon: 'Trainer profile will be added soon.',
+  progressTitle: 'Your progress',
+  progressText: '{n} of {total} {unit} complete',
+  btnStart: 'Start course',
+  btnContinue: 'Continue course',
+  btnReview: 'Review course',
+  favBtn: 'Save for later',
+  favBtnOn: 'Saved to favorites',
+  copyBtn: 'Copy link',
+  tocTitle: 'On this page',
+  moreTitle: 'More courses',
+  navAria: 'More courses',
+  prev: 'Previous course',
+  next: 'Next course',
+  atFirst: 'This is the first course',
+  atLast: 'This is the last course',
+  toastStarted: 'Course started. Mark each lesson complete as you go.',
+  toastDone: 'Course complete. Well done!',
+  toastSaved: 'Course saved',
+  toastUnsaved: 'Removed from saved',
+  linkCopied: 'Link copied',
+  copyFailed: 'Could not copy the link',
+  loading: 'Loading course...',
+  notFoundTitle: 'Course not found',
+  notFoundText: 'This course may have been moved or removed.',
+};
+
+// Har category ke default "What you will learn" points (course ka apna outcomes na ho to)
+export const COURSE_CATEGORY_OUTCOMES: Record<CourseCategoryKey, string[]> = {
+  ai: [
+    'Use AI tools in your fundraising work with confidence.',
+    'Protect beneficiary and donor information when using digital tools.',
+  ],
+  strategy: [
+    'Plan where to look for donors and grants.',
+    'Balance your funding sources so no single funder carries the organisation.',
+  ],
+  partnerships: [
+    'Open conversations with funders and corporate partners.',
+    'Keep partnerships strong with clear communication over time.',
+  ],
+  csr: [
+    'Understand what CSR and ESG funders look for.',
+    'Shape your project and reporting to match their priorities.',
+  ],
+  proposal: [
+    'Structure each section so reviewers can score it easily.',
+    'Check your draft against a simple pre-submission list.',
+  ],
+};
+
+// Real app me trainers API se aayenge. photo me real image ka url daalo
+export const COURSE_TRAINERS: Record<string, CourseTrainer> = {
+  gopal: {
+    name: 'Gopal Kumar Jain',
+    role: 'The Trainer',
+    bio: [
+      'Gopal Kumar Jain is a senior developmental sector professional with over 25 years of rich experience in the areas of NGO Management, Fundraising, Corporate Partnerships, CSR Management, Branding and Communications, Programme Management and Compliance Management.',
+      'Voiceovers to his videos are provided by Vidushi Jain.',
+    ],
+    tags: ['NGO Management', 'Fundraising', 'CSR Management', 'Compliance'],
+    color: '#2a5b9d',
+  },
+  noriko: {
+    name: 'Noriko Nayuki (Noguchi)',
+    role: 'The Trainer',
+    bio: [], // profile aane par yahan paragraphs daal do
+    tags: [],
+    color: '#be185d',
+  },
+};
+
+const CTR = COURSE_TRAINERS;
+
+// Chhota helper: category aur trainer do, baaki cheezein apne aap aa jaati hain
+const mkCourse = (
+  id: number,
+  title: string,
+  category: CourseCategoryKey,
+  trainer: CourseTrainer,
+  minutes: number,
+  extra: Partial<Course> = {},
+): Course => ({ id, title, category, trainer, minutes, ...extra });
+
+// Real app me ye list API se aayegi (api.ts me getCourses())
+// Apna summary / outcomes / lessons chahiye to extra me daal do
+export const MOCK_COURSES: Course[] = [
+  mkCourse(
+    1,
+    'Using Generative AI to Personalize Grant Applications for Global Foundation Requirements',
+    'ai',
+    CTR['gopal'],
+    60,
+    {
+      summary:
+        'Discover how generative AI can help your NGO tailor grant applications to the requirements of global foundations, with practical ways to personalise each proposal.',
+    },
+  ),
+  mkCourse(
+    2,
+    'Zero Project History? Strategic Grant-Winning Secrets for Newly Registered Global Nonprofits',
+    'strategy',
+    CTR['gopal'],
+    14,
+    {
+      summary:
+        'Learn how a newly registered NGO can build donor trust, show impact without a track record and compete for grants of every size.',
+    },
+  ),
+  mkCourse(
+    3,
+    'AI Data Privacy for NGOs: Safeguarding Vulnerable Beneficiary Information in Digital Proposals',
+    'ai',
+    CTR['gopal'],
+    15,
+    {
+      summary:
+        'See how to use AI responsibly in fundraising and proposal writing, including data protection and keeping beneficiary information safe.',
+    },
+  ),
+  mkCourse(
+    4,
+    'AI Forecasting: Predicting Global Funding Shifts to Adjust Your NGO Sustainability Plan',
+    'ai',
+    CTR['gopal'],
+    13,
+    {
+      summary:
+        'The funding landscape is shifting worldwide. Learn to read the trends and adjust your sustainability plan before they affect you.',
+    },
+  ),
+  mkCourse(5, 'Building Corporate Partnerships for NGOs', 'partnerships', CTR['gopal'], 60, {
+    summary:
+      'Gain the skills to build and sustain partnerships with more than 100 corporate organisations that fund and support NGOs.',
+  }),
+  mkCourse(6, 'How to Write an Effective CSR Proposal', 'csr', CTR['gopal'], 60, {
+    summary:
+      'A complete guide to crafting impactful project proposals tailored to the needs of Corporate Social Responsibility funders.',
+  }),
+  mkCourse(
+    7,
+    'CSR, ESG and Sustainability: Commonalities and Differences. How to Raise Funds in the Changing Face of the Business World',
+    'csr',
+    CTR['gopal'],
+    60,
+    {
+      summary:
+        'Understand how CSR, ESG and sustainability overlap and differ, and how to raise funds as the business world changes.',
+    },
+  ),
+  mkCourse(
+    8,
+    'Why Was Our Application Turned Down? Possible Reasons and How to Prevent It from Happening Again (Part 2)',
+    'proposal',
+    CTR['noriko'],
+    90,
+    {
+      summary:
+        'Explore the common reasons applications are turned down and how to prevent them next time, for individuals and organisations.',
+    },
+  ),
+  mkCourse(9, 'Prompting AI Tools to Research Donors Faster', 'ai', CTR['gopal'], 30),
+  mkCourse(10, 'Using AI to Draft and Edit Grant Narratives', 'ai', CTR['gopal'], 45),
+  mkCourse(11, 'Automating Grant Deadline Tracking with Free Tools', 'ai', CTR['gopal'], 20),
+  mkCourse(12, 'Ethical AI Use in NGO Communications', 'ai', CTR['noriko'], 25),
+  mkCourse(13, 'Building a Diversified Funding Strategy', 'strategy', CTR['gopal'], 60),
+  mkCourse(14, 'How to Research Grants Like a Professional', 'strategy', CTR['gopal'], 45),
+  mkCourse(15, 'Finding the Right Donor for Your Programme', 'strategy', CTR['gopal'], 60),
+  mkCourse(16, 'Planning Your Fundraising Calendar for the Year', 'strategy', CTR['noriko'], 30),
+  mkCourse(
+    17,
+    'Funding Sustainability: Reducing Dependence on One Donor',
+    'strategy',
+    CTR['gopal'],
+    75,
+  ),
+  mkCourse(18, 'Crowdfunding Basics for Small NGOs', 'strategy', CTR['noriko'], 40),
+  mkCourse(
+    19,
+    'Approaching Corporate Donors: A First-Meeting Guide',
+    'partnerships',
+    CTR['gopal'],
+    45,
+  ),
+  mkCourse(20, 'Managing Long-Term Donor Relationships', 'partnerships', CTR['noriko'], 60),
+  mkCourse(21, 'Foundation Funding 101: How Foundations Decide', 'partnerships', CTR['gopal'], 50),
+  mkCourse(22, 'Building Alliances with Local Government', 'partnerships', CTR['noriko'], 35),
+  mkCourse(23, 'Aligning Your Project with CSR Priorities', 'csr', CTR['gopal'], 45),
+  mkCourse(24, 'Measuring and Reporting CSR Impact', 'csr', CTR['gopal'], 60),
+  mkCourse(25, 'ESG Reporting Basics for Nonprofits', 'csr', CTR['noriko'], 40),
+  mkCourse(26, 'Employee Volunteering Programmes as a Funding Bridge', 'csr', CTR['gopal'], 25),
+  mkCourse(27, 'Writing a Strong Problem Statement', 'proposal', CTR['noriko'], 40),
+  mkCourse(28, 'Budgets That Funders Trust: A Step-by-Step Guide', 'proposal', CTR['gopal'], 75),
+  mkCourse(29, 'Logical Frameworks Made Simple', 'proposal', CTR['gopal'], 60),
+  mkCourse(30, 'Editing Your Proposal Before You Submit', 'proposal', CTR['noriko'], 30),
+  mkCourse(31, 'Responding to Funder Feedback and Reapplying', 'proposal', CTR['noriko'], 45),
+  mkCourse(32, 'Writing an Executive Summary That Gets Read', 'proposal', CTR['gopal'], 20),
+];
+
+/* ----- Course helpers (list + details dono page use karte hain) ----- */
+
+// Baad me Api se aayega: this.api.getCourse(id)
+export const getCourse = (id: number): Course | null =>
+  MOCK_COURSES.find((c) => c.id === id) ?? null;
+
+// Lessons nahi diye to ek "SlideShow" lesson ban jaata hai
+export const getCourseLessons = (c: Course): CourseLesson[] =>
+  c.lessons?.length
+    ? c.lessons
+    : [{ title: `${c.title} - SlideShow`, format: 'PDF slides', minutes: c.minutes }];
+
+// "What you will learn": apna outcomes, nahi to summary + category ke default points
+export const getCourseOutcomes = (c: Course): string[] => {
+  if (c.outcomes?.length) return c.outcomes;
+  const blurb = COURSE_CATEGORIES.find((x) => x.key === c.category)?.blurb ?? '';
+  return [c.summary || blurb, ...COURSE_CATEGORY_OUTCOMES[c.category]];
+};
+
+// "Noriko Nayuki (Noguchi)" => "NN"
+export const getInitials = (name: string): string => {
+  const parts = name
+    .replace(/\(.*\)/, '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (!parts.length) return '';
+  return (parts[0][0] + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase();
+};
+
+/* ----- Saved courses + progress (abhi localStorage, baad me API) ----- */
+const csRead = <T>(key: string, fallback: T): T => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const csWrite = (key: string, value: unknown): void => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    /* storage band hai to chup-chaap chhod do */
+  }
+};
+
+export const getSavedCourseIds = (): number[] => csRead<number[]>(COURSE_SAVED_KEY, []);
+
+export const setSavedCourseIds = (ids: number[]): void => csWrite(COURSE_SAVED_KEY, ids);
+
+export const getCourseProgress = (id: number): CourseProgress =>
+  csRead<Record<string, CourseProgress>>(COURSE_PROGRESS_KEY, {})[id] ?? {
+    started: false,
+    done: [],
+  };
+
+export const setCourseProgress = (id: number, p: CourseProgress): void => {
+  const all = csRead<Record<string, CourseProgress>>(COURSE_PROGRESS_KEY, {});
+  all[id] = p;
+  csWrite(COURSE_PROGRESS_KEY, all);
+};
+
+
+/* =====================================================
+   35. PDF VIEWER + SAMPLE PROPOSAL / EBOOK DETAILS
+   ===================================================== */
+
+// pdfUrl na ho to ye demo PDF khulegi. Real PDF aane par bas pdfUrl daalo.
+export const DEMO_PDF_URL =
+  'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf';
+
+// pdf.worker ka path (angular.json ke assets glob se milta hai)
+export const PDF_WORKER_SRC = '/pdfjs/pdf.worker.min.mjs';
+
+export const PDF_ZOOM_STEP = 0.25;
+export const PDF_ZOOM_MIN = 0.5;
+export const PDF_ZOOM_MAX = 3;
+export const PDF_PAGE_GAP_PAD = 32; // fit-width me left-right padding (px)
+export const PDF_ZOOM_PRESETS = [0.5, 0.75, 1, 1.25, 1.5, 2, 3];
+export const PDF_THUMB_WIDTH = 120; // sidebar thumbnail ki width (px)
+
+export const PDF_VIEWER_TEXT: PdfViewerText = {
+  pageLabel: 'Page',
+  first: 'First page',
+  last: 'Last page',
+  prev: 'Previous page',
+  next: 'Next page',
+  zoomIn: 'Zoom in',
+  zoomOut: 'Zoom out',
+  zoomLabel: 'Zoom level',
+  fitWidth: 'Fit to width',
+  fitPage: 'Fit to page',
+  rotateCw: 'Rotate clockwise',
+  rotateCcw: 'Rotate counterclockwise',
+  sidebar: 'Toggle page thumbnails',
+  tools: 'Tools',
+  fullscreen: 'Presentation mode',
+  exitFullscreen: 'Exit presentation mode',
+  print: 'Print',
+  preparingPrint: 'Preparing document for print...',
+  download: 'Download PDF',
+  handTool: 'Hand tool',
+  loading: 'Loading document...',
+  errorTitle: 'Could not load this PDF',
+  errorText: 'Check your connection or try again in a moment.',
+  retry: 'Try again',
+};
+
+export const SP_ROUTE_LIST = '/sample-proposals';
+export const EB_ROUTE_LIST = '/ebooks';
+
+export const SP_DETAIL_TEXT: ResourceDetailText = {
+  backBtn: 'All sample proposals',
+  eyebrow: 'SAMPLE PROPOSAL',
+  readBtn: 'Read online',
+  downloadBtn: 'Download PDF',
+  addToList: 'Add to Download List',
+  inList: 'In Download List',
+  favBtn: 'Save to favorites',
+  favBtnOn: 'Saved to favorites',
+  copyBtn: 'Copy link',
+  linkCopied: 'Link copied',
+  copyFailed: 'Could not copy the link',
+  aboutTitle: 'About this proposal',
+  defaultAbout:
+    'A complete sample grant proposal you can read online. Use its structure, wording and budget layout as a guide for your own application.',
+  topicsTitle: 'What is inside',
+  previewTitle: 'Read the proposal',
+  previewSub: 'Scroll to read, or use the toolbar to zoom, jump to a page or go full screen.',
+  factFile: 'File',
+  factPages: 'Pages',
+  factUpdated: 'Updated',
+  factArea: 'Area of interest',
+  notFoundTitle: 'Sample proposal not found',
+  notFoundText: 'This proposal may have been moved or removed.',
+  notFoundBtn: 'Back to sample proposals',
+};
+
+export const EB_DETAIL_TEXT: ResourceDetailText = {
+  backBtn: 'All ebooks',
+  eyebrow: 'EBOOK',
+  readBtn: 'Read online',
+  downloadBtn: 'Download PDF',
+  addToList: '',
+  inList: '',
+  favBtn: 'Save to favorites',
+  favBtnOn: 'Saved to favorites',
+  copyBtn: 'Copy link',
+  linkCopied: 'Link copied',
+  copyFailed: 'Could not copy the link',
+  aboutTitle: 'About this ebook',
+  defaultAbout:
+    'A free guide to help you raise funds and run stronger programs. Read it online or download the PDF to keep.',
+  topicsTitle: 'What you will learn',
+  previewTitle: 'Read the ebook',
+  previewSub: 'Scroll to read, or use the toolbar to zoom, jump to a page or go full screen.',
+  factFile: 'File',
+  factPages: 'Pages',
+  factUpdated: 'Updated',
+  factArea: 'Area of interest',
+  notFoundTitle: 'Ebook not found',
+  notFoundText: 'This ebook may have been moved or removed.',
+  notFoundBtn: 'Back to ebooks',
+};
+
+// Baad me Api se aayega: this.api.getSampleProposal(id) / getEbook(id)
+export const getSampleProposal = (id: string | null): SampleProposal | null =>
+  MOCK_SAMPLE_PROPOSALS.find((p) => String(p.id) === id) ?? null;
+
+export const getEbook = (id: string | null): Ebook | null =>
+  MOCK_EBOOKS.find((b) => String(b.id) === id) ?? null;
+
+export const SP_REQUEST_TEXT: DownloadRequestText = {
+  requestBtn: 'Request to Download',
+  inList: 'View Download List',
+  viewList: 'View Download List',
+  limitReached: 'Download limit reached for this plan period.',
+  added: 'Added to your Download List',
+  usedLabel: 'downloads used',
+  leftLabel: 'left',
+  note: 'Sample proposals can only be downloaded through your Download List, within your plan limit.',
+  noteFull: 'You have used all your downloads. New downloads open in your next plan period.',
+};

@@ -1,0 +1,133 @@
+<div #rootEl class="pdfv" [class.fs]="fullscreen()" [style.height]="fullscreen() ? '100vh' : height()">
+  <!-- ===== Toolbar ===== -->
+  <div class="pdfv-bar" role="toolbar">
+    <div class="pdfv-g">
+      <button type="button" class="pdfv-b" [class.on]="sidebarOpen()" [title]="text.sidebar" [attr.aria-label]="text.sidebar" [attr.aria-pressed]="sidebarOpen()" (click)="toggleSidebar()">
+        <i class="bi bi-layout-sidebar"></i>
+      </button>
+      <span class="pdfv-sep"></span>
+
+      <button type="button" class="pdfv-b" [title]="text.first" [attr.aria-label]="text.first" [disabled]="current() <= 1" (click)="goTo(1)">
+        <i class="bi bi-chevron-bar-up"></i>
+      </button>
+      <button type="button" class="pdfv-b" [title]="text.prev" [attr.aria-label]="text.prev" [disabled]="current() <= 1" (click)="goTo(current() - 1)">
+        <i class="bi bi-chevron-up"></i>
+      </button>
+
+      <span class="pdfv-pi">
+        <input
+          #pageIn
+          type="number"
+          min="1"
+          [max]="numPages()"
+          [value]="current()"
+          [attr.aria-label]="text.pageLabel"
+          (change)="onPageInput(pageIn)"
+          (keydown.enter)="onPageInput(pageIn)"
+        />
+        <span>/ {{ numPages() }}</span>
+      </span>
+
+      <button type="button" class="pdfv-b" [title]="text.next" [attr.aria-label]="text.next" [disabled]="current() >= numPages()" (click)="goTo(current() + 1)">
+        <i class="bi bi-chevron-down"></i>
+      </button>
+      <button type="button" class="pdfv-b" [title]="text.last" [attr.aria-label]="text.last" [disabled]="current() >= numPages()" (click)="goTo(numPages())">
+        <i class="bi bi-chevron-bar-down"></i>
+      </button>
+    </div>
+
+    <div class="pdfv-g">
+      <button type="button" class="pdfv-b" [title]="text.zoomOut" [attr.aria-label]="text.zoomOut" (click)="zoomOut()">
+        <i class="bi bi-dash-lg"></i>
+      </button>
+      <button type="button" class="pdfv-b" [title]="text.zoomIn" [attr.aria-label]="text.zoomIn" (click)="zoomIn()">
+        <i class="bi bi-plus-lg"></i>
+      </button>
+      <select class="pdfv-sel" [attr.aria-label]="text.zoomLabel" (change)="onZoomSelect($any($event.target).value)">
+        @for (o of zoomOptions(); track o.v) {
+          <option [value]="o.v" [selected]="o.v === zoomValue()">{{ o.l }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="pdfv-g">
+      <button type="button" class="pdfv-b" [title]="text.rotateCw" [attr.aria-label]="text.rotateCw" (click)="rotate(90)">
+        <i class="bi bi-arrow-clockwise"></i>
+      </button>
+      <button type="button" class="pdfv-b" [title]="text.rotateCcw" [attr.aria-label]="text.rotateCcw" (click)="rotate(-90)">
+        <i class="bi bi-arrow-counterclockwise"></i>
+      </button>
+
+      <div class="pdfv-tools">
+        <button type="button" class="pdfv-b" [class.on]="toolsOpen()" [title]="text.tools" [attr.aria-label]="text.tools" aria-haspopup="menu" [attr.aria-expanded]="toolsOpen()" (click)="toggleTools($event)">
+          <i class="bi bi-list"></i>
+        </button>
+
+        @if (toolsOpen()) {
+          <div class="pdfv-menu" role="menu" (click)="$event.stopPropagation()">
+            <button type="button" role="menuitem" (click)="toggleFullscreen()">
+              <i class="bi" [class.bi-fullscreen]="!fullscreen()" [class.bi-fullscreen-exit]="fullscreen()"></i>
+              {{ fullscreen() ? text.exitFullscreen : text.fullscreen }}
+            </button>
+
+            @if (allowPrint()) {
+              <button type="button" role="menuitem" [disabled]="printing()" (click)="printDoc()">
+                <i class="bi bi-printer"></i>{{ text.print }}
+              </button>
+            }
+            @if (allowDownload()) {
+              <a role="menuitem" [href]="src()" [attr.download]="fileName()" target="_blank" rel="noopener">
+                <i class="bi bi-download"></i>{{ text.download }}
+              </a>
+            }
+
+            <hr />
+            <button type="button" role="menuitem" [disabled]="current() <= 1" (click)="goTo(1); toolsOpen.set(false)">
+              <i class="bi bi-chevron-bar-up"></i>{{ text.first }}
+            </button>
+            <button type="button" role="menuitem" [disabled]="current() >= numPages()" (click)="goTo(numPages()); toolsOpen.set(false)">
+              <i class="bi bi-chevron-bar-down"></i>{{ text.last }}
+            </button>
+
+            <hr />
+            <button type="button" role="menuitemcheckbox" [class.on]="hand()" [attr.aria-checked]="hand()" (click)="toggleHand()">
+              <i class="bi bi-hand-index"></i>{{ text.handTool }}
+              @if (hand()) {
+                <i class="bi bi-check2 end"></i>
+              }
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Body: sidebar + pages ===== -->
+  <div class="pdfv-body">
+    <aside #sideEl class="pdfv-side" [class.open]="sidebarOpen()" (click)="onThumbClick($event)">
+      <div #thumbsEl class="pdfv-thumbs"></div>
+    </aside>
+
+    <div class="pdfv-main">
+      <div #scroller class="pdfv-scroll" [class.hand]="hand()" [class.grabbing]="false" (scroll)="onScroll()" (mousedown)="onDragStart($event)">
+        <div #pagesEl class="pdfv-pages"></div>
+      </div>
+
+      @if (loading()) {
+        <div class="pdfv-ov" aria-live="polite">
+          <span class="pdfv-sp"></span>
+          <p>{{ text.loading }}</p>
+        </div>
+      }
+
+      @if (error()) {
+        <div class="pdfv-ov">
+          <i class="bi bi-exclamation-circle pdfv-ei"></i>
+          <b>{{ text.errorTitle }}</b>
+          <p>{{ text.errorText }}</p>
+          <button type="button" class="btn" (click)="retry()">{{ text.retry }}</button>
+        </div>
+      }
+    </div>
+  </div>
+</div>

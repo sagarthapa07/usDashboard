@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SampleProposal } from './sample-proposal';
+// import { SampleProposals } from './sample-proposal';
 
 describe('SampleProposal', () => {
   let component: SampleProposal;
