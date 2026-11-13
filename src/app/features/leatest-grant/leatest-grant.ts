@@ -65,16 +65,8 @@ export class LeatestGrant implements OnInit {
   private readonly memberKey = 'q4kvSpcHhvH7Ldy5EfUsZA||';
 
   private readonly tones = [
-    'blue',
-    'red',
-    'indigo',
-    'gold',
-    'pink',
-    'slate',
-    'green',
-    'purple',
-    'teal',
-    'orange',
+    'blue', 'red', 'indigo', 'gold', 'pink',
+    'slate', 'green', 'purple', 'teal', 'orange',
   ];
 
   sortOptions: SortOption[] = LATEST_SORT_OPTIONS;
@@ -99,6 +91,7 @@ export class LeatestGrant implements OnInit {
   detail: GrantDetailView | null = null;
   detailLoading = false;
   detailError = false;
+  detailErrMsg = '';
   private detailCache = new Map<number | string, GrantDetailView>();
 
   private listScroll = 0;
@@ -218,41 +211,41 @@ export class LeatestGrant implements OnInit {
     this.detailError = false;
     this.cdr.markForCheck();
 
+    this.detailErrMsg = '';
+
     this.api.getUsGrantDetail(payload).subscribe({
-      next: (res) => {
+      next: (res: any) => {
+        // Beech me user ne dusri grant select kar li to ye response ignore
         if (this.selected?.id !== g.id) return;
 
         console.log('Detail response:', res);
 
         try {
-          // res.result ho ya interceptor ne already unwrap kar diya ho, dono chalega
           const wrapped = res?.result ? res : res?.grantTitle ? { result: res } : res;
           const view = this.mapDetail(wrapped);
           if (view) {
             this.detailCache.set(g.id, view);
             this.detail = view;
             this.detailError = false;
+            this.detailErrMsg = '';
           } else {
-            console.error('Detail: result missing, res =', res);
             this.detailError = true;
+            this.detailErrMsg = 'result missing: keys = ' + Object.keys(res ?? {}).join(', ');
           }
-        } catch (e) {
-          console.error('Detail: mapDetail crashed:', e, res);
+        } catch (e: any) {
+          console.error('mapDetail crashed:', e);
           this.detailError = true;
+          this.detailErrMsg = 'mapDetail crash: ' + (e?.message ?? e);
         }
 
         this.detailLoading = false;
         this.cdr.markForCheck();
       },
       error: (err) => {
-        console.error('Detail API error:', {
-          status: err?.status,
-          body: err?.error,
-          payload,
-          listUrl: g.url,
-        });
+        console.error('Detail API error:', err);
         if (this.selected?.id !== g.id) return;
         this.detailError = true;
+        this.detailErrMsg = `HTTP ${err?.status} ${err?.message ?? ''}`;
         this.detailLoading = false;
         this.cdr.markForCheck();
       },

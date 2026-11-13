@@ -164,6 +164,7 @@
               Details load nahi ho paye.
               <button type="button" class="d-retry" (click)="retryDetail()">Retry</button>
             </p>
+            <p class="d-loading"><small>{{ detailErrMsg }}</small></p>
           } @else {
             <p>{{ detail?.intro || g.description || g.title }}</p>
           }
