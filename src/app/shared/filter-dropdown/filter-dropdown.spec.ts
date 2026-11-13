@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ProfileDropdown } from './profile-dropdown';
+import { FilterDropdown } from './filter-dropdown';
 
-describe('ProfileDropdown', () => {
-  let component: ProfileDropdown;
-  let fixture: ComponentFixture<ProfileDropdown>;
+describe('FilterDropdown', () => {
+  let component: FilterDropdown;
+  let fixture: ComponentFixture<FilterDropdown>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProfileDropdown]
+      imports: [FilterDropdown]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ProfileDropdown);
+    fixture = TestBed.createComponent(FilterDropdown);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -41,7 +41,7 @@
   <!-- ============ DESIGN 2: DETAILED ============ -->
   <article class="gc gc-detailed">
     <div class="gc-top">
-      <div class="gc-icon tone-{{ grant.tone }}"><i class="bi {{ grant.icon }}"></i></div>
+      <!-- <div class="gc-icon tone-{{ grant.tone }}"><i class="bi {{ grant.icon }}"></i></div> -->
 
       <div class="gc-body">
         <h3 class="gc-title">{{ grant.title }}</h3>
@@ -91,7 +91,11 @@
 } @else {
   <!-- ============ DESIGN 3: ROW (table / list) ============ -->
   <article class="gc gc-row-card" [class.sel]="selected">
-    <div class="gc-icon tone-{{ grant.tone }}"><i class="bi {{ grant.icon }}"></i></div>
+    @if (grant.image) {
+      <img class="thumb-img" [src]="grant.image" [alt]="grant.title" loading="lazy" />
+    } @else {
+      <i class="bi"></i>
+    }
 
     <div class="gc-body">
       <div class="gcr-badges">

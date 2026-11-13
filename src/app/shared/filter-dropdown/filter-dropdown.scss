@@ -1,0 +1,229 @@
+:host {
+  display: block;
+}
+
+.fd {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.fd-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: var(--smallFont);
+  font-weight: 600;
+  color: var(--menuTextClr);
+}
+
+.fd-control {
+  position: relative;
+}
+
+/* ---------- Trigger ---------- */
+.fd-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  height: 38px;
+  padding: 0 52px 0 10px;
+  font: inherit;
+  font-size: var(--bodyFont);
+  text-align: left;
+  color: var(--textClr);
+  background: var(--cardBgClr);
+  border: var(--border);
+  border-radius: var(--radiusSm);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    border-color: var(--primaryClr);
+  }
+}
+
+.fd--open .fd-trigger {
+  border-color: var(--primaryClr);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primaryClr) 15%, transparent);
+}
+
+.fd-value,
+.fd-placeholder {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fd-placeholder {
+  color: var(--mutedClr);
+}
+
+.fd-caret {
+  position: absolute;
+  right: 12px;
+  flex-shrink: 0;
+  color: var(--mutedClr);
+  transition: transform 0.15s;
+}
+
+.fd--open .fd-caret {
+  transform: rotate(180deg);
+}
+
+.fd-clear {
+  position: absolute;
+  top: 50%;
+  right: 30px;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--mutedClr);
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--textClr);
+    background: var(--primaryLightClr);
+  }
+}
+
+/* ---------- Panel (solid background) ---------- */
+.fd-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 50;
+  min-width: 100%;
+  width: max-content;
+  max-width: min(320px, 90vw);
+  overflow: hidden;
+  background: var(--whiteClr);
+  border: var(--border);
+  border-radius: var(--radiusSm);
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--textClr) 22%, transparent);
+}
+
+/* Select All row */
+.fd-all {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  font-size: var(--bodyFont);
+  font-weight: 600;
+  color: var(--textClr);
+  background: var(--whiteClr);
+  border-bottom: var(--border);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--primaryLightClr);
+  }
+}
+
+/* Search (borderless, neeche line) */
+.fd-search {
+  display: block;
+  width: 100%;
+  height: 40px;
+  padding: 0 14px;
+  font: inherit;
+  font-size: var(--bodyFont);
+  color: var(--textClr);
+  background: var(--whiteClr);
+  border: 0;
+  border-bottom: var(--border);
+  border-radius: 0;
+  outline: none;
+
+  &::placeholder {
+    color: var(--mutedClr);
+  }
+}
+
+/* ---------- List ---------- */
+.fd-list {
+  max-height: 240px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+  background: var(--whiteClr);
+}
+
+.fd-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  font-size: var(--bodyFont);
+  color: var(--textClr);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--primaryLightClr);
+  }
+}
+
+/* Single-select me selected row highlight */
+.fd-option--active {
+  font-weight: 600;
+  color: var(--primaryClr);
+  background: var(--primaryLightClr);
+}
+
+/* ---------- Checkbox ---------- */
+.fd-check {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  background: var(--whiteClr);
+  border: 2px solid var(--primaryClr);
+  border-radius: 3px;
+
+  &--on {
+    background: var(--primaryClr);
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 0;
+      width: 5px;
+      height: 10px;
+      border: solid var(--whiteClr);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+  }
+}
+
+/* ---------- Messages ---------- */
+.fd-msg {
+  padding: 12px;
+  font-size: var(--bodyFont);
+  text-align: center;
+  color: var(--mutedClr);
+}
+
+.fd-retry {
+  margin-left: 6px;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--primaryClr);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}

@@ -1,0 +1,83 @@
+<div class="dp" [class.dp--open]="open()" [class.dp--right]="alignRight()">
+  @if (label()) {
+    <label class="dp-label">{{ label() }}</label>
+  }
+
+  <div class="dp-control">
+    <button type="button" class="dp-trigger" aria-haspopup="dialog" [attr.aria-expanded]="open()" (click)="toggle()">
+      @if (display()) {
+        <span class="dp-value">{{ display() }}</span>
+      } @else {
+        <span class="dp-placeholder">{{ placeholder() }}</span>
+      }
+      <svg class="dp-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+    </button>
+
+    @if (value()) {
+      <button type="button" class="dp-clear" aria-label="Clear date" (click)="clear($event)">×</button>
+    }
+  </div>
+
+  @if (open()) {
+    <div class="dp-panel" role="dialog">
+      <!-- Header:  ‹  [Nov]  [2026]  › -->
+      <div class="dp-head">
+        <button type="button" class="dp-nav" aria-label="Previous month" (click)="prevMonth()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <select class="dp-select" aria-label="Month" [value]="viewMonth()" (change)="onMonthChange($event)">
+          @for (m of months; track m.index) {
+            <option [value]="m.index" [selected]="m.index === viewMonth()">{{ m.short }}</option>
+          }
+        </select>
+
+        <select class="dp-select" aria-label="Year" [value]="viewYear()" (change)="onYearChange($event)">
+          @for (y of years; track y) {
+            <option [value]="y" [selected]="y === viewYear()">{{ y }}</option>
+          }
+        </select>
+
+        <button type="button" class="dp-nav" aria-label="Next month" (click)="nextMonth()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Weekdays -->
+      <div class="dp-week">
+        @for (w of weekdays; track w) {
+          <span>{{ w }}</span>
+        }
+      </div>
+
+      <!-- Days -->
+      <div class="dp-grid">
+        @for (d of days(); track d.date) {
+          <button
+            type="button"
+            class="dp-day"
+            [class.dp-day--out]="!d.inMonth"
+            [class.dp-day--today]="d.date === today"
+            [class.dp-day--selected]="d.date === value()"
+            [disabled]="d.disabled"
+            (click)="pick(d)"
+          >
+            {{ d.day }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+</div>

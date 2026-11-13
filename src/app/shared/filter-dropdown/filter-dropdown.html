@@ -1,0 +1,75 @@
+<div class="fd" [class.fd--open]="open()">
+  <label class="fd-label">{{ label() ?? config().label }}</label>
+
+  <div class="fd-control">
+    <button
+      type="button"
+      class="fd-trigger"
+      aria-haspopup="listbox"
+      [attr.aria-expanded]="open()"
+      (click)="toggle()"
+    >
+      @if (display()) {
+        <span class="fd-value">{{ display() }}</span>
+      } @else {
+        <span class="fd-placeholder">{{ placeholder() ?? config().placeholder }}</span>
+      }
+      <svg class="fd-caret" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+        <polygon points="3,8 21,8 12,19"></polygon>
+      </svg>
+    </button>
+
+    @if (selected().length) {
+      <button type="button" class="fd-clear" aria-label="Clear selection" (click)="clear($event)">×</button>
+    }
+  </div>
+
+  @if (open()) {
+    <div class="fd-panel">
+      @if (multiple() && !loading() && !error() && items().length) {
+        <div class="fd-all" (click)="toggleAll()">
+          <span class="fd-check" [class.fd-check--on]="allSelected()"></span>
+          <span class="fd-option-text">Select All</span>
+        </div>
+      }
+
+      @if (config().searchable) {
+        <input
+          class="fd-search"
+          type="text"
+          placeholder="Search"
+          [value]="query()"
+          (input)="onSearch($event)"
+        />
+      }
+
+      <ul class="fd-list" role="listbox" [attr.aria-multiselectable]="multiple()">
+        @if (loading()) {
+          <li class="fd-msg">Loading...</li>
+        } @else if (error()) {
+          <li class="fd-msg">
+            Data load nahi hua.
+            <button type="button" class="fd-retry" (click)="load()">Retry</button>
+          </li>
+        } @else {
+          @for (item of filtered(); track item.id) {
+            <li
+              class="fd-option"
+              role="option"
+              [class.fd-option--active]="isSelected(item) && !multiple()"
+              [attr.aria-selected]="isSelected(item)"
+              (click)="select(item)"
+            >
+              @if (multiple()) {
+                <span class="fd-check" [class.fd-check--on]="isSelected(item)"></span>
+              }
+              <span class="fd-option-text">{{ item.name }}</span>
+            </li>
+          } @empty {
+            <li class="fd-msg">No results</li>
+          }
+        }
+      </ul>
+    </div>
+  }
+</div>

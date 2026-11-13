@@ -15,57 +15,21 @@ button {
   cursor: pointer;
 }
 
-/* ===== collection ke colours (card + drawer dono me use hote hain) ===== */
-$acc: (
-  funding: #2a5b9d,
-  proposal: #0f7a4d,
-  ebook: #7a2fd0,
-  article: #c0245c,
-  video: #c2410c,
-  course: #64748b,
-  donor: #0f766e,
-  all: #2a5b9d,
-);
-$tint: (
-  funding: #e8effa,
-  proposal: #e4f5ec,
-  ebook: #f1e8fc,
-  article: #fce7f0,
-  video: #fdeee3,
-  course: #eef1f5,
-  donor: #e1f5f2,
-  all: #e8effa,
-);
-@each $k, $c in $acc {
+/* ===== collection ke colours (colors global theme me hain) ===== */
+$kinds: 'funding', 'proposal', 'ebook', 'article', 'video', 'course', 'donor', 'all';
+@each $k in $kinds {
   .k-#{$k} {
-    --acc: #{$c};
-  }
-}
-@each $k, $c in $tint {
-  .k-#{$k} {
-    --tint: #{$c};
+    --acc: var(--acc-#{$k});
+    --tint: var(--tint-#{$k});
   }
 }
 
-/* ===== thumbnail ke gradient ===== */
-$tones: (
-  blue: '#4f86d6, #2a5b9d',
-  red: '#e5565f, #b91c3a',
-  indigo: '#6d77e0, #4036a8',
-  gold: '#d9a93a, #a8741a',
-  pink: '#e0589a, #b0236c',
-  slate: '#6b7699, #3a4569',
-  green: '#2fb36a, #0f7a3e',
-  purple: '#a23fcc, #6d2aa8',
-  teal: '#12b088, #07806b',
-  orange: '#f08a3c, #c2561a',
-  navy: '#2a4a8a, #14284b',
-  crimson: '#c0183f, #7a0f2a',
-  dark: '#3a3d46, #17181d',
-);
-@each $name, $pair in $tones {
+/* ===== thumbnail ke gradient (colors global theme me hain) ===== */
+$tones: 'blue', 'red', 'indigo', 'gold', 'pink', 'slate', 'green', 'purple', 'teal', 'orange',
+  'navy', 'crimson', 'dark';
+@each $name in $tones {
   .tn-#{$name} {
-    background: linear-gradient(135deg, #{$pair});
+    background: linear-gradient(135deg, var(--tn-#{$name}));
   }
 }
 
@@ -144,8 +108,8 @@ $tones: (
   align-items: baseline;
   gap: 8px;
   padding: 10px 18px;
-  background: #14284b;
-  color: #fff;
+  background: var(--deepNavyClr);
+  color: var(--whiteClr);
   border-radius: 10px;
   b {
     font: 700 26px/1 var(--headingFontFamily);
@@ -202,8 +166,8 @@ $tones: (
   flex-direction: column;
   padding: 22px;
   border-radius: 16px;
-  background: linear-gradient(160deg, #2f4f93, #14284b);
-  color: #fff;
+  background: linear-gradient(160deg, var(--deepNavyLightClr), var(--deepNavyClr));
+  color: var(--whiteClr);
 }
 .hero-head {
   display: flex;
@@ -215,13 +179,13 @@ $tones: (
     display: grid;
     place-items: center;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.14);
+    background: var(--glassStrongClr);
     font-size: 20px;
   }
   h2 {
     margin: 0;
     font: 700 26px/1.2 var(--headingFontFamily);
-    color: #fff;
+    color: var(--whiteClr);
   }
 }
 .hero-sub {
@@ -232,7 +196,7 @@ $tones: (
 .hero-empty {
   padding: 16px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--glassClr);
   font-size: 13.5px;
 }
 
@@ -246,11 +210,11 @@ $tones: (
   padding: 10px 14px;
   border: 0;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  background: var(--glassClr);
+  color: var(--whiteClr);
   text-align: left;
   &:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--glassHoverClr);
   }
 }
 .dbox {
@@ -260,15 +224,15 @@ $tones: (
   justify-content: center;
   height: 50px;
   border-radius: 8px;
-  background: #fff;
-  color: #14284b;
+  background: var(--whiteClr);
+  color: var(--deepNavyClr);
   small {
     font-size: 10px;
     font-weight: 700;
     line-height: 1;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #c0392b;
+    color: var(--dangerClr);
   }
   b {
     font: 700 21px/1.1 var(--headingFontFamily);
@@ -296,16 +260,16 @@ $tones: (
   font-size: 12px;
   font-weight: 700;
   &.hot {
-    background: #fde4e4;
-    color: #c0262d;
+    background: var(--dangerBgClr);
+    color: var(--dangerClr);
   }
   &.warn {
-    background: #fdebd3;
-    color: #b45309;
+    background: var(--warningBgClr);
+    color: var(--warningClr);
   }
   &.ok {
-    background: #d6f5e3;
-    color: #0f7a3e;
+    background: var(--successBgClr);
+    color: var(--successClr);
   }
 }
 .hero-link {
@@ -314,11 +278,11 @@ $tones: (
   align-self: flex-start;
   border: 0;
   background: none;
-  color: #a9c4ff;
+  color: var(--heroLinkClr);
   font-size: 13.5px;
   font-weight: 700;
   &:hover {
-    color: #fff;
+    color: var(--whiteClr);
   }
 }
 
@@ -332,7 +296,7 @@ $tones: (
   overflow: hidden;
   border: 1px solid var(--borderClr);
   border-radius: 14px;
-  background: linear-gradient(135deg, var(--tint), #fff 80%);
+  background: linear-gradient(135deg, var(--tint), var(--whiteClr) 80%);
   cursor: pointer;
   transition:
     border-color 0.15s,
@@ -344,7 +308,7 @@ $tones: (
     border-color: var(--acc);
     box-shadow:
       0 0 0 1px var(--acc),
-      0 8px 20px rgba(20, 40, 75, 0.1);
+      0 8px 20px color-mix(in srgb, var(--deepNavyClr) 10%, transparent);
   }
 
   &.is-empty {
@@ -359,11 +323,11 @@ $tones: (
       color: var(--mutedClr);
     }
     .ico {
-      background: #dfe4ec;
-      color: #8a94a6;
+      background: var(--disabledBgClr);
+      color: var(--disabledClr);
     }
     .open {
-      color: #b45309;
+      color: var(--warningClr);
     }
   }
 }
@@ -379,7 +343,7 @@ $tones: (
     place-items: center;
     border-radius: 10px;
     background: var(--acc);
-    color: #fff;
+    color: var(--whiteClr);
     font-size: 17px;
   }
   h3 {
@@ -458,27 +422,27 @@ $tones: (
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
     &:nth-child(1) {
       left: 0;
-      background: linear-gradient(160deg, #4f86d6, #2a5b9d);
+      background: linear-gradient(160deg, var(--tn-blue));
       transform: rotate(-14deg);
     }
     &:nth-child(2) {
       left: 26px;
-      background: linear-gradient(160deg, #2fb36a, #0f7a3e);
+      background: linear-gradient(160deg, var(--tn-green));
       transform: rotate(-5deg);
     }
     &.front {
       left: 54px;
       display: grid;
       place-items: center;
-      background: linear-gradient(160deg, #a23fcc, #6d2aa8);
-      color: #fff;
+      background: linear-gradient(160deg, var(--tn-purple));
+      color: var(--whiteClr);
       font-size: 28px;
       transform: rotate(5deg);
     }
   }
 }
 .fc.k-article .stack .front {
-  background: linear-gradient(160deg, #e08a3c, #b85a12);
+  background: linear-gradient(160deg, var(--tn-orange));
 }
 
 /* =============== DRAWER =============== */
@@ -486,7 +450,7 @@ $tones: (
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: rgba(10, 20, 40, 0.45);
+  background: var(--overlayClr);
 }
 .drawer {
   position: fixed;
@@ -517,7 +481,7 @@ $tones: (
   align-items: center;
   gap: 14px;
   padding: 18px 20px;
-  background: linear-gradient(135deg, var(--tint), #fff);
+  background: linear-gradient(135deg, var(--tint), var(--whiteClr));
   .ico {
     flex: 0 0 46px;
     height: 46px;
@@ -525,7 +489,7 @@ $tones: (
     place-items: center;
     border-radius: 12px;
     background: var(--acc);
-    color: #fff;
+    color: var(--whiteClr);
     font-size: 21px;
   }
   h2 {
@@ -546,12 +510,12 @@ $tones: (
   place-items: center;
   border: 2px solid var(--textClr);
   border-radius: 50%;
-  background: #fff;
+  background: var(--whiteClr);
   color: var(--textClr);
   font-size: 15px;
   &:hover {
     background: var(--textClr);
-    color: #fff;
+    color: var(--whiteClr);
   }
 }
 
@@ -613,14 +577,14 @@ $tones: (
   border: 1px solid var(--borderClr);
   border-radius: 10px;
   background: var(--cardBgClr);
-  box-shadow: 0 2px 6px rgba(20, 40, 75, 0.05);
+  box-shadow: var(--shadow);
 }
 
 .thumb {
   display: grid;
   place-items: center;
   min-height: 86px;
-  color: #fff;
+  color: var(--whiteClr);
   font-size: 30px;
 }
 .txt {
@@ -666,7 +630,7 @@ $tones: (
     font-size: 14px;
   }
   .heart {
-    color: #e11d48;
+    color: var(--heartClr);
     &:hover {
       transform: scale(1.15);
     }

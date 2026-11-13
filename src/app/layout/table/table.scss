@@ -8,9 +8,7 @@
   border: var(--border);
   border-radius: 14px;
   overflow: hidden;
-  
 }
-
 
 .gt-row {
   border-bottom: var(--border);
@@ -22,11 +20,11 @@
   }
 
   &:hover {
-    background: #f8fafc;
+    background: var(--bgClr);
   }
 
   &:focus-visible {
-    outline: 2px solid #4f8cff;
+    outline: 2px solid var(--primaryClr);
     outline-offset: -2px;
   }
 }
@@ -38,7 +36,7 @@
   gap: 8px;
   padding: 40px 16px;
   color: var(--mutedClr);
-  font-size: 13.5px;
+  font-size: var(--bodyFont);
 
   .bi {
     font-size: 28px;

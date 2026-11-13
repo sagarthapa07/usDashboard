@@ -32,6 +32,8 @@ export interface GrantCardData {
   isFav?: boolean;
   eligibility?: string[];
   orgType?: string;
+  image?: string; 
+  url?: string;
 }
 export type ResourceType = 'proposal' | 'ebook' | 'video' | 'article' | 'course';
 
@@ -1353,7 +1355,7 @@ export interface PdfViewerText {
   errorTitle: string;
   errorText: string;
   retry: string;
-    first: string;
+  first: string;
   last: string;
   zoomLabel: string;
   fitPage: string;
@@ -1404,3 +1406,102 @@ export interface DownloadRequestText {
   note: string;
   noteFull: string;
 }
+
+export type DropdownType =
+  | 'state'
+  | 'area'
+  | 'county'
+  | 'donorCountry'
+  | 'focusCountry'
+  | 'date'
+  | 'funding';
+
+export interface DropdownItem {
+  id: string | number;
+  name: string;
+}
+
+// State API response
+export interface StateApiItem {
+  countryid: number;
+  countryname: string;
+}
+
+export interface GetStatesResponse {
+  status: number;
+  message: string;
+  countries: StateApiItem[];
+}
+
+// Area of Interest (Issues) API response
+export interface IssueApiItem {
+  id: number;
+  issue: string;
+}
+
+export interface GetIssuesResponse {
+  status: number;
+  message: string;
+  issues: IssueApiItem[];
+}
+
+// ---------- Latest Grants API ----------
+export interface LatestGrantsRequest {
+  pageIndex: number;
+  pageSize: number;
+  userIp: string;
+  memberId: string;
+  platform: string;
+  viewType: string;
+  countries: (number | string)[];
+  issues: (number | string)[];
+  toDate: string | null;
+  fromDate: string | null;
+}
+
+export interface LatestGrantApiItem {
+  id: number;
+  image: string;
+  url: string;
+  title: string;
+  category: string;
+  donorAgency: string;
+  grantSize: string;
+  posted: string; // "November 13, 2026"
+  dateVal: number; // 20261113
+  deadline: string; // "December 01, 2026"
+}
+
+export interface LatestGrantsResponse {
+  message: string;
+  status: number;
+  grants: LatestGrantApiItem[];
+  pageCount: number;
+}
+
+
+// ---------- Grant Detail (side panel) ----------
+export interface GrantDetailRequest {
+  url: string;
+  userIp: string;
+  memberId: string;
+  platform: string;
+}
+
+// Panel me jo data dikhana hai (API response se normalize hoke aayega)
+export interface GrantDetailView {
+  image?: string;
+  description?: string;
+  amount?: string;
+  type?: string;
+  category?: string;
+  location?: string;
+  donor?: string;
+  donorType?: string;
+  posted?: string; // ISO date
+  deadline?: string; // ISO date
+  eligibility?: string[];
+  websiteUrl?: string;
+}
+
+

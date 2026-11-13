@@ -51,16 +51,36 @@
 }
 
 /* ---------- Icon box colors ---------- */
-.tone-blue   { background: linear-gradient(135deg, #4a80c9, #2a5b9d); }
-.tone-red    { background: linear-gradient(135deg, #e0624d, #b03a26); }
-.tone-indigo { background: linear-gradient(135deg, #6366d1, #4346a8); }
-.tone-gold   { background: linear-gradient(135deg, #c9a33a, #92701f); }
-.tone-pink   { background: linear-gradient(135deg, #de5a97, #b02f6c); }
-.tone-slate  { background: linear-gradient(135deg, #6b7a9c, #43506f); }
-.tone-green  { background: linear-gradient(135deg, #2fa162, #167a42); }
-.tone-purple { background: linear-gradient(135deg, #9a4fd0, #6e2fa3); }
-.tone-teal   { background: linear-gradient(135deg, #12b189, #0a8466); }
-.tone-orange { background: linear-gradient(135deg, #e08a45, #b05a1c); }
+.tone-blue {
+  background: linear-gradient(135deg, #4a80c9, #2a5b9d);
+}
+.tone-red {
+  background: linear-gradient(135deg, #e0624d, #b03a26);
+}
+.tone-indigo {
+  background: linear-gradient(135deg, #6366d1, #4346a8);
+}
+.tone-gold {
+  background: linear-gradient(135deg, #c9a33a, #92701f);
+}
+.tone-pink {
+  background: linear-gradient(135deg, #de5a97, #b02f6c);
+}
+.tone-slate {
+  background: linear-gradient(135deg, #6b7a9c, #43506f);
+}
+.tone-green {
+  background: linear-gradient(135deg, #2fa162, #167a42);
+}
+.tone-purple {
+  background: linear-gradient(135deg, #9a4fd0, #6e2fa3);
+}
+.tone-teal {
+  background: linear-gradient(135deg, #12b189, #0a8466);
+}
+.tone-orange {
+  background: linear-gradient(135deg, #e08a45, #b05a1c);
+}
 
 /* =====================================================
    DESIGN 1: TILE
@@ -91,6 +111,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
 
   .gc-fav {
     flex: 0 0 auto;
@@ -208,10 +229,18 @@
     padding: 2px 10px;
     border-radius: 6px;
 
-    &.type-grant      { background: var(--primaryClr); }
-    &.type-program    { background: #b45f1c; }
-    &.type-fellowship { background: #7c3aed; }
-    &.type-scholarship { background: #0f766e; }
+    &.type-grant {
+      background: var(--primaryClr);
+    }
+    &.type-program {
+      background: #b45f1c;
+    }
+    &.type-fellowship {
+      background: #7c3aed;
+    }
+    &.type-scholarship {
+      background: #0f766e;
+    }
   }
 
   .gc-list {
@@ -233,10 +262,27 @@
       color: var(--menuTextClr);
     }
 
-    .gc-amt    { color: #15803d; font-weight: 600; .bi { color: #15803d; } }
-    .gc-amt-na { color: var(--mutedClr); font-weight: 500; }
-    .gc-strong { color: var(--textClr); font-weight: 600; }
-    .gc-posted { color: var(--mutedClr); .bi { color: var(--mutedClr); } }
+    .gc-amt {
+      color: #15803d;
+      font-weight: 600;
+      .bi {
+        color: #15803d;
+      }
+    }
+    .gc-amt-na {
+      color: var(--mutedClr);
+      font-weight: 500;
+    }
+    .gc-strong {
+      color: var(--textClr);
+      font-weight: 600;
+    }
+    .gc-posted {
+      color: var(--mutedClr);
+      .bi {
+        color: var(--mutedClr);
+      }
+    }
   }
 }
 
@@ -387,5 +433,11 @@
   &.sel {
     background: var(--primaryLightClr);
     box-shadow: inset 3px 0 0 var(--primaryClr);
+  }
+  .thumb-img {
+    width: 15%;
+    height: 15%;
+    object-fit: cover;
+    border-radius: 20%;
   }
 }

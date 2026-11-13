@@ -1,11 +1,10 @@
 <div class="lt-page" [class.filters-open]="filtersOpen" [class.detail-open]="detailOpen">
-  <!-- ============ HERO + FILTERS (ek hi box) ============ -->
+  <!-- ============ HERO + FILTERS ============ -->
   <section class="lt-hero">
     <span class="lt-eyebrow">FUNDING OPPORTUNITIES FOR A STRONGER TOMORROW</span>
     <h1>Latest <span>Grants</span></h1>
     <p>Browse newly posted grants, filter them and open any grant to see its details.</p>
 
-    <!-- MOBILE: Filters button (desktop par chhupa rehta hai) -->
     <button type="button" class="lt-filter-toggle" (click)="toggleFilters()">
       <i class="bi bi-funnel"></i>
       Filters
@@ -17,33 +16,22 @@
 
     <div class="lt-filter">
       <div class="lt-field">
-        <label for="lt-state">State</label>
-        <select id="lt-state" [(ngModel)]="draft.state" name="state">
-          <option value="">Select State…</option>
-          @for (s of states; track s.id) {
-            <option [value]="s.name">{{ s.name }}</option>
-          }
-        </select>
+        <app-filter-dropdown type="state" [multiple]="true" [(selected)]="draft.state" />
       </div>
 
       <div class="lt-field">
-        <label for="lt-area">Area of Interest</label>
-        <select id="lt-area" [(ngModel)]="draft.area" name="area">
-          <option value="">Areas of Interest…</option>
-          @for (a of areas; track a.id) {
-            <option [value]="a.name">{{ a.name }}</option>
-          }
-        </select>
+        <app-filter-dropdown type="area" [multiple]="true" [(selected)]="draft.area" />
       </div>
 
-      <div class="lt-field">
-        <label for="lt-from">Published From</label>
-        <input id="lt-from" type="date" [(ngModel)]="draft.from" name="from" />
-      </div>
-
-      <div class="lt-field">
-        <label for="lt-to">Published To</label>
-        <input id="lt-to" type="date" [(ngModel)]="draft.to" name="to" />
+      <div class="lt-range">
+        <app-date-picker placeholder="Published From" [(value)]="draft.from" [max]="draft.to" />
+        <span class="lt-dash">–</span>
+        <app-date-picker
+          placeholder="Published To"
+          [(value)]="draft.to"
+          [min]="draft.from"
+          [alignRight]="true"
+        />
       </div>
 
       <div class="lt-actions">
@@ -65,7 +53,7 @@
       <div class="lt-list-head">
         <div>
           <h2>Grant Listings</h2>
-          <small>Showing {{ pagedCards.length }} of {{ filteredCards.length }} results</small>
+          <small>Showing {{ pagedCards.length }} of {{ totalItems }} results</small>
         </div>
 
         <select
@@ -80,7 +68,17 @@
         </select>
       </div>
 
-      @if (filteredCards.length) {
+      @if (loading) {
+        <div class="no-result">
+          <i class="bi bi-hourglass-split"></i>
+          <span>Loading grants...</span>
+        </div>
+      } @else if (error) {
+        <div class="no-result">
+          <i class="bi bi-exclamation-circle"></i>
+          <span>{{ error }}</span>
+        </div>
+      } @else if (cards.length) {
         <app-table
           [grants]="pagedCards"
           [selectedId]="selected?.id ?? null"
@@ -94,7 +92,7 @@
       }
 
       <app-pagination
-        [totalItems]="filteredCards.length"
+        [totalItems]="totalItems"
         [pageSize]="pageSize"
         [currentPage]="currentPage"
         (pageChange)="onPageChange($event)"
@@ -105,15 +103,16 @@
     <!-- RIGHT: Details panel -->
     @if (selected; as g) {
       <aside class="lt-detail" id="lt-detail">
-        <!-- MOBILE: wapas list par (desktop par chhupa rehta hai) -->
         <button type="button" class="d-back" (click)="closeDetail()">
           <i class="bi bi-arrow-left"></i> Back to results
         </button>
 
-        <!-- Top row: type, status, save -->
+        <!-- Top row -->
         <div class="d-head">
-          <span class="d-type">{{ g.type ?? 'Grant' }}</span>
-          @if (isClosingSoon(g)) {
+          <span class="d-type">{{ detail?.type ?? g.type ?? 'Grant' }}</span>
+          @if (isOngoing()) {
+            <b class="d-status">● ONGOING</b>
+          } @else if (isClosingSoon(g)) {
             <b class="d-status soon">● CLOSING SOON</b>
           } @else {
             <b class="d-status">● OPEN</b>
@@ -135,38 +134,39 @@
         <!-- Title + donor -->
         <h2>{{ g.title }}</h2>
         <div class="d-by">
-          <b>{{ g.donor }}</b> • Posted {{ g.posted | date: 'MMM d, y' }}
+          <b>{{ detail?.donor || g.donor }}</b> • Posted
+          {{ detail?.posted || g.posted | date: 'MMM d, y' }}
         </div>
 
-        <!-- 3 stat boxes -->
-        <div class="d-stats">
-          <div class="st st-green">
-            <small>Grant Range</small>
-            <b>{{ g.amount }}</b>
-          </div>
-          <div class="st st-orange">
-            <small>Deadline</small>
-            <b>{{ g.deadline | date: 'MMM d, y' }}</b>
-          </div>
-          <div class="st">
-            <small>Time left</small>
-            <b>{{ leftLabel(g) }}</b>
-          </div>
-        </div>
-
-        <!-- Location + focus area tags -->
-        <div class="d-tags">
-          <span><i class="bi bi-geo-alt"></i>{{ g.state }}</span>
-          <span><i class="bi bi-tag"></i>{{ g.category }}</span>
+        <!-- Chips -->
+        <div class="d-chips">
+          <span class="green">{{ detail?.amount ?? g.amount }}</span>
+          <span class="orange">
+            Deadline:
+            @if (isOngoing()) {
+              Ongoing
+            } @else {
+              {{ deadlineOf(g) | date: 'MMM d, y' }}
+            }
+          </span>
+          <span class="plain" [attr.title]="detail?.locationFull || null">
+            {{ detail?.locationLabel ?? g.state }}
+          </span>
         </div>
 
         <!-- Grant Intro -->
         <div class="d-sec">
           <h4>Grant Intro</h4>
-          <p>
-            {{ g.description ?? g.title }} {{ g.donor }} invites proposals that strengthen
-            communities.
-          </p>
+          @if (detailLoading) {
+            <p class="d-loading"><i class="bi bi-hourglass-split"></i> Loading details...</p>
+          } @else if (detailError) {
+            <p class="d-loading">
+              Details load nahi ho paye.
+              <button type="button" class="d-retry" (click)="retryDetail()">Retry</button>
+            </p>
+          } @else {
+            <p>{{ detail?.intro || g.description || g.title }}</p>
+          }
         </div>
 
         <!-- Funding -->
@@ -175,20 +175,18 @@
           <dl>
             <div>
               <dt>Grant Range</dt>
-              <dd>{{ g.amount }}</dd>
+              <dd>{{ detail?.amount ?? g.amount }}</dd>
             </div>
             <div>
               <dt>Grant Type</dt>
-              <dd>{{ g.type ?? 'Grant' }}</dd>
+              <dd>{{ detail?.type ?? g.type ?? 'Grant' }}</dd>
             </div>
-            <div>
-              <dt>Focus Area</dt>
-              <dd>{{ g.category }}</dd>
-            </div>
-            <div>
-              <dt>Location</dt>
-              <dd>{{ g.state }}</dd>
-            </div>
+            @if (detail?.duration) {
+              <div>
+                <dt>Duration</dt>
+                <dd>{{ detail?.duration }}</dd>
+              </div>
+            }
           </dl>
         </div>
 
@@ -198,11 +196,7 @@
           <dl>
             <div>
               <dt>Donor Name</dt>
-              <dd>{{ g.donor }}</dd>
-            </div>
-            <div>
-              <dt>Donor Type</dt>
-              <dd>{{ sourceLabel(g) }}</dd>
+              <dd>{{ detail?.donor || g.donor }}</dd>
             </div>
           </dl>
         </div>
@@ -213,29 +207,46 @@
           <dl>
             <div>
               <dt>Deadline</dt>
-              <dd class="warn">{{ g.deadline | date: 'MMM d, y' }}</dd>
+              <dd class="warn">
+                @if (isOngoing()) {
+                  Ongoing
+                } @else {
+                  {{ deadlineOf(g) | date: 'MMM d, y' }}
+                }
+              </dd>
             </div>
             <div>
               <dt>Post Date</dt>
-              <dd>{{ g.posted | date: 'MMM d, y' }}</dd>
+              <dd>{{ detail?.posted || g.posted | date: 'MMM d, y' }}</dd>
             </div>
           </dl>
         </div>
 
         <!-- Eligibility -->
-        <div class="d-sec">
-          <h4>Eligibility</h4>
-          <ul>
-            @for (e of eligibilityOf(g); track $index) {
-              <li>{{ e }}</li>
-            }
-          </ul>
-        </div>
+        @if (detail?.eligibility?.length) {
+          <div class="d-sec">
+            <h4>Eligibility</h4>
+            <ul>
+              @for (e of detail!.eligibility; track $index) {
+                <li>{{ e }}</li>
+              }
+            </ul>
+          </div>
+        } @else if (detail?.contentHtml) {
+          <div class="d-sec">
+            <h4>About this Grant</h4>
+            <div class="d-content" [innerHTML]="detail!.contentHtml"></div>
+          </div>
+        }
 
         <!-- Actions -->
         <div class="d-actions">
           <app-buttons (click)="onView(g)">View Full Details →</app-buttons>
-          <app-buttons variant="outline" icon="bi-bell" (click)="onAlert(g)">Set Alert</app-buttons>
+          @if (detail?.linkUrl) {
+            <app-buttons variant="outline" icon="bi-box-arrow-up-right" (click)="onApply()">
+              Official Website
+            </app-buttons>
+          }
         </div>
       </aside>
     }

@@ -123,9 +123,7 @@ export const MOCK_STATES: DropdownItem[] = toItems([
   'West Virginia',
   'Wisconsin',
   'Wyoming',
-  'Florida',
   'Kentucky',
-  'Texas',
 ]);
 
 export const MOCK_AREAS: DropdownItem[] = toItems([

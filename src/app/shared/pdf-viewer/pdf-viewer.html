@@ -1,16 +1,43 @@
-<div #rootEl class="pdfv" [class.fs]="fullscreen()" [style.height]="fullscreen() ? '100vh' : height()">
+<div
+  #rootEl
+  class="pdfv"
+  [class.fs]="fullscreen()"
+  [style.height]="fullscreen() ? '100vh' : height()"
+>
   <!-- ===== Toolbar ===== -->
   <div class="pdfv-bar" role="toolbar">
     <div class="pdfv-g">
-      <button type="button" class="pdfv-b" [class.on]="sidebarOpen()" [title]="text.sidebar" [attr.aria-label]="text.sidebar" [attr.aria-pressed]="sidebarOpen()" (click)="toggleSidebar()">
+      <button
+        type="button"
+        class="pdfv-b"
+        [class.on]="sidebarOpen()"
+        [title]="text.sidebar"
+        [attr.aria-label]="text.sidebar"
+        [attr.aria-pressed]="sidebarOpen()"
+        (click)="toggleSidebar()"
+      >
         <i class="bi bi-layout-sidebar"></i>
       </button>
       <span class="pdfv-sep"></span>
 
-      <button type="button" class="pdfv-b" [title]="text.first" [attr.aria-label]="text.first" [disabled]="current() <= 1" (click)="goTo(1)">
+      <button
+        type="button"
+        class="pdfv-b"
+        [title]="text.first"
+        [attr.aria-label]="text.first"
+        [disabled]="current() <= 1"
+        (click)="goTo(1)"
+      >
         <i class="bi bi-chevron-bar-up"></i>
       </button>
-      <button type="button" class="pdfv-b" [title]="text.prev" [attr.aria-label]="text.prev" [disabled]="current() <= 1" (click)="goTo(current() - 1)">
+      <button
+        type="button"
+        class="pdfv-b"
+        [title]="text.prev"
+        [attr.aria-label]="text.prev"
+        [disabled]="current() <= 1"
+        (click)="goTo(current() - 1)"
+      >
         <i class="bi bi-chevron-up"></i>
       </button>
 
@@ -28,22 +55,52 @@
         <span>/ {{ numPages() }}</span>
       </span>
 
-      <button type="button" class="pdfv-b" [title]="text.next" [attr.aria-label]="text.next" [disabled]="current() >= numPages()" (click)="goTo(current() + 1)">
+      <button
+        type="button"
+        class="pdfv-b"
+        [title]="text.next"
+        [attr.aria-label]="text.next"
+        [disabled]="current() >= numPages()"
+        (click)="goTo(current() + 1)"
+      >
         <i class="bi bi-chevron-down"></i>
       </button>
-      <button type="button" class="pdfv-b" [title]="text.last" [attr.aria-label]="text.last" [disabled]="current() >= numPages()" (click)="goTo(numPages())">
+      <button
+        type="button"
+        class="pdfv-b"
+        [title]="text.last"
+        [attr.aria-label]="text.last"
+        [disabled]="current() >= numPages()"
+        (click)="goTo(numPages())"
+      >
         <i class="bi bi-chevron-bar-down"></i>
       </button>
     </div>
 
     <div class="pdfv-g">
-      <button type="button" class="pdfv-b" [title]="text.zoomOut" [attr.aria-label]="text.zoomOut" (click)="zoomOut()">
+      <button
+        type="button"
+        class="pdfv-b"
+        [title]="text.zoomOut"
+        [attr.aria-label]="text.zoomOut"
+        (click)="zoomOut()"
+      >
         <i class="bi bi-dash-lg"></i>
       </button>
-      <button type="button" class="pdfv-b" [title]="text.zoomIn" [attr.aria-label]="text.zoomIn" (click)="zoomIn()">
+      <button
+        type="button"
+        class="pdfv-b"
+        [title]="text.zoomIn"
+        [attr.aria-label]="text.zoomIn"
+        (click)="zoomIn()"
+      >
         <i class="bi bi-plus-lg"></i>
       </button>
-      <select class="pdfv-sel" [attr.aria-label]="text.zoomLabel" (change)="onZoomSelect($any($event.target).value)">
+      <select
+        class="pdfv-sel"
+        [attr.aria-label]="text.zoomLabel"
+        (change)="onZoomSelect($any($event.target).value)"
+      >
         @for (o of zoomOptions(); track o.v) {
           <option [value]="o.v" [selected]="o.v === zoomValue()">{{ o.l }}</option>
         }
@@ -51,22 +108,47 @@
     </div>
 
     <div class="pdfv-g">
-      <button type="button" class="pdfv-b" [title]="text.rotateCw" [attr.aria-label]="text.rotateCw" (click)="rotate(90)">
+      <button
+        type="button"
+        class="pdfv-b"
+        [title]="text.rotateCw"
+        [attr.aria-label]="text.rotateCw"
+        (click)="rotate(90)"
+      >
         <i class="bi bi-arrow-clockwise"></i>
       </button>
-      <button type="button" class="pdfv-b" [title]="text.rotateCcw" [attr.aria-label]="text.rotateCcw" (click)="rotate(-90)">
+      <button
+        type="button"
+        class="pdfv-b"
+        [title]="text.rotateCcw"
+        [attr.aria-label]="text.rotateCcw"
+        (click)="rotate(-90)"
+      >
         <i class="bi bi-arrow-counterclockwise"></i>
       </button>
 
       <div class="pdfv-tools">
-        <button type="button" class="pdfv-b" [class.on]="toolsOpen()" [title]="text.tools" [attr.aria-label]="text.tools" aria-haspopup="menu" [attr.aria-expanded]="toolsOpen()" (click)="toggleTools($event)">
+        <button
+          type="button"
+          class="pdfv-b"
+          [class.on]="toolsOpen()"
+          [title]="text.tools"
+          [attr.aria-label]="text.tools"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="toolsOpen()"
+          (click)="toggleTools($event)"
+        >
           <i class="bi bi-list"></i>
         </button>
 
         @if (toolsOpen()) {
           <div class="pdfv-menu" role="menu" (click)="$event.stopPropagation()">
             <button type="button" role="menuitem" (click)="toggleFullscreen()">
-              <i class="bi" [class.bi-fullscreen]="!fullscreen()" [class.bi-fullscreen-exit]="fullscreen()"></i>
+              <i
+                class="bi"
+                [class.bi-fullscreen]="!fullscreen()"
+                [class.bi-fullscreen-exit]="fullscreen()"
+              ></i>
               {{ fullscreen() ? text.exitFullscreen : text.fullscreen }}
             </button>
 
@@ -76,25 +158,157 @@
               </button>
             }
             @if (allowDownload()) {
-              <a role="menuitem" [href]="src()" [attr.download]="fileName()" target="_blank" rel="noopener">
+              <a
+                role="menuitem"
+                [href]="src()"
+                [attr.download]="fileName()"
+                target="_blank"
+                rel="noopener"
+              >
                 <i class="bi bi-download"></i>{{ text.download }}
               </a>
             }
 
             <hr />
-            <button type="button" role="menuitem" [disabled]="current() <= 1" (click)="goTo(1); toolsOpen.set(false)">
+            <button
+              type="button"
+              role="menuitem"
+              [disabled]="current() <= 1"
+              (click)="goTo(1); toolsOpen.set(false)"
+            >
               <i class="bi bi-chevron-bar-up"></i>{{ text.first }}
             </button>
-            <button type="button" role="menuitem" [disabled]="current() >= numPages()" (click)="goTo(numPages()); toolsOpen.set(false)">
+            <button
+              type="button"
+              role="menuitem"
+              [disabled]="current() <= 1"
+              (click)="goTo(current() - 1); toolsOpen.set(false)"
+            >
+              <i class="bi bi-chevron-up"></i>Go to Previous Page
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              [disabled]="current() >= numPages()"
+              (click)="goTo(current() + 1); toolsOpen.set(false)"
+            >
+              <i class="bi bi-chevron-down"></i>Go to Next Page
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              [disabled]="current() >= numPages()"
+              (click)="goTo(numPages()); toolsOpen.set(false)"
+            >
               <i class="bi bi-chevron-bar-down"></i>{{ text.last }}
             </button>
 
             <hr />
-            <button type="button" role="menuitemcheckbox" [class.on]="hand()" [attr.aria-checked]="hand()" (click)="toggleHand()">
+            <button type="button" role="menuitem" (click)="rotate(90); toolsOpen.set(false)">
+              <i class="bi bi-arrow-clockwise"></i>{{ text.rotateCw }}
+            </button>
+            <button type="button" role="menuitem" (click)="rotate(-90); toolsOpen.set(false)">
+              <i class="bi bi-arrow-counterclockwise"></i>{{ text.rotateCcw }}
+            </button>
+
+            <hr />
+            <button
+              type="button"
+              role="menuitemcheckbox"
+              [class.on]="hand()"
+              [attr.aria-checked]="hand()"
+              (click)="toggleHand()"
+            >
               <i class="bi bi-hand-index"></i>{{ text.handTool }}
               @if (hand()) {
                 <i class="bi bi-check2 end"></i>
               }
+            </button>
+
+            <hr />
+            <div class="pdfv-mh">Page scrolling</div>
+            <button
+              type="button"
+              role="menuitemradio"
+              [class.on]="scrollMode() === 'vertical'"
+              [attr.aria-checked]="scrollMode() === 'vertical'"
+              (click)="setScrollMode('vertical')"
+            >
+              <i class="bi bi-arrow-down-up"></i>Vertical Scrolling
+              @if (scrollMode() === 'vertical') {
+                <i class="bi bi-check2 end"></i>
+              }
+            </button>
+            <button
+              type="button"
+              role="menuitemradio"
+              [class.on]="scrollMode() === 'horizontal'"
+              [attr.aria-checked]="scrollMode() === 'horizontal'"
+              (click)="setScrollMode('horizontal')"
+            >
+              <i class="bi bi-arrow-left-right"></i>Horizontal Scrolling
+              @if (scrollMode() === 'horizontal') {
+                <i class="bi bi-check2 end"></i>
+              }
+            </button>
+            <button
+              type="button"
+              role="menuitemradio"
+              [class.on]="scrollMode() === 'wrapped'"
+              [attr.aria-checked]="scrollMode() === 'wrapped'"
+              (click)="setScrollMode('wrapped')"
+            >
+              <i class="bi bi-grid-3x3-gap"></i>Wrapped Scrolling
+              @if (scrollMode() === 'wrapped') {
+                <i class="bi bi-check2 end"></i>
+              }
+            </button>
+
+            <hr />
+            <div class="pdfv-mh">Spreads</div>
+            <button
+              type="button"
+              role="menuitemradio"
+              [disabled]="!spreadsAllowed()"
+              [class.on]="spreadMode() === 'none'"
+              [attr.aria-checked]="spreadMode() === 'none'"
+              (click)="setSpreadMode('none')"
+            >
+              <i class="bi bi-file-earmark"></i>No Spreads
+              @if (spreadMode() === 'none') {
+                <i class="bi bi-check2 end"></i>
+              }
+            </button>
+            <button
+              type="button"
+              role="menuitemradio"
+              [disabled]="!spreadsAllowed()"
+              [class.on]="spreadMode() === 'odd'"
+              [attr.aria-checked]="spreadMode() === 'odd'"
+              (click)="setSpreadMode('odd')"
+            >
+              <i class="bi bi-book"></i>Odd Spreads
+              @if (spreadMode() === 'odd') {
+                <i class="bi bi-check2 end"></i>
+              }
+            </button>
+            <button
+              type="button"
+              role="menuitemradio"
+              [disabled]="!spreadsAllowed()"
+              [class.on]="spreadMode() === 'even'"
+              [attr.aria-checked]="spreadMode() === 'even'"
+              (click)="setSpreadMode('even')"
+            >
+              <i class="bi bi-book-half"></i>Even Spreads
+              @if (spreadMode() === 'even') {
+                <i class="bi bi-check2 end"></i>
+              }
+            </button>
+
+            <hr />
+            <button type="button" role="menuitem" (click)="openProps()">
+              <i class="bi bi-info-circle"></i>Document Properties
             </button>
           </div>
         }
@@ -104,12 +318,93 @@
 
   <!-- ===== Body: sidebar + pages ===== -->
   <div class="pdfv-body">
-    <aside #sideEl class="pdfv-side" [class.open]="sidebarOpen()" (click)="onThumbClick($event)">
-      <div #thumbsEl class="pdfv-thumbs"></div>
+    <aside class="pdfv-side" [class.open]="sidebarOpen()">
+      <div class="pdfv-tabs">
+        <button
+          type="button"
+          class="pdfv-b"
+          [class.on]="sideTab() === 'thumbs'"
+          title="Thumbnails"
+          aria-label="Thumbnails"
+          (click)="sideTab.set('thumbs')"
+        >
+          <i class="bi bi-image"></i>
+        </button>
+        <button
+          type="button"
+          class="pdfv-b"
+          [class.on]="sideTab() === 'outline'"
+          title="Document outline"
+          aria-label="Document outline"
+          (click)="sideTab.set('outline')"
+        >
+          <i class="bi bi-list-ul"></i>
+        </button>
+
+        @if (sideTab() === 'outline' && hasOutlineKids()) {
+          <button
+            type="button"
+            class="pdfv-b pdfv-tabs-end"
+            title="Expand / collapse all"
+            aria-label="Expand or collapse all"
+            (click)="toggleAllOutline()"
+          >
+            <i class="bi bi-chevron-bar-expand"></i>
+          </button>
+        }
+      </div>
+
+      <div #sideEl class="pdfv-sidec">
+        <div
+          #thumbsEl
+          class="pdfv-thumbs"
+          [hidden]="sideTab() !== 'thumbs'"
+          (click)="onThumbClick($event)"
+        ></div>
+
+        @if (sideTab() === 'outline') {
+          @if (outline().length) {
+            <nav class="pdfv-ol" aria-label="Document outline">
+              @for (o of visibleOutline(); track o.id) {
+                <div class="pdfv-ol-row" [style.padding-left.px]="8 + o.depth * 14">
+                  @if (o.hasKids) {
+                    <button
+                      type="button"
+                      class="pdfv-ol-tg"
+                      [attr.aria-expanded]="!collapsed().has(o.id)"
+                      (click)="toggleOutlineNode(o.id, $event)"
+                    >
+                      <i
+                        class="bi"
+                        [class.bi-caret-right-fill]="collapsed().has(o.id)"
+                        [class.bi-caret-down-fill]="!collapsed().has(o.id)"
+                      ></i>
+                    </button>
+                  } @else {
+                    <span class="pdfv-ol-tg"></span>
+                  }
+                  <button type="button" class="pdfv-ol-a" (click)="goToOutline(o)">
+                    {{ o.title }}
+                  </button>
+                </div>
+              }
+            </nav>
+          } @else {
+            <p class="pdfv-ol-empty">This document has no outline.</p>
+          }
+        }
+      </div>
     </aside>
 
     <div class="pdfv-main">
-      <div #scroller class="pdfv-scroll" [class.hand]="hand()" [class.grabbing]="false" (scroll)="onScroll()" (mousedown)="onDragStart($event)">
+      <div
+        #scroller
+        class="pdfv-scroll"
+        [class.hand]="hand()"
+        [class.grabbing]="false"
+        (scroll)="onScroll()"
+        (mousedown)="onDragStart($event)"
+      >
         <div #pagesEl class="pdfv-pages"></div>
       </div>
 
@@ -130,4 +425,38 @@
       }
     </div>
   </div>
+
+  <!-- ===== Document properties dialog ===== -->
+  @if (propsOpen()) {
+    <div class="pdfv-dlg-bg" (click)="closeProps()">
+      <div
+        class="pdfv-dlg"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Document properties"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="pdfv-dlg-h">
+          <b>Document Properties</b>
+          <button type="button" class="pdfv-b" aria-label="Close" (click)="closeProps()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <dl class="pdfv-dl">
+          @for (r of propRows(); track r.label) {
+            <dt>{{ r.label }}</dt>
+            <dd>{{ r.value }}</dd>
+          } @empty {
+            <dt>Loading</dt>
+            <dd>...</dd>
+          }
+        </dl>
+
+        <div class="pdfv-dlg-f">
+          <button type="button" class="btn" (click)="closeProps()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

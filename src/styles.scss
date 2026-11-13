@@ -50,7 +50,58 @@
 
   /* ---------- Layout Sizes ---------- */
   --sidebarWidth: 210px;
-  --topbarHeight: 60px;
+  --topbarHeight: 60px; 
+    /* ---------- Hero / dark card colors ---------- */
+  --deepNavyClr: #14284b;       /* dark hero card, total badge */
+  --deepNavyLightClr: #2f4f93;  /* dark hero gradient start */
+  --heroLinkClr: #a9c4ff;       /* dark card ke upar link */
+  --overlayClr: rgba(10, 20, 40, 0.45);
+  --glassClr: rgba(255, 255, 255, 0.08);      /* dark card ke upar halka box */
+  --glassHoverClr: rgba(255, 255, 255, 0.15);
+  --glassStrongClr: rgba(255, 255, 255, 0.14);
+
+  /* ---------- Status background colors ---------- */
+  --dangerBgClr: #fde4e4;
+  --warningBgClr: #fdebd3;
+  --successBgClr: #d6f5e3;
+  --heartClr: #e11d48;
+  --disabledBgClr: #dfe4ec;
+  --disabledClr: #8a94a6;
+
+  /* ---------- Collection colors (accent + tint) ---------- */
+  --acc-funding: var(--primaryClr);
+  --acc-proposal: #0f7a4d;
+  --acc-ebook: #7a2fd0;
+  --acc-article: #c0245c;
+  --acc-video: #c2410c;
+  --acc-course: #64748b;
+  --acc-donor: #0f766e;
+  --acc-all: var(--primaryClr);
+
+  --tint-funding: #e8effa;
+  --tint-proposal: #e4f5ec;
+  --tint-ebook: #f1e8fc;
+  --tint-article: #fce7f0;
+  --tint-video: #fdeee3;
+  --tint-course: #eef1f5;
+  --tint-donor: #e1f5f2;
+  --tint-all: #e8effa;
+
+  /* ---------- Thumbnail tones (gradient: start, end) ---------- */
+  --tn-blue: #4f86d6, #2a5b9d;
+  --tn-red: #e5565f, #b91c3a;
+  --tn-indigo: #6d77e0, #4036a8;
+  --tn-gold: #d9a93a, #a8741a;
+  --tn-pink: #e0589a, #b0236c;
+  --tn-slate: #6b7699, #3a4569;
+  --tn-green: #2fb36a, #0f7a3e;
+  --tn-purple: #a23fcc, #6d2aa8;
+  --tn-teal: #12b088, #07806b;
+  --tn-orange: #f08a3c, #c2561a;
+  --tn-navy: #2a4a8a, #14284b;
+  --tn-crimson: #c0183f, #7a0f2a;
+  --tn-dark: #3a3d46, #17181d;
+  
 }
 
 /* ---------- Basic Reset ---------- */

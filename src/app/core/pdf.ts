@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import * as pdfjs from 'pdfjs-dist';
 import type { PDFDocumentLoadingTask, PDFPageProxy, RenderTask } from 'pdfjs-dist';
 import { PDF_WORKER_SRC } from './mock-data';
 
-pdfjs.GlobalWorkerOptions.workerSrc = PDF_WORKER_SRC;
-
 @Injectable({ providedIn: 'root' })
 export class PdfService {
-  open(url: string): PDFDocumentLoadingTask {
+  // pdf.js ab yahin load hota hai, jab PDF khulti hai (sirf browser me)
+  async open(url: string): Promise<PDFDocumentLoadingTask> {
+    const pdfjs = await import('pdfjs-dist');
+    pdfjs.GlobalWorkerOptions.workerSrc = PDF_WORKER_SRC;
     return pdfjs.getDocument({ url });
   }
 

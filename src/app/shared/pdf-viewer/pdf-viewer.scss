@@ -4,6 +4,7 @@
 }
 
 .pdfv {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -20,8 +21,11 @@
   }
 }
 
-/* ----- Toolbar ----- */
+/* ===== Toolbar ===== */
 .pdfv-bar {
+  position: relative;
+  z-index: 5;
+  flex: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -38,18 +42,29 @@
   gap: 4px;
 }
 
+.pdfv-sep {
+  align-self: stretch;
+  margin: 6px 6px;
+  border-left: var(--border);
+}
+
 .pdfv-b {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: none;
   width: 34px;
   height: 34px;
+  padding: 0;
   border: 1px solid transparent;
   border-radius: var(--radiusSm);
   background: transparent;
   color: var(--menuTextClr);
   font-size: var(--detailFont);
-  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
 
   &:hover:not(:disabled) {
     background: var(--primaryLightClr);
@@ -106,19 +121,257 @@
   }
 }
 
-.pdfv-z {
-  min-width: 48px;
-  text-align: center;
-  font-size: var(--bodyFont);
-  font-weight: 600;
+.pdfv-sel {
+  height: 32px;
+  margin-left: 4px;
+  padding: 0 8px;
+  border: var(--border);
+  border-radius: var(--radiusSm);
+  background: var(--cardBgClr);
   color: var(--textClr);
+  font: inherit;
+  font-size: var(--bodyFont);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--primaryClr);
+    outline-offset: 1px;
+  }
 }
 
-/* ----- Pages area ----- */
+/* ===== Tools menu ===== */
+.pdfv-tools {
+  position: relative;
+}
+
+.pdfv-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  min-width: 220px;
+  max-height: min(70vh, 480px);
+  overflow-y: auto;
+  padding: 6px;
+  background: var(--cardBgClr);
+  border: var(--border);
+  border-radius: var(--radiusSm);
+  box-shadow: var(--shadow);
+
+  hr {
+    margin: 4px 0;
+    border: 0;
+    border-top: var(--border);
+  }
+
+  button,
+  a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: var(--radiusSm);
+    background: transparent;
+    color: var(--textClr);
+    font: inherit;
+    font-size: var(--bodyFont);
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+
+    i {
+      width: 16px;
+      color: var(--mutedClr);
+    }
+
+    &:hover:not(:disabled) {
+      background: var(--primaryLightClr);
+      color: var(--primaryClr);
+
+      i {
+        color: var(--primaryClr);
+      }
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    &.on {
+      background: var(--primaryLightClr);
+      color: var(--primaryClr);
+    }
+
+    .end {
+      margin-left: auto;
+      color: var(--primaryClr);
+    }
+  }
+}
+
+.pdfv-mh {
+  padding: 6px 10px 2px;
+  font-size: var(--detailFont);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--mutedClr);
+}
+
+/* ===== Body: sidebar + pages ===== */
 .pdfv-body {
   position: relative;
   flex: 1;
   min-height: 0;
+  display: flex;
+}
+
+/* ----- Sidebar ----- */
+.pdfv-side {
+  display: none;
+  flex: none;
+  flex-direction: column;
+  width: 190px;
+  min-height: 0;
+  background: var(--cardBgClr);
+  border-right: var(--border);
+
+  &.open {
+    display: flex;
+  }
+}
+
+.pdfv-tabs {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border-bottom: var(--border);
+}
+
+.pdfv-tabs-end {
+  margin-left: auto;
+}
+
+.pdfv-sidec {
+  position: relative; // markThumb ka offsetTop isi se calculate hota hai
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--bgClr);
+}
+
+/* Thumbnails */
+.pdfv-thumbs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 8px;
+
+  &[hidden] {
+    display: none; // flex ke upar [hidden] kaam kare
+  }
+}
+
+:host ::ng-deep .pdfv-th {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: var(--detailFont);
+  color: var(--mutedClr);
+
+  &.on {
+    color: var(--primaryClr);
+    font-weight: 600;
+
+    .pdfv-thb {
+      outline: 2px solid var(--primaryClr);
+      outline-offset: 2px;
+    }
+  }
+
+  &:hover:not(.on) .pdfv-thb {
+    outline: 2px solid var(--primaryLightClr);
+    outline-offset: 2px;
+  }
+}
+
+:host ::ng-deep .pdfv-thb {
+  background: var(--whiteClr);
+  border: var(--border);
+  box-shadow: 0 1px 4px rgba(15, 31, 56, 0.12);
+
+  canvas {
+    display: block;
+  }
+}
+
+/* Outline */
+.pdfv-ol {
+  padding: 6px 0;
+}
+
+.pdfv-ol-empty {
+  margin: 0;
+  padding: 16px 12px;
+  text-align: center;
+  font-size: var(--bodyFont);
+  color: var(--mutedClr);
+}
+
+.pdfv-ol-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+  padding-right: 8px;
+}
+
+.pdfv-ol-tg {
+  flex: none;
+  width: 18px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--mutedClr);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.pdfv-ol-a {
+  flex: 1;
+  text-align: left;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: var(--radiusSm);
+  background: transparent;
+  color: var(--textClr);
+  font: inherit;
+  font-size: var(--bodyFont);
+  line-height: 1.35;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--primaryLightClr);
+    color: var(--primaryClr);
+  }
+}
+
+/* ----- Pages ----- */
+.pdfv-main {
+  position: relative;
+  flex: 1;
+  min-width: 0;
 }
 
 .pdfv-scroll {
@@ -127,14 +380,47 @@
   overflow: auto;
   background: var(--bgClr);
   padding: 16px;
+
+  &.hand {
+    cursor: grab;
+  }
 }
 
+/* Layout class TS se lagti hai: m-v / m-h / m-w  +  s-odd / s-even */
 .pdfv-pages {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 14px; // TS ke PAGE_GAP (14) se match
   min-width: min-content;
+
+  // Horizontal scrolling
+  &.m-h {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  // Wrapped scrolling
+  &.m-w {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  // Spreads (sirf vertical mode me)
+  &.m-v.s-odd,
+  &.m-v.s-even {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    justify-content: center;
+    align-items: start;
+  }
+}
+
+// Even spreads: page 1 akela, right side me
+:host ::ng-deep .pdfv-pages.m-v.s-even > .pdfv-pg:first-child {
+  grid-column: 2;
 }
 
 :host ::ng-deep .pdfv-pg {
@@ -149,10 +435,11 @@
   }
 }
 
-/* ----- Loading / Error ----- */
+/* ===== Loading / Error ===== */
 .pdfv-ov {
   position: absolute;
   inset: 0;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -190,8 +477,89 @@
   }
 }
 
+/* ===== Document properties dialog ===== */
+.pdfv-dlg-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(15, 31, 56, 0.45);
+}
+
+.pdfv-dlg {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 460px;
+  max-height: 100%;
+  background: var(--cardBgClr);
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.pdfv-dlg-h {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px 10px 16px;
+  border-bottom: var(--border);
+  color: var(--textClr);
+}
+
+.pdfv-dl {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 8px 12px;
+  margin: 0;
+  padding: 14px 16px;
+  font-size: var(--bodyFont);
+
+  dt {
+    color: var(--mutedClr);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--textClr);
+    overflow-wrap: anywhere;
+  }
+}
+
+.pdfv-dlg-f {
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 16px;
+  border-top: var(--border);
+}
+
+/* ===== Mobile ===== */
 @media (max-width: 560px) {
   .pdfv-bar {
     justify-content: center;
+  }
+
+  // Chhoti screen par sidebar pages ke upar overlay ban jaata hai
+  .pdfv-side {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 4;
+    width: 170px;
+    box-shadow: 4px 0 14px rgba(15, 31, 56, 0.18);
+  }
+
+  .pdfv-dl {
+    grid-template-columns: 110px 1fr;
   }
 }
